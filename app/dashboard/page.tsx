@@ -40,7 +40,7 @@ const mockSessions = {
 
 export default function Dashboard() {
   const navigate = useRouter();
-  const [username] = useState('KaraokeAdmin');
+  const [username] = useState('Karaokee UserSma');
 
   const userMenuItems = [
     {
@@ -66,7 +66,7 @@ export default function Dashboard() {
   };
 
   const handleRejoin = (sessionId: string) => {
-    navigate.push(`/session/${sessionId}`);
+    navigate.push(`/session/${sessionId}/participant`);
   };
 
   const renderSessionCard = (session: any, isCreated: boolean) => (
