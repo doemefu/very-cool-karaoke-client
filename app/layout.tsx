@@ -62,6 +62,12 @@ export default function RootLayout({
               Dropdown: {
                 colorBgElevated: '#16181D',  // ← gleiche Farbe wie colorBgContainer
               },
+              Tabs: {
+                inkBarColor: '#FF2D7E',
+                itemActiveColor: '#FF2D7E',
+                itemSelectedColor: '#FF2D7E',
+                itemHoverColor: '#FF2D7E',
+              },
             },
           }}
         >

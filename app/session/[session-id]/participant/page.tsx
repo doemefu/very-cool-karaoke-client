@@ -258,7 +258,7 @@ export default function ParticipantSession() {
 
                         <List
                             dataSource={queue}
-                            renderItem={(song, index) => (
+                            renderItem={(song) => (
                                 <div key={song.id} style={{ marginBottom: 8 }}>
                                     <List.Item
                                         style={{
@@ -269,27 +269,6 @@ export default function ParticipantSession() {
                                         }}
                                     >
                                         <List.Item.Meta
-                                            avatar={
-                                                <div
-                                                    style={{
-                                                        width: 28,
-                                                        height: 28,
-                                                        borderRadius: '50%',
-                                                        background: index === 0
-                                                            ? 'linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)'
-                                                            : 'rgba(255,255,255,0.1)',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        color: '#FFFFFF',
-                                                        fontSize: 12,
-                                                        fontWeight: 600,
-                                                        flexShrink: 0,
-                                                    }}
-                                                >
-                                                    {index + 1}
-                                                </div>
-                                            }
                                             title={<span style={{ color: '#FFFFFF' }}>{song.title}</span>}
                                             description={
                                                 <span style={{ color: 'rgba(255, 255, 255, 0.65)' }}>
