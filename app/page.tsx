@@ -18,7 +18,7 @@ export default function Home() {
           height={38}
           priority
         />
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#111" }}>
+        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#FF2D7E" }}>
           Group 22
         </h1>
         <ol>
