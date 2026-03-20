@@ -18,6 +18,9 @@ export default function Home() {
           height={38}
           priority
         />
+        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#111" }}>
+          Group 22
+        </h1>
         <ol>
           <li>
             <code>app/page.tsx</code>{" "}
