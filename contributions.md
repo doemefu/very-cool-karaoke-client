@@ -30,18 +30,18 @@ reason).
 
 ---
 
-## Contributions Week 1 - [Begin Date] to [End Date]
+## Contributions Week 1 - 23.03.2026 to 30.03.2026
 
-| **Student**        | **Date** | **Link to Commit** | **Description**                 | **Relevance**                       |
-| ------------------ | -------- | ------------------ | ------------------------------- | ----------------------------------- |
-| **[@githubUser1]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]   | [Link to Commit 1] | [Brief description of the task] | [Why this contribution is relevant] |
-|                    | [date]   | [Link to Commit 2] | [Brief description of the task] | [Why this contribution is relevant] |
+| **Student**        | **Date**     | **Link to Commit** | **Description**                                    | **Relevance**                       |
+|--------------------|--------------| ------------------ |----------------------------------------------------|-------------------------------------|
+| **@Oskar-567**   | 27.03.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/32/changes/d0549868d3a00f49c082deea8b3fdcc52dd224f7 | #2 Create registration page                      | critical |
+|                    | 27.03.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/33/changes/507094f54057d7f1f28d3fa917647ae2e0491193 | #3 Implement auth token storage and route guards | critical|
+| **[@githubUser2]** | [date]       | [Link to Commit 1] | [Brief description of the task]                    | [Why this contribution is relevant] |
+|                    | [date]       | [Link to Commit 2] | [Brief description of the task]                    | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]       | [Link to Commit 1] | [Brief description of the task]                    | [Why this contribution is relevant] |
+|                    | [date]       | [Link to Commit 2] | [Brief description of the task]                    | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]       | [Link to Commit 1] | [Brief description of the task]                    | [Why this contribution is relevant] |
+|                    | [date]       | [Link to Commit 2] | [Brief description of the task]                    | [Why this contribution is relevant] |
 
 ---
 
