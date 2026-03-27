@@ -61,7 +61,7 @@ const LandingPage: React.FC =() => {
         registerForm.setFields([
           {
             name: "username",
-            errors: ["Username already taken"],
+            errors: ["Username already taken, please choose another"],
           },
         ]);
       } else {
