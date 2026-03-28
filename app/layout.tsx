@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ConfigProvider
           theme={{
-            algorithm: theme.defaultAlgorithm,
+            algorithm: theme.darkAlgorithm,
             token: {
               // general theme options are set in token, meaning all primary elements (button, menu, ...) will have this color
               colorPrimary: "#22426b", // selected input field boarder will have this color as well
@@ -43,9 +43,11 @@ export default function RootLayout({
             // if a component type needs special styling, setting here will override default options set in token
             components: {
               Button: {
-                colorPrimary: "#75bd9d", // this will color all buttons in #75bd9d, overriding the default primaryColor #22426b set in token line 35
+                colorPrimary: "#FF2D7E", // this will color all buttons in #75bd9d, overriding the default primaryColor #22426b set in token line 35
+                colorPrimaryHover: '#C91F5E',
                 algorithm: true, // enable algorithm (redundant with line 33 but here for demo purposes)
                 controlHeight: 38,
+                fontWeight: 600,
               },
               Input: {
                 colorBorder: "gray", // color boarder selected is not overridden but instead is set by primary color in line 35
@@ -57,6 +59,19 @@ export default function RootLayout({
                 algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
               },
               Card: {},
+              Dropdown: {
+                colorBgElevated: '#16181D',
+              },
+              Tabs: {
+                inkBarColor: '#FF2D7E',
+                itemActiveColor: '#FF2D7E',
+                itemSelectedColor: '#FF2D7E',
+                itemHoverColor: '#FF2D7E',
+              },
+              Alert: {
+                colorErrorBg: '#7A3B00',
+                colorErrorBorder: 'transparent',
+              },
             },
           }}
         >

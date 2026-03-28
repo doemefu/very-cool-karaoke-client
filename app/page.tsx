@@ -1,119 +1,262 @@
-"use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
+"use client";
+
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { Button } from "antd";
-import { BookOutlined, CodeOutlined, GlobalOutlined } from "@ant-design/icons";
-import styles from "@/styles/page.module.css";
+import { useApi } from "@/hooks/useApi";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { User } from "@/types/user";
+import { Layout, Card, Input, Button, Tabs, Alert, Typography, Form } from 'antd';
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
-export default function Home() {
-  const router = useRouter();
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <h1 style={{ fontSize: "2rem", fontWeight: "bold", color: "#FF2D7E" }}>
-          Group 22
-        </h1>
-        <ol>
-          <li>
-            <code>app/page.tsx</code>{" "}
-            is the landing page for your application, currently being displayed.
-          </li>
-          <li>
-            <code>app/login/page.tsx</code> is the login page for users.
-          </li>
-          <li>
-            <code>app/users/page.tsx</code>{" "}
-            is the dashboard that shows an overview of all users, fetched from
-            the server.
-          </li>
-          <li>
-            <code>app/users/[id]/page.tsx</code>{" "}
-            is a slug page that shows info of a particular user. Since each user
-            has its own id, each user has its own infopage, dynamically with the
-            use of slugs.
-          </li>
-          <li>
-            To test, modify the current page <code>app/page.tsx</code>{" "}
-            and save to see your changes instantly.
-          </li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <Button
-            type="primary" // as defined in the ConfigProvider in [layout.tsx](./layout.tsx), all primary antd elements are colored #22426b, with buttons #75bd9d as override
-            color="red" // if a single/specific antd component needs yet a different color, it can be explicitly overridden in the component as shown here
-            variant="solid" // read more about the antd button and its options here: https://ant.design/components/button
-            onClick={() =>
-              globalThis.open(
-                "https://vercel.com/new",
-                "_blank",
-                "noopener,noreferrer",
-              )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Deploy now
-          </Button>
-          <Button
-            type="default"
-            variant="solid"
-            onClick={() =>
-              globalThis.open(
-                "https://nextjs.org/docs",
-                "_blank",
-                "noopener,noreferrer",
-              )}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </Button>
-          <Button
-            type="primary"
-            variant="solid"
-            onClick={() => router.push("/login")}
-          >
-            Go to login
-          </Button>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <Button
-          type="link"
-          icon={<BookOutlined />}
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn
-        </Button>
-        <Button
-          type="link"
-          icon={<CodeOutlined />}
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Examples
-        </Button>
-        <Button
-          type="link"
-          icon={<GlobalOutlined />}
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Go to nextjs.org →
-        </Button>
-      </footer>
-    </div>
-  );
+interface RegisterFormValues {
+  username: string;
+  password: string;
+  confirmPassword: string;
 }
+
+interface LoginFormValues {
+  username: string;
+  password: string;
+}
+
+
+const { Content } = Layout;
+const { Title, Text } = Typography;
+
+
+
+const LandingPage: React.FC =() => {
+  const router = useRouter();
+  const apiService = useApi();
+  const [activeTab, setActiveTab] = useState('login');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [loginForm] = Form.useForm();
+  const [registerForm] = Form.useForm();
+
+  const { set: setToken } = useLocalStorage<string>("token", "");
+  const { set: setUserId } = useLocalStorage<string>("id", "");
+
+
+  const handleRegister = async (values: RegisterFormValues) => {
+    setLoading(true);
+    try {
+      const { username, password } = values;
+
+      const response = await apiService.post<User>("/users", { username, password });
+      console.log(response);
+
+      if (response.token) {
+        setToken(response.token);
+      }
+
+      if (response.id) {
+        setUserId(response.id);
+      }
+
+      router.push(`/dashboard`);
+
+    } catch (error) {
+      if (error instanceof Error) {
+        registerForm.setFields([
+          {
+            name: "username",
+            errors: ["Username already taken, please choose another"],
+          },
+        ]);
+      } else {
+        alert("Registration failed. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogin = async (values: LoginFormValues) => {
+    setLoading(true);
+    try {
+      // Call the API service and let it handle JSON serialization and error handling
+      const response = await apiService.post<User>("/auth/login", values);
+
+      // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
+      if (response.token) {
+        setToken(response.token);
+      }
+      if (response.id) {
+        setUserId(response.id);
+      }
+
+      // Navigate to the user overview
+      router.push("/dashboard");
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(`Something went wrong during the login:\n${error.message}`);
+      } else {
+        console.error("An unknown error occurred during login.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const loginTab = (
+      <Form form={loginForm} onFinish={handleLogin} layout="vertical" size="large">
+        <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Please enter your username' }]}
+        >
+          <Input prefix={<UserOutlined />} placeholder="Username" />
+        </Form.Item>
+
+        <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Please enter your password' }]}
+        >
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" size="large" block loading={loading}>
+            Login
+          </Button>
+        </Form.Item>
+      </Form>
+  );
+
+  const registerTab = (
+      <Form form={registerForm} onFinish={handleRegister} layout="vertical" size="large">
+        <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Please enter a username' }]}
+        >
+          <Input prefix={<UserOutlined />} placeholder="Username" />
+        </Form.Item>
+
+        <Form.Item
+            name="password"
+            rules={[
+              { required: true, message: 'Please enter a password' },
+              { min: 6, message: 'Password must be at least 6 characters' },
+            ]}
+        >
+          <Input.Password prefix={<LockOutlined />} placeholder="Password" />
+        </Form.Item>
+
+        <Form.Item
+            name="confirmPassword"
+            dependencies={['password']}
+            rules={[
+              { required: true, message: 'Please confirm your password' },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue('password') === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('Passwords do not match'));
+                },
+              }),
+            ]}
+        >
+          <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" />
+        </Form.Item>
+
+        <Form.Item>
+          <Button type="primary" htmlType="submit" size="large" block loading={loading}>
+            Register
+          </Button>
+        </Form.Item>
+      </Form>
+  );
+
+  const tabItems = [
+    {
+      key: 'login',
+      label: 'Login',
+      children: loginTab,
+    },
+    {
+      key: 'register',
+      label: 'Register',
+      children: registerTab,
+    },
+  ];
+
+  return (
+      <Layout style={{ minHeight: '100vh', background: '#0D0D1A' }}>
+        <Content
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '24px',
+            }}
+        >
+          <div
+              style={{
+                width: '100%',
+                maxWidth: 1200,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                gap: 48,
+                alignItems: 'center',
+              }}
+          >
+            {/* Left Column - Branding */}
+            <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+              <Title
+                  level={1}
+                  style={{
+                    color: '#FF2D7E',
+                    fontSize: 64,
+                    marginBottom: 24,
+                    fontWeight: 800,
+                  }}
+              >
+                Karaokee
+              </Title>
+              <Text
+                  style={{
+                    color: '#00C2FF',
+                    fontSize: 28,
+                    fontWeight: 300,
+                    display: 'block',
+                  }}
+              >
+                Your night. Your songs.
+              </Text>
+              <div
+                  style={{
+                    marginTop: 48,
+                    fontSize: 80,
+                    opacity: 0.3,
+                  }}
+              >
+                🎤
+              </div>
+            </div>
+
+            {/* Right Column - Auth Forms */}
+            <Card style={{ maxWidth: 500, width: '100%', margin: '0 auto' }}>
+              {error && (
+                  <Alert
+                      title={error}
+                      type="error"
+                      closable={{}}
+                      style={{ marginBottom: 24 }}
+                  />
+              )}
+              <Tabs
+                  activeKey={activeTab}
+                  onChange={setActiveTab}
+                  items={tabItems}
+                  size="large"
+              />
+            </Card>
+          </div>
+        </Content>
+      </Layout>
+  );
+};
+
+export default LandingPage;
