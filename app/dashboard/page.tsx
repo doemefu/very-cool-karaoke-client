@@ -13,7 +13,6 @@ export default function Dashboard() {
   const apiService = useApi();
 
   const handleCreateParty = async () => {
-    const response = await apiService.post("/sessions", {});
     router.push('/create-session');
   };
 
