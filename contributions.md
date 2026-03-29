@@ -43,7 +43,11 @@ reason).
 | **[@Spring987](https://github.com/Spring987)**  | 29.03.2026  | https://github.com/doemefu/very-cool-karaoke-client/pull/34/changes/7861628d3b20b8c043dc068529957ac44bebcea2 | #27 add create-session page with name and description, pin display                                | critical                                                              |
 | **[@Unick1](https://github.com/Unick1)**                              | 28.03.2026      | https://github.com/doemefu/very-cool-karaoke-server/pull/60/chages/7912630e1befc7964b7bc5c486df01dd02b13463                                                                                           | #22 Implemented a many-to-many relationship between sessions and users with an idempotent join table to track participants for User Story #5.                                                                   | critical                                  |
 |     **[@Unick1](https://github.com/Unick1)**                                            |  29.03.2026     | https://github.com/doemefu/very-cool-karaoke-client/pull/35/changes/8e645b2480fc52568bffaca7ed120a95e315d6ba                                                                                           | #6 Implemented a lyrics display feature that fetches data from the backend to provide all session participants with a synchronized, scrollable view, including 404 error handling for missing lyrics.                                                                   | critical                                   |
-
+| **[@lurisz33](https://github.com/lurisz33)**  | 29.03.2026  | https://github.com/doemefu/very-cool-karaoke-server/pull/56/changes/6b4ce89a1ee6b90e4ac775ee7c852753f4f995be | #17 be create user entity | critical    
+| **[@lurisz33](https://github.com/lurisz33)**  | 29.03.2026  | https://github.com/doemefu/very-cool-karaoke-server/pull/57/changes/f1ab2ef13a02297fbb3951f70aef722b6b046ba5 | #18 Implement registration endpoint. Adjust UserGetDTO and DTOMapper
+ | critical    
+ | **[@lurisz33](https://github.com/lurisz33)**  | 29.03.2026  | https://github.com/doemefu/very-cool-karaoke-server/pull/58/changes/7633c4a23635a333cc952b7cb3194dcdcf16f195 | #19 be implement post userslogin endpoint
+ | critical    
 ---
 
 ## Contributions Week 2 - [Begin Date] to [End Date]
