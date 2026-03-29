@@ -150,7 +150,7 @@ export default function CreateSession() {
                     size="large"
                     block
                     style={{ marginTop: 16 }}
-                    onClick={() => router.push(`/session/${sessionId}`)}
+                    // onClick={() => router.push(`/session/${sessionId}`)}
                   >
                     Go to Lobby
                   </Button>
