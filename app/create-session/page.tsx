@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Layout, Button, Input, Card, Steps, Typography, Space, message } from 'antd';
+import { Layout, Button, Input, Card, Steps, Typography, Space, message, Form } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useApi } from '@/hooks/useApi';
+import { Session } from '@/types/session';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -13,32 +14,29 @@ const { TextArea } = Input;
 export default function CreateSession() {
   const router = useRouter();
   const apiService = useApi();
-  const [sessionName, setSessionName] = useState('');
-  const [description, setDescription] = useState('');
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const [pin, setPin] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionCreated, setSessionCreated] = useState(false);
 
 
 
-  const handleStartSession = async () => {
-    if (!sessionName.trim()) {
-      message.error('Please enter a session name');
-      return;
-    }
-
+  const handleStartSession = async (values: { name: string, description?: string }) => {
+    setLoading(true);
     try {
-      const data: any = await apiService.post('/sessions', { name: sessionName, description });
+      const data = await apiService.post<Session>('/sessions', values);
       setPin(data.gamePin);
       setSessionId(data.id);
       setSessionCreated(true);
+      message.success('Session created successfully!');
     } catch (error) {
       if (error instanceof Error) {
         message.error(`Error creating session: ${error.message}`);
       }
+    } finally {
+      setLoading(false);
     }
-
-
   };
 
   return (
@@ -81,35 +79,28 @@ export default function CreateSession() {
 
           {/* Main Form Card */}
           <Card>
-            <Space direction="vertical" size={24} style={{ width: '100%' }}>
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={handleStartSession}
+              disabled={sessionCreated}
+            >
               {!sessionCreated && (
                 <>
-                  <div>
-                    <Text strong style={{ color: '#FFFFFF', fontSize: 16 }}>
-                      Session Name
-                    </Text>
-                    <Input
-                      size="large"
-                      placeholder="Enter session name"
-                      value={sessionName}
-                      onChange={(e) => setSessionName(e.target.value)}
-                      style={{ marginTop: 8 }}
-                    />
-                  </div>
+                  <Form.Item
+                    name="name"
+                    label={<Text strong style={{ color: '#FFFFFF', fontSize: 16 }}>Session Name</Text>}
+                    rules={[{ required: true, message: 'Please enter a session name' }]}
+                  >
+                    <Input size="large" placeholder="Enter session name" />
+                  </Form.Item>
 
-                  <div>
-                    <Text strong style={{ color: '#FFFFFF', fontSize: 16 }}>
-                      Description
-                    </Text>
-                    <TextArea
-                      size="large"
-                      placeholder="Add a description (optional)"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      rows={4}
-                      style={{ marginTop: 8 }}
-                    />
-                  </div>
+                  <Form.Item
+                    name="description"
+                    label={<Text strong style={{ color: '#FFFFFF', fontSize: 16 }}>Description</Text>}
+                  >
+                    <TextArea size="large" placeholder="Add a description (optional)" rows={4} />
+                  </Form.Item>
                 </>
               )}
 
@@ -150,7 +141,7 @@ export default function CreateSession() {
                     size="large"
                     block
                     style={{ marginTop: 16 }}
-                    // onClick={() => router.push(`/session/${sessionId}`)}
+                  // onClick={() => router.push(`/session/${sessionId}`)} TODO: implement session page and uncomment this line to navigate to the session lobby
                   >
                     Go to Lobby
                   </Button>
@@ -158,22 +149,25 @@ export default function CreateSession() {
               </div>
 
               {!sessionCreated && (
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  onClick={handleStartSession}
-                  style={{
-                    marginTop: 24,
-                    height: 56,
-                    fontSize: 18,
-                    fontWeight: 600,
-                  }}
-                >
-                  Start Session
-                </Button>
+                <Form.Item style={{ marginBottom: 0 }}>
+                  <Button
+                    type="primary"
+                    size="large"
+                    block
+                    htmlType="submit"
+                    loading={loading}
+                    style={{
+                      marginTop: 24,
+                      height: 56,
+                      fontSize: 18,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Start Session
+                  </Button>
+                </Form.Item>
               )}
-            </Space>
+            </Form>
           </Card>
         </div>
       </Content>
