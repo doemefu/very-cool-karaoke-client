@@ -1,6 +1,5 @@
 "use client"; // For components that need React hooks and browser APIs, SSR (server side rendering) has to be disabled. Read more here: https://nextjs.org/docs/pages/building-your-application/rendering/server-side-rendering
 
-
 import { Card, Typography, Layout } from 'antd';
 import { useRouter } from 'next/navigation';
 import { useApi } from "@/hooks/useApi";
@@ -10,9 +9,10 @@ const { Content } = Layout;
 
 export default function Dashboard() {
   const router = useRouter();
-  const apiService = useApi();
 
-  const handleCreateParty = async () => {
+  // The create-session page handles the actual POST /sessions with
+  // the required name field — this just navigates there.
+  const handleCreateParty = () => {
     router.push('/create-session');
   };
 
@@ -52,3 +52,5 @@ export default function Dashboard() {
     </Layout>
   );
 }
+
+
