@@ -89,11 +89,15 @@ const LandingPage: React.FC =() => {
       // Navigate to the user overview
       router.push("/dashboard");
     } catch (error) {
-      if (error instanceof Error) {
-        setError(`Something went wrong during the login:\n${error.message}`);
-      } else {
-        console.error("An unknown error occurred during login.");
-      }
+        if (error instanceof Error) {
+            if (error.message.includes("401")) {
+                setError("Invalid credentials. Please check your username and password.");
+            } else {
+                setError(`Something went wrong during the login:\n${error.message}`);
+            }
+        } else {
+            console.error("An unknown error occurred during login.");
+        }
     } finally {
       setLoading(false);
     }
