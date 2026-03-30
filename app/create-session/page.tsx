@@ -104,7 +104,7 @@ export default function CreateSession() {
                 </>
               )}
 
-              {/* PIN Display */}
+{sessionCreated && (
               <div style={{ textAlign: 'center', marginTop: 24 }}>
                 <Text strong style={{ color: '#FFFFFF', fontSize: 16, display: 'block', marginBottom: 16 }}>
                   Session PIN
@@ -140,14 +140,14 @@ export default function CreateSession() {
                   <Button
                     size="large"
                     block
-                    style={{ marginTop: 16 }}
+                    style={{ marginTop: 16 , color: "white"}}
                   // onClick={() => router.push(`/session/${sessionId}`)} TODO: implement session page and uncomment this line to navigate to the session lobby
                   >
                     Go to Lobby
                   </Button>
                 )}
               </div>
-
+)}
               {!sessionCreated && (
                 <Form.Item style={{ marginBottom: 0 }}>
                   <Button
@@ -163,7 +163,7 @@ export default function CreateSession() {
                       fontWeight: 600,
                     }}
                   >
-                    Start Session
+                    Start the session to generate a PIN
                   </Button>
                 </Form.Item>
               )}
