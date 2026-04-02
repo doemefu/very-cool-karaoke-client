@@ -17,12 +17,9 @@ export class ApiService {
     const storedtoken = localStorage.getItem("token");
     const token = storedtoken ? JSON.parse(storedtoken) : "";
 
-    const storedId = localStorage.getItem("id");
-    const id = storedId ? JSON.parse(storedId) : "";
     return {
       ...this.defaultHeaders,
-      "Authorization": token,
-      "UserId" : id,
+      "token": token,
     };
   }
 

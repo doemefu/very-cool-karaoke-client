@@ -7,24 +7,26 @@
 "use client";
 
 import React from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Layout, Button, Typography, Tooltip } from "antd";
 import { ArrowLeftOutlined, ReloadOutlined } from "@ant-design/icons";
-import { useAuth } from "@/hooks/useAuth";
+// import { useAuth } from "@/hooks/useAuth";
 import { useLyrics } from "@/hooks/useLyrics";
 import LyricsDisplay from "../../components/LyricsDisplay";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
 
 export default function SessionPage() {
   // Redirect to "/" if no token in localStorage
-  const { isAuthenticated } = useAuth();
+  // const { isAuthenticated } = useAuth();
 
-  const params  = useParams();
+  // const params  = useParams();
   const router  = useRouter();
 
-  const sessionId = params?.sessionId as string;
+  // const sessionId = params?.sessionId as string;
+  const { value: sessionId } = useLocalStorage<string>("sessionId", "");
 
   // All lyrics state comes from the hook — this page stays thin
   const {
@@ -37,7 +39,7 @@ export default function SessionPage() {
   } = useLyrics(sessionId);
 
   // Do not render anything while useAuth is redirecting
-  if (!isAuthenticated) return null;
+  // if (!isAuthenticated) return null;
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>

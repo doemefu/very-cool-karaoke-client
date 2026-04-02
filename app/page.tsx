@@ -35,7 +35,6 @@ const LandingPage: React.FC =() => {
   const [registerForm] = Form.useForm();
 
   const { set: setToken } = useLocalStorage<string>("token", "");
-  const { set: setUserId } = useLocalStorage<string>("id", "");
 
 
   const handleRegister = async (values: RegisterFormValues) => {
@@ -48,10 +47,6 @@ const LandingPage: React.FC =() => {
 
       if (response.token) {
         setToken(response.token);
-      }
-
-      if (response.id) {
-        setUserId(response.id);
       }
 
       router.push(`/dashboard`);
@@ -81,9 +76,6 @@ const LandingPage: React.FC =() => {
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
         setToken(response.token);
-      }
-      if (response.id) {
-        setUserId(response.id);
       }
 
       // Navigate to the user overview
