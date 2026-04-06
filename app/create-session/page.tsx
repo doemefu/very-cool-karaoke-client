@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Layout, Button, Input, Card, Steps, Typography, Form } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useApi } from '@/hooks/useApi';
+import { ApiService } from '@/api/apiService';
 import { Session } from '@/types/session';
 // import { useAuth } from '@/hooks/useAuth'
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -20,7 +20,7 @@ interface SessionFormValues {
 
 export default function CreateSession() {
   const router = useRouter();
-  const apiService = useApi();
+    const apiService = new ApiService();
   // const { isAuthenticated } = useAuth();
   const [form] = Form.useForm<SessionFormValues>();
   const [loading, setLoading] = useState(false);

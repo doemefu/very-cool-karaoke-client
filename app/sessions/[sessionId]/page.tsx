@@ -6,14 +6,15 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout, Button, Typography, Tooltip } from "antd";
-import { ArrowLeftOutlined, ReloadOutlined } from "@ant-design/icons";
+import {ArrowLeftOutlined, PlusOutlined, ReloadOutlined} from "@ant-design/icons";
 // import { useAuth } from "@/hooks/useAuth";
 import { useLyrics } from "@/hooks/useLyrics";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import SongSearchDrawer from "../../components/SongSearchDrawer";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -28,6 +29,8 @@ export default function SessionPage() {
   // const sessionId = params?.sessionId as string;
   const { value: sessionId } = useLocalStorage<string>("sessionId", "");
 
+  const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
+
   // All lyrics state comes from the hook — this page stays thin
   const {
     currentSong,
@@ -40,6 +43,10 @@ export default function SessionPage() {
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
+
+    const handleAddSong = () => {
+        setSearchDrawerOpen(false);
+    };
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
@@ -83,14 +90,24 @@ export default function SessionPage() {
 
         {/* Manual refresh button — picks up the new song immediately
             instead of waiting for the next 5-second poll tick */}
-        <Tooltip title="Refresh current song">
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <Tooltip title="Refresh current song">
+              <Button
+                  type="text"
+                  icon={<ReloadOutlined />}
+                  onClick={refresh}
+                  style={{ color: "rgba(255,255,255,0.65)" }}
+              />
+          </Tooltip>
           <Button
-            type="text"
-            icon={<ReloadOutlined />}
-            onClick={refresh}
-            style={{ color: "rgba(255,255,255,0.65)" }}
-          />
-        </Tooltip>
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setSearchDrawerOpen(true)}
+          >
+              Add Song
+          </Button>
+        </div>
       </Header>
 
       {/* Main content */}
@@ -137,6 +154,16 @@ export default function SessionPage() {
 
         </div>
       </Content>
+
+
+        {/* Song Search Drawer */}
+        <SongSearchDrawer
+            open={searchDrawerOpen}
+            onClose={() => setSearchDrawerOpen(false)}
+            onAddSong={handleAddSong}
+            sessionId={sessionId}  // ← das fehlt
+        />
+
     </Layout>
   );
 }
