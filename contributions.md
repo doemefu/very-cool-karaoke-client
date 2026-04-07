@@ -51,17 +51,17 @@ reason).
 
 ## Contributions Week 2 - 30.03.2026 to 13.04.2026
 
-| **Student**        | **Date**   | **Link to Commit**                                                                                           | **Description**                                        | **Relevance**                       |
-| ------------------ |------------|--------------------------------------------------------------------------------------------------------------|--------------------------------------------------------| ----------------------------------- |
-| **[@Oskar-567](https://github.com/Oskar-567)**      | 06.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/36/changes/308bca43a6f68244cddf4663e3e0206a4ce08100 | #8 song search bar and results display in session view | critical                                                              |
-| **[@Oskar-567](https://github.com/Oskar-567)**      | ---        | ---                                                                                                          | ---                                                    | critical                                                              |
-|                    | [date]     | [Link to Commit 2]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
-| **[@githubUser2]** | [date]     | [Link to Commit 1]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
-|                    | [date]     | [Link to Commit 2]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
-| **[@githubUser3]** | [date]     | [Link to Commit 1]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
-|                    | [date]     | [Link to Commit 2]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
-| **[@githubUser4]** | [date]     | [Link to Commit 1]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
-|                    | [date]     | [Link to Commit 2]                                                                                           | [Brief description of the task]                        | [Why this contribution is relevant] |
+| **Student**        | **Date**   | **Link to Commit**                                                                                            | **Description**                                        | **Relevance**                       |
+| ------------------ |------------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------|-------------------------------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**      | 06.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/36/changes/308bca43a6f68244cddf4663e3e0206a4ce08100  | #8 song search bar and results display in session view | critical                            |
+| **[@Oskar-567](https://github.com/Oskar-567)**      | 07.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/commit/3ed5befc85b790099aef1ead9181363912313d33           | #7 Display session playlist and add-to-playlist action | critical                            |
+|                    | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+| **[@githubUser2]** | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+|                    | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+| **[@githubUser3]** | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+|                    | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+| **[@githubUser4]** | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+|                    | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
 
 ---
 
