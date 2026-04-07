@@ -4,6 +4,7 @@
 // current song and lyrics — satisfying "all participants see the same
 // lyrics view" from the issue requirements.
 
+
 "use client";
 
 import React, { useState } from "react";
