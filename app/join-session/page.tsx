@@ -2,21 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Typography, Layout, Button, Steps, Input, message, Modal } from 'antd';
+import { Card, Typography, Layout, Button, Input, message } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useApi } from '@/hooks/useApi';
+import { Session } from '@/types/session';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
-
-// Mock component since it isn't imported
-const SongSearchModal = ({ onSelectSong }: { onSelectSong: (song: any) => void }) => {
-  return (
-    <Button block size="large" onClick={() => onSelectSong({ title: 'Bohemian Rhapsody', artist: 'Queen' })}>
-      Select Bohemian Rhapsody
-    </Button>
-  );
-};
 
 export default function JoinSession() {
   const router = useRouter();
@@ -30,17 +22,12 @@ export default function JoinSession() {
     }
 
     try {
-      // 1. Get the session by pin to get its ID
-      const session = await apiService.get<any>(`/sessions/pin/${pin}`);
-
-      // 2. Join the session
+      const session = await apiService.get<Session>(`/sessions/pin/${pin}`);
       await apiService.post(`/sessions/${session.id}/participants`, { gamePin: pin });
-
-      // 3. On success: redirect user to the session page
       message.success(`Joined successfully!`);
-      router.push(`/sessions/${session.id}`);
+      router.push(`/session/${session.id}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      // 4. On failure (404): display the specific message
       if (error.status === 404) {
         message.error('Invalid game pin, please check and try again');
       } else {

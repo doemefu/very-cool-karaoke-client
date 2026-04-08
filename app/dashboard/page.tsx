@@ -2,8 +2,6 @@
 
 import { Card, Typography, Layout } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useApi } from "@/hooks/useApi";
-
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
