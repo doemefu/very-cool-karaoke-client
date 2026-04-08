@@ -2,37 +2,49 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Layout, Button, Input, Card, Steps, Typography, Space, message, Form } from 'antd';
+import { Layout, Button, Input, Card, Steps, Typography, Form } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { useApi } from '@/hooks/useApi';
+import { ApiService } from '@/api/apiService';
 import { Session } from '@/types/session';
+// import { useAuth } from '@/hooks/useAuth'
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
+interface SessionFormValues {
+  name: string;
+  description?: string;
+}
+
 export default function CreateSession() {
   const router = useRouter();
-  const apiService = useApi();
-  const [form] = Form.useForm();
+    const apiService = new ApiService();
+  // const { isAuthenticated } = useAuth();
+  const [form] = Form.useForm<SessionFormValues>();
   const [loading, setLoading] = useState(false);
+  const [, setError] = useState('');
   const [pin, setPin] = useState<string | null>(null);
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  // const [sessionId, setSessionId] = useState<string | null>(null);
   const [sessionCreated, setSessionCreated] = useState(false);
 
+  const { set: setSessionId, value: SessionId } = useLocalStorage<string>("sessionId", "");
 
 
-  const handleStartSession = async (values: { name: string, description?: string }) => {
+  // if (!isAuthenticated) router.push('/');
+
+  const handleStartSession = async (values: SessionFormValues) => {
     setLoading(true);
     try {
       const data = await apiService.post<Session>('/sessions', values);
       setPin(data.gamePin);
       setSessionId(data.id);
       setSessionCreated(true);
-      message.success('Session created successfully!');
+      // message.success('Session created successfully!');
     } catch (error) {
       if (error instanceof Error) {
-        message.error(`Error creating session: ${error.message}`);
+          setError(`Error creating session: ${error.message}`);
       }
     } finally {
       setLoading(false);
@@ -71,8 +83,8 @@ export default function CreateSession() {
               current={sessionCreated ? 1 : 0}
               items={[
                 { title: 'Setup' },
-                { title: 'Invite' },
-                { title: 'Party' },
+                { title: 'Session Created' },
+                // { title: 'Party' },
               ]}
             />
           </Card>
@@ -83,7 +95,7 @@ export default function CreateSession() {
               form={form}
               layout="vertical"
               onFinish={handleStartSession}
-              disabled={sessionCreated}
+              // disabled={!sessionCreated}
             >
               {!sessionCreated && (
                 <>
@@ -136,12 +148,13 @@ export default function CreateSession() {
                     </Text>
                   )}
                 </div>
-                {sessionId && (
+                {sessionCreated && (
                   <Button
+                    type="primary"
                     size="large"
                     block
                     style={{ marginTop: 16 , color: "white"}}
-                  // onClick={() => router.push(`/session/${sessionId}`)} TODO: implement session page and uncomment this line to navigate to the session lobby
+                    onClick={() => router.push(`/sessions/${SessionId}`)}
                   >
                     Go to Lobby
                   </Button>

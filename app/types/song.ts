@@ -20,3 +20,12 @@ export interface Song {
   performed: boolean;
   addedBy: SongAddedBy;
 }
+
+/** Lightweight DTO returned by GET /songs/search — not a full playlist entry. */
+export interface SongSearchResult {
+  spotifyId: string;
+  geniusId: string;
+  title: string;
+  artist: string;
+  lyricsAvailable: boolean;
+}

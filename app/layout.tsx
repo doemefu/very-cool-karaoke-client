@@ -72,6 +72,20 @@ export default function RootLayout({
                 colorErrorBg: '#7A3B00',
                 colorErrorBorder: 'transparent',
               },
+              Drawer: {
+                colorBgElevated: '#16181D',
+                colorText: '#fff',
+                colorIcon: 'rgba(255, 255, 255, 0.65)',
+                colorIconHover: '#fff',
+              },
+              Notification: {
+                colorBgElevated: '#16181D',
+                colorText: '#fff',
+                colorTextHeading: '#fff',
+                colorIcon: 'rgba(255, 255, 255, 0.65)',
+                colorIconHover: '#fff',
+                colorBorder: 'rgba(255, 255, 255, 0.1)',
+              },
             },
           }}
         >
