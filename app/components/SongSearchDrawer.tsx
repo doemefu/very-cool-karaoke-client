@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Drawer, Input, List, Avatar, Empty, App, Spin } from 'antd';
-import {SearchOutlined, PlusOutlined, WarningOutlined} from '@ant-design/icons';
-import { ApiService } from '@/api/apiService';
+import { Drawer, Input, Empty, App, Spin } from 'antd';
+import { SearchOutlined, PlusOutlined, WarningOutlined} from '@ant-design/icons';
+import { useApi } from "@/hooks/useApi";
 import { SongSearchResult } from '@/types/song';
 
 const { Search } = Input;
-const apiService = new ApiService();
+
 
 interface SongSearchDrawerProps {
     open: boolean;
@@ -21,6 +21,7 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
     const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const { notification } = App.useApp();
+    const apiService = useApi();
 
     useEffect(() => {
         const query = searchQuery.trim();
@@ -48,11 +49,11 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
         }, 300);
 
         return () => clearTimeout(timeout);
-    }, [searchQuery, notification]);
+    }, [searchQuery, notification, apiService]);
 
     const handleAddSong = async (song: SongSearchResult) => {
         try {
-            await apiService.post(`/sessions/${sessionId}/playlist`, {
+            await apiService.post(`/sessions/${sessionId}/songs`, {
                 spotifyId: song.spotifyId,
                 geniusId: song.geniusId,
                 title: song.title,
@@ -74,7 +75,6 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
             });
         }
     };
-
 
     const handleClose = () => {
         setSearchQuery('');
@@ -116,48 +116,45 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
             )}
 
             {showResults && (
-                <List
-                    dataSource={searchResults}
-                    renderItem={(item) => (
-                        <List.Item
+                <div>
+                    {searchResults.map((item) => (
+                        <div
+                            key={item.spotifyId}
                             style={{
-                                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                                padding: '16px 0',
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+                                padding: "16px 0",
                             }}
-                            actions={[
-                                <PlusOutlined
-                                    key="add"
-                                    onClick={() => handleAddSong(item)}
-                                    style={{ fontSize: 18, color: '#FF2D7E', cursor: 'pointer' }}
-                                />,
-                            ]}
                         >
-                            <List.Item.Meta
-                                avatar={
-                                    <Avatar
-                                        size={48}
-                                        style={{
-                                            background: 'linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)',
-                                            fontSize: 24,
-                                        }}
-                                    >
-                                    </Avatar>
-                                }
-                                title={<span style={{ color: '#FFFFFF', fontWeight: 500 }}>{item.title}</span>}
-                                description={
-                                    <div>
-                                        <div style={{ color: 'rgba(255, 255, 255, 0.65)' }}>{item.artist}</div>
-                                        {!item.lyricsAvailable && (
-                                            <div style={{ color: '#faad14', fontSize: 12 }}>
-                                                <WarningOutlined /> No lyrics available
-                                            </div>
-                                        )}
-                                    </div>
-                                }
+                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                <div
+                                    style={{
+                                        width: 48,
+                                        height: 48,
+                                        borderRadius: "50%",
+                                        background: "linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)",
+                                        flexShrink: 0,
+                                    }}
+                                />
+                                <div>
+                                    <div style={{ color: "#FFFFFF", fontWeight: 500 }}>{item.title}</div>
+                                    <div style={{ color: "rgba(255, 255, 255, 0.65)", fontSize: 13 }}>{item.artist}</div>
+                                    {!item.lyricsAvailable && (
+                                        <div style={{ color: "#faad14", fontSize: 12 }}>
+                                            <WarningOutlined /> No lyrics available
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <PlusOutlined
+                                onClick={() => handleAddSong(item)}
+                                style={{ fontSize: 18, color: "#FF2D7E", cursor: "pointer" }}
                             />
-                        </List.Item>
-                    )}
-                />
+                        </div>
+                    ))}
+                </div>
             )}
 
             {!searchQuery && (

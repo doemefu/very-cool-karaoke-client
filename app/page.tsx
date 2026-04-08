@@ -7,6 +7,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Layout, Card, Input, Button, Tabs, Alert, Typography, Form } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import {ApplicationError} from "@/types/error";
 
 interface RegisterFormValues {
   username: string;
@@ -52,18 +53,28 @@ const LandingPage: React.FC =() => {
       router.push(`/dashboard`);
 
     } catch (error) {
-      if (error instanceof Error) {
-        registerForm.setFields([
-          {
-            name: "username",
-            errors: ["Username already taken, please choose another"],
-          },
-        ]);
-      } else {
-        alert("Registration failed. Please try again.");
-      }
+        // Network error: fetch throws TypeError when server is unreachable
+        if (error instanceof TypeError) {
+            setError("Server unreachable. Please check your connection.");
+            return;
+        }
+
+        // API error with status code
+        const status = (error as ApplicationError).status;
+
+        if (status === 409) {
+            registerForm.setFields([
+                {
+                  name: "username",
+                  errors: ["Username already taken, please choose another"],
+                 },
+            ]);
+
+        } else {
+            setError("Registration failed. Please try again.");
+        }
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
@@ -85,7 +96,7 @@ const LandingPage: React.FC =() => {
             if (error.message.includes("401")) {
                 setError("Invalid credentials. Please check your username and password.");
             } else {
-                setError(`Something went wrong during the login:\n${error.message}`);
+                setError("Server unreachable. Please check your connection.");
             }
         } else {
             console.error("An unknown error occurred during login.");
