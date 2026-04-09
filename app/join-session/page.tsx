@@ -6,6 +6,7 @@ import { Card, Typography, Layout, Button, Input, message } from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useApi } from '@/hooks/useApi';
 import { Session } from '@/types/session';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -14,25 +15,22 @@ export default function JoinSession() {
   const router = useRouter();
   const apiService = useApi();
   const [pin, setPin] = useState('');
+  const { set: setSessionId } = useLocalStorage<string>('sessionId', '');
 
   const handleJoinWithPin = async () => {
     if (pin.length !== 6) {
-      message.error('Please enter a valid 6-digit PIN');
+      message.error('Please enter a valid 6-character PIN');
       return;
     }
 
     try {
       const session = await apiService.get<Session>(`/sessions/pin/${pin}`);
       await apiService.post(`/sessions/${session.id}/participants`, { gamePin: pin });
+      setSessionId(session.id);
       message.success(`Joined successfully!`);
-      router.push(`/session/${session.id}`);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      if (error.status === 404) {
-        message.error('Invalid game pin, please check and try again');
-      } else {
-        message.error('Invalid game pin, please check and try again');
-      }
+      router.push(`/sessions/${session.id}`);
+    } catch {
+      message.error('Invalid game pin, please check and try again');
     }
   };
 
@@ -75,7 +73,7 @@ export default function JoinSession() {
                 size="large"
                 placeholder="000000"
                 value={pin}
-                onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) => setPin(e.target.value.slice(0, 6))}
                 maxLength={6}
                 style={{
                   fontSize: 32,
