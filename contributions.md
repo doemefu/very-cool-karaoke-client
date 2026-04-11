@@ -62,6 +62,12 @@ reason).
 |                    | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
 | **[@githubUser4]** | [date]     | [Link to Commit 1]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
 |                    | [date]     | [Link to Commit 2]                                                                                            | [Brief description of the task]                        | [Why this contribution is relevant] |
+|
+| **[@lurisz33](https://github.com/lurisz33)**        | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/59/changes/ff79c8915fe5c50f0439825d8c716e41b66a4b9c | #43 Implement POST /users/logout endpoint                                                         | critical |
+| **[@lurisz33](https://github.com/lurisz33)**        | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/71/changes/6cf1b5fea8a2d55e0eb9eb1d9b927b30a4197fb9 | #24 Define Song entity and DB schema                                                         
+| major |
+| **[@lurisz33](https://github.com/lurisz33)**        | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/73/changes/28bd5221c4918ce60e37f0d35138ee5d6e5b0d9a | #29 Implement PUT /users/{id}/password endpoint                                                   
+| critical |
 
 ---
 
