@@ -33,12 +33,7 @@ export default function SessionPage() {
   const apiService = useApi();
 
   const { value: sessionId } = useLocalStorage<string>("sessionId", "");
-  const [userId, setUserId] = useState<string>("");
-
-  useEffect(() => {
-    const stored = sessionStorage.getItem("id");
-    if (stored) setUserId(JSON.parse(stored));
-  }, []);
+  const { value: userId } = useLocalStorage<string>("id", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);

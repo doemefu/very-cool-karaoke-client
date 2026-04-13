@@ -46,7 +46,7 @@ const LandingPage: React.FC =() => {
         sessionStorage.setItem("token", JSON.stringify(response.token));
       }
       if (response.id) {
-        sessionStorage.setItem("id", JSON.stringify(String(response.id)));
+        localStorage.setItem("id", JSON.stringify(String(response.id)));
       }
 
       router.push(`/dashboard`);
@@ -87,7 +87,7 @@ const LandingPage: React.FC =() => {
         sessionStorage.setItem("token", JSON.stringify(response.token));
       }
       if (response.id) {
-        sessionStorage.setItem("id", JSON.stringify(String(response.id)));
+        localStorage.setItem("id", JSON.stringify(String(response.id)));
       }
 
       // Navigate to the user overview
