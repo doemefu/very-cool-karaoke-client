@@ -11,13 +11,15 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Layout, Button, Typography, Tooltip, Badge } from "antd";
 import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
-// import { useAuth } from "@/hooks/useAuth";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
+import { StompProvider } from "@/context/StompContext";
+import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
+// import { useAuth } from "@/hooks/useAuth";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -54,8 +56,9 @@ export default function SessionPage() {
         setSearchDrawerOpen(false);
     };
 
-  return (
-    <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
+    return (
+      <StompProvider>
+        <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
 
       {/* Header bar */}
       <Header
@@ -116,7 +119,7 @@ export default function SessionPage() {
       </Header>
 
       {/* Main content */}
-        <Layout style={{ background: "transparent" }}>
+        <Layout style={{ background: "transparent", paddingBottom: 80 }}>
 
             {/* Lyrics */}
             <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px" }}>
@@ -165,7 +168,6 @@ export default function SessionPage() {
                     </Text>
                 </div>
 
-                {/* ← kein List mehr, natives map */}
                 {queue.length === 0 ? (
                     <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
                 ) : (
@@ -199,6 +201,9 @@ export default function SessionPage() {
         sessionId={sessionId}
       />
 
+      <ReactionBar sessionId={sessionId} />
+
     </Layout>
+  </StompProvider>
   );
 }
