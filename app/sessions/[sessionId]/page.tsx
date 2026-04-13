@@ -40,7 +40,7 @@ export default function SessionPage() {
   const [gamePin, setGamePin] = useState<string>("");
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !userId) return;
     apiService.get<Session>(`/sessions/${sessionId}`).then((session) => {
       setIsAdmin(String(session.admin?.id) === String(userId));
       setGamePin(session.gamePin ?? "");
