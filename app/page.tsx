@@ -43,7 +43,7 @@ const LandingPage: React.FC =() => {
       console.log(response);
 
       if (response.token) {
-        sessionStorage.setItem("token", JSON.stringify(response.token));
+        localStorage.setItem("token", JSON.stringify(response.token));
       }
       if (response.id) {
         localStorage.setItem("id", JSON.stringify(String(response.id)));
@@ -84,7 +84,7 @@ const LandingPage: React.FC =() => {
       const response = await apiService.post<User>("/auth/login", values);
 
       if (response.token) {
-        sessionStorage.setItem("token", JSON.stringify(response.token));
+        localStorage.setItem("token", JSON.stringify(response.token));
       }
       if (response.id) {
         localStorage.setItem("id", JSON.stringify(String(response.id)));

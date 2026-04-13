@@ -3,8 +3,8 @@ import { useRouter } from 'next/navigation';
 
 export const useAuth = () => {
     const router = useRouter();
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem('token') : null;
-    const id = typeof window !== 'undefined' ? sessionStorage.getItem('id') : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+    const id = typeof window !== 'undefined' ? localStorage.getItem('id') : null;
 
 
     useEffect(() => {
