@@ -4,4 +4,5 @@ export interface Session {
     name?: string;
     description?: string;
     status?: string;
+    admin?: { id: number; username: string };
 }

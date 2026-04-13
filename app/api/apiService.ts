@@ -14,7 +14,7 @@ export class ApiService {
   }
 
   private getHeaders(): HeadersInit {
-    const storedtoken = localStorage.getItem("token");
+    const storedtoken = sessionStorage.getItem("token");
     const token = storedtoken ? JSON.parse(storedtoken) : "";
 
     return {
@@ -38,7 +38,7 @@ export class ApiService {
   ): Promise<T> {
     if (!res.ok) {
       if (res.status === 401) {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         // localStorage.removeItem("sessionId");
         window.location.href = "/";
         return Promise.resolve(null as T);

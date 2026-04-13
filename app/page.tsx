@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Layout, Card, Input, Button, Tabs, Alert, Typography, Form } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -35,9 +34,6 @@ const LandingPage: React.FC =() => {
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
 
-  const { set: setToken } = useLocalStorage<string>("token", "");
-
-
   const handleRegister = async (values: RegisterFormValues) => {
     setLoading(true);
     try {
@@ -47,7 +43,10 @@ const LandingPage: React.FC =() => {
       console.log(response);
 
       if (response.token) {
-        setToken(response.token);
+        sessionStorage.setItem("token", JSON.stringify(response.token));
+      }
+      if (response.id) {
+        sessionStorage.setItem("id", JSON.stringify(String(response.id)));
       }
 
       router.push(`/dashboard`);
@@ -84,9 +83,11 @@ const LandingPage: React.FC =() => {
       // Call the API service and let it handle JSON serialization and error handling
       const response = await apiService.post<User>("/auth/login", values);
 
-      // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
-        setToken(response.token);
+        sessionStorage.setItem("token", JSON.stringify(response.token));
+      }
+      if (response.id) {
+        sessionStorage.setItem("id", JSON.stringify(String(response.id)));
       }
 
       // Navigate to the user overview
