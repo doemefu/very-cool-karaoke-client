@@ -51,25 +51,28 @@ reason).
 
 ## Contributions Week 2 - 30.03.2026 to 13.04.2026
 
-| **Student**       | **Date**   | **Link to Commit**                                                                                           | **Description**                                                   | **Relevance**                       |
-| ----------------- |------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------------|
-| **[@Oskar-567](https://github.com/Oskar-567)**     | 06.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/36/changes/308bca43a6f68244cddf4663e3e0206a4ce08100 | #8 song search bar and results display in session view            | critical                            |
-| **[@Oskar-567](https://github.com/Oskar-567)**     | 07.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/commit/3ed5befc85b790099aef1ead9181363912313d33          | #7 Display session playlist and add-to-playlist action            | critical                            |
-|  **[@Spring987](https://github.com/Spring987)**| 09.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/38/commits                                          | #5 implement join session with game pin                           | critical                            |
-| **[@Spring987](https://github.com/Spring987)** | 09.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/42/commits                                          | #28 Add leave session button for non admins                       | critical                            |
-| **[@Unick1](https://github.com/Unick1)**                  | 12.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/74/changes/657c64a9779d924231d024d6ce9dbf6ba6ee7177 | #49 session playlist relationship and song tracking               | critical                            |
-| **[@Unick1](https://github.com/Unick1)** | 12.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/75/changes/49f330d78948b203f36b1ea647ed606204694aba | #36 Created the voting data model                                 | major                               | 
-|   **[@doemefu](https://github.com/doemefu)**              | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/26                                                | #26 Integrate Spotify Web API for song search                     | critical                            |
-| **[@doemefu](https://github.com/doemefu)** | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/51                                                | #51 Implement GET /songs/search endpoint with lyrics availability | critical                            |
-| **[@lurisz33](https://github.com/lurisz33)**       | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/59/changes/ff79c8915fe5c50f0439825d8c716e41b66a4b9c | #43 Implement POST /users/logout endpoint                         | critical                            |
-| **[@lurisz33](https://github.com/lurisz33)**       | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/71/changes/6cf1b5fea8a2d55e0eb9eb1d9b927b30a4197fb9 | #24 Define Song entity and DB schema                              | major                               |
-| **[@lurisz33](https://github.com/lurisz33)**       | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/73/changes/28bd5221c4918ce60e37f0d35138ee5d6e5b0d9a | #29 Implement PUT /users/{id}/password endpoint                   | critical                            |
+| **Student**                                       | **Date**   | **Link to Commit**                                                                                           | **Description**                                                   | **Relevance**                       |
+|---------------------------------------------------|------------|--------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------|-------------------------------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 06.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/36/changes/308bca43a6f68244cddf4663e3e0206a4ce08100 | #8 song search bar and results display in session view            | critical                            |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 07.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/commit/3ed5befc85b790099aef1ead9181363912313d33          | #7 Display session playlist and add-to-playlist action            | critical                            |
+| **[@Spring987](https://github.com/Spring987)**    | 09.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/38/commits                                          | #5 implement join session with game pin                           | critical                            |
+| **[@Spring987](https://github.com/Spring987)**    | 09.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/42/commits                                          | #28 Add leave session button for non admins                       | critical                            |
+| **[@Unick1](https://github.com/Unick1)**          | 12.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/74/changes/657c64a9779d924231d024d6ce9dbf6ba6ee7177 | #49 session playlist relationship and song tracking               | critical                            |
+| **[@Unick1](https://github.com/Unick1)**          | 12.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/75/changes/49f330d78948b203f36b1ea647ed606204694aba | #36 Created the voting data model                                 | major                               | 
+| **[@doemefu](https://github.com/doemefu)**        | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/26                                                | #26 Integrate Spotify Web API for song search                     | critical                            |
+| **[@doemefu](https://github.com/doemefu)**        | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/51                                                | #51 Implement GET /songs/search endpoint with lyrics availability | critical                            |
+| **[@lurisz33](https://github.com/lurisz33)**      | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/59/changes/ff79c8915fe5c50f0439825d8c716e41b66a4b9c | #43 Implement POST /users/logout endpoint                         | critical                            |
+| **[@lurisz33](https://github.com/lurisz33)**      | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/71/changes/6cf1b5fea8a2d55e0eb9eb1d9b927b30a4197fb9 | #24 Define Song entity and DB schema                              | major                               |
+| **[@lurisz33](https://github.com/lurisz33)**      | 11.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/73/changes/28bd5221c4918ce60e37f0d35138ee5d6e5b0d9a | #29 Implement PUT /users/{id}/password endpoint                   | critical                            |
 
 ---
 
-## Contributions Week 3 - [Begin Date] to [End Date]
+## Contributions Week 3 - 13.04.2026 to 20.04.2026
 
-_Continue with the same table format as above._
+| **Student**                                       | **Date**   | **Link to Commit**                                                                                            | **Description**                                            | **Relevance** |
+|---------------------------------------------------|------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 13.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/44/changes/bf1a09afe0ded4d6dcddeb4d8e0e2a95015f6beb  | #18 add emoji reaction buttons in session performance view | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 13.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/45/changes/a9783bfc487fe76cb58a390f8f9c9ff87da6f251  | #19 Establishing Stomp Websocket for Frontend              | major         |
 
 ---
 
