@@ -14,7 +14,9 @@ import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/ico
 // import { useAuth } from "@/hooks/useAuth";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
+import { useVotingRound } from "@/hooks/useVotingRound";
 import LyricsDisplay from "../../components/LyricsDisplay";
+import VotingPhase from "../../components/VotingPhase";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import { Song } from "@/types/song";
@@ -59,6 +61,8 @@ export default function SessionPage() {
 
   const { queue, refresh: refreshQueue } = useSongQueue(sessionId);
 
+  const openRound = useVotingRound(sessionId);
+
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
 
@@ -71,6 +75,16 @@ export default function SessionPage() {
       message.error("Could not leave the session. Please try again.");
     }
   };
+
+  if (openRound) {
+    return (
+      <VotingPhase
+        sessionId={sessionId}
+        round={openRound}
+        onRoundClosed={() => {/* hook picks up the change automatically on next poll */}}
+      />
+    );
+  }
 
   const handleAddSong = () => {
         refreshQueue();
@@ -176,6 +190,8 @@ export default function SessionPage() {
                             noSongPlaying={noSongPlaying}
                             fetchError={fetchError}
                         />
+
+                        
                     </div>
 
                     {!isLoading && !fetchError && (
