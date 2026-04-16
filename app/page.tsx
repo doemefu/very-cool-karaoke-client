@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Layout, Card, Input, Button, Tabs, Alert, Typography, Form } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
@@ -28,6 +29,9 @@ const { Title, Text } = Typography;
 const LandingPage: React.FC =() => {
   const router = useRouter();
   const apiService = useApi();
+  const { set: setToken } = useLocalStorage("token", "");
+  const { set: setUserId } = useLocalStorage("id", "");
+
   const [activeTab, setActiveTab] = useState('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -43,10 +47,10 @@ const LandingPage: React.FC =() => {
       console.log(response);
 
       if (response.token) {
-        localStorage.setItem("token", JSON.stringify(response.token));
+        setToken(response.token);
       }
       if (response.id) {
-        localStorage.setItem("id", JSON.stringify(String(response.id)));
+        setUserId(String(response.id));
       }
 
       router.push(`/dashboard`);
@@ -84,10 +88,10 @@ const LandingPage: React.FC =() => {
       const response = await apiService.post<User>("/auth/login", values);
 
       if (response.token) {
-        localStorage.setItem("token", JSON.stringify(response.token));
+        setToken(response.token);
       }
       if (response.id) {
-        localStorage.setItem("id", JSON.stringify(String(response.id)));
+        setUserId(String(response.id));
       }
 
       // Navigate to the user overview

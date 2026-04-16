@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Layout, Button, Typography, Tooltip, Badge } from "antd";
+import { Layout, Button, Typography, Tooltip, Badge, message } from "antd";
 import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 // import { useAuth } from "@/hooks/useAuth";
 import { useLyrics } from "@/hooks/useLyrics";
@@ -62,7 +62,17 @@ export default function SessionPage() {
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
 
-    const handleAddSong = () => {
+  const handleLeaveSession = async () => {
+    try {
+      await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Failed to leave session:", err);
+      message.error("Could not leave the session. Please try again.");
+    }
+  };
+
+  const handleAddSong = () => {
         refreshQueue();
         setSearchDrawerOpen(false);
     };
@@ -104,10 +114,7 @@ export default function SessionPage() {
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={async () => {
-              await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
-              router.push("/dashboard");
-            }}
+            onClick={handleLeaveSession}
             style={{ color: "rgba(255,255,255,0.65)", fontSize: 14 }}
           >
             Leave Session
