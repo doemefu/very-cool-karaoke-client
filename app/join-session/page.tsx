@@ -19,19 +19,23 @@ export default function JoinSession() {
   const { set: setSessionId } = useLocalStorage<string>('sessionId', '');
 
   const handleJoinWithPin = async () => {
+    setError('');
     if (pin.length !== 6) {
       setError('Please enter a valid 6-character PIN');
       return;
     }
 
     try {
-      setError('');
       const session = await apiService.get<Session>(`/sessions/pin/${pin}`);
       await apiService.post(`/sessions/${session.id}/participants`, { gamePin: pin });
       setSessionId(session.id);
       router.push(`/sessions/${session.id}`);
-    } catch {
-      setError('Invalid game pin, please check and try again');
+    } catch (error) {
+      if (error instanceof TypeError) {
+        setError('Server not reachable, please check your connection');
+      } else {
+        setError('Invalid game pin, please check and try again');
+      }
     }
   };
 
@@ -62,9 +66,6 @@ export default function JoinSession() {
       <Content style={{ padding: '48px 24px' }}>
         <div style={{ maxWidth: 600, margin: '0 auto' }}>
           <Card>
-            {error && (
-              <Alert type="error" title={error} style={{ marginBottom: 24 }} />
-            )}
             <div style={{ textAlign: 'center', padding: '48px 24px' }}>
               <Title level={2} style={{ color: '#FFFFFF', marginBottom: 8 }}>
                 Enter Session PIN
@@ -77,7 +78,10 @@ export default function JoinSession() {
                 size="large"
                 placeholder="000000"
                 value={pin}
-                onChange={(e) => setPin(e.target.value.slice(0, 6))}
+                onChange={(e) => {
+                  setPin(e.target.value.slice(0, 6));
+                  setError('');
+                }}
                 maxLength={6}
                 style={{
                   fontSize: 32,
@@ -97,6 +101,9 @@ export default function JoinSession() {
               >
                 Join Session
               </Button>
+              {error && (
+                <Alert title={error} type="error" showIcon style={{ marginTop: 16, textAlign: 'left' }} />
+              )}
             </div>
           </Card>
         </div>
