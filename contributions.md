@@ -73,6 +73,8 @@ reason).
 |---------------------------------------------------|------------|---------------------------------------------------------------------------------------------------------------|------------------------------------------------------------|---------------|
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 13.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/44/changes/bf1a09afe0ded4d6dcddeb4d8e0e2a95015f6beb  | #18 add emoji reaction buttons in session performance view | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 13.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/45/changes/a9783bfc487fe76cb58a390f8f9c9ff87da6f251  | #19 Establishing Stomp Websocket for Frontend              | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 18.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/76/changes/850d04b3635376a9776d55da4dd6dce4dce28909 | #37 Implement POST /sessions/{id}/votes endpoint  | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 18.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/79/changes/dd412cf9db9f3e02622e04dcb82792649629ecac | #39 Implement GET /sessions/{id}/votes endpoint (live vote counts)  | major    |
 
 ---
 
