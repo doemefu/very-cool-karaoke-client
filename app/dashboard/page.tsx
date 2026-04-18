@@ -2,8 +2,6 @@
 
 import { Card, Typography, Layout } from 'antd';
 import { useRouter } from 'next/navigation';
-import { useApi } from "@/hooks/useApi";
-
 const { Title, Text } = Typography;
 const { Content } = Layout;
 
@@ -14,8 +12,12 @@ export default function Dashboard() {
   // the required name field — this just navigates there.
   const handleCreateParty = () => {
     router.push('/create-session');
+  
+  
   };
-
+  const handleJoinParty = () => {
+    router.push('/join-session');
+  };
   return (
     <Layout style={{ minHeight: '100vh', background: '#0D0D1A' }}>
       <Content
@@ -48,6 +50,28 @@ export default function Dashboard() {
             Start a new karaoke session
           </Text>
         </Card>
+
+          <Card
+              hoverable
+              onClick={handleJoinParty}
+              style={{
+                textAlign: 'center',
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, #00C2FF 0%, #0091C7 100%)',
+                border: 'none',
+                marginLeft: 24,
+              }}
+              styles={{
+                body: { padding: '48px 24px' },
+              }}
+            >
+              <Title level={3} style={{ color: '#FFFFFF', marginBottom: 8 }}>
+                Join a Party 🎉
+              </Title>
+              <Text style={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+                Enter a session PIN
+              </Text>
+            </Card>
       </Content>
     </Layout>
   );
