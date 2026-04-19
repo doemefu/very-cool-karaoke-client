@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Layout, Card, Input, Button, Typography, Form, App } from 'antd';
+import { Layout, Card, Input, Button, Typography, Form, Alert } from 'antd';
 import { LockOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { useApi } from '@/hooks/useApi';
@@ -13,28 +13,30 @@ const { Title, Text } = Typography;
 export default function ChangePassword() {
   const router = useRouter();
   const apiService = useApi();
-  const { message } = App.useApp();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const { value: userId } = useLocalStorage<string>('id', '');
 
   const handleSubmit = async (values: { currentPassword: string; newPassword: string; confirmPassword: string }) => {
     setLoading(true);
+    setError(null);
     try {
       await apiService.put(`/users/${userId}`, {
         oldPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
-      message.success('Password changed successfully!');
+      setSuccess(true);
       form.resetFields();
-      setTimeout(() => router.push('/dashboard'), 1000);
+      setTimeout(() => router.push('/dashboard'), 1500);
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status;
       if (status === 403) {
-        message.error('Current password is incorrect.');
+        setError('Current password is incorrect.');
       } else {
-        message.error('Something went wrong. Please try again.');
+        setError('Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -98,6 +100,29 @@ export default function ChangePassword() {
           </div>
 
           <Form form={form} onFinish={handleSubmit} layout="vertical" size="large">
+            {error && (
+              <Alert
+                type="error"
+                description={<span style={{ color: '#FFFFFF' }}>{error}</span>}
+                style={{
+                  marginBottom: 24,
+                  background: 'rgba(255, 45, 126, 0.15)',
+                  border: '1px solid rgba(255, 45, 126, 0.4)',
+                }}
+              />
+            )}
+            {success && (
+              <Alert
+                type="success"
+                description={<span style={{ color: '#FFFFFF' }}>Password changed! Redirecting...</span>}
+                style={{
+                  marginBottom: 24,
+                  background: 'rgba(0, 194, 255, 0.15)',
+                  border: '1px solid rgba(0, 194, 255, 0.4)',
+                }}
+              />
+            )}
+
             <Form.Item
               name="currentPassword"
               label={<span style={{ color: '#FFFFFF' }}>Current Password</span>}
