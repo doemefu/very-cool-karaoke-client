@@ -77,6 +77,9 @@ reason).
 | **[@lurisz33](https://github.com/lurisz33)**      | 18.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/79/changes/dd412cf9db9f3e02622e04dcb82792649629ecac | #39 Implement GET /sessions/{id}/votes endpoint (live vote counts)  | major    |
 | **[@Spring987](https://github.com/Spring987)**    | 19.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/47/changes| #20-fe-display-voting-ui-with-song-options-and-vote-submission                           | critical   |
 | **[@Spring987](https://github.com/Spring987)**    | 19.04.2026 |                                           | #14-fe-add-change-password-form-on-dashboard | critical  |
+| **[@Unick1](https://github.com/Unick1)**    | 18.04.2026 |  https://github.com/doemefu/very-cool-karaoke-server/pull/78/changes/859d7c7461f99acc5d691380b45022ae6be53a35                                         | #40 implement GET users/{id}/sessions endpoint| Major  |
+| **[@Unick1](https://github.com/Unick1)**    | 18.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/77/changes/2484dbd8be426997c63630206727f8a45ddaaf5e                                         | #32 enforcing one song selection per participant during session join| Major  |
+
 
 ---
 
