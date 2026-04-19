@@ -38,10 +38,12 @@ export class ApiService {
   ): Promise<T> {
     if (!res.ok) {
       if (res.status === 401) {
-        localStorage.removeItem("token");
-        // localStorage.removeItem("sessionId");
-        window.location.href = "/";
-        return Promise.resolve(null as T);
+        const existingToken = localStorage.getItem("token");
+        if (existingToken) {
+          localStorage.removeItem("token");
+          window.location.href = "/";
+          return Promise.resolve(null as T);
+        }
       }
       let errorDetail = res.statusText;
       try {
