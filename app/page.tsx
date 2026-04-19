@@ -31,6 +31,7 @@ const LandingPage: React.FC =() => {
   const apiService = useApi();
   const { set: setToken } = useLocalStorage("token", "");
   const { set: setUserId } = useLocalStorage("id", "");
+  const { set: setUsername } = useLocalStorage("username", "");
 
   const [activeTab, setActiveTab] = useState('login');
   const [loading, setLoading] = useState(false);
@@ -51,6 +52,9 @@ const LandingPage: React.FC =() => {
       }
       if (response.id) {
         setUserId(String(response.id));
+      }
+      if (response.username) {
+        setUsername(response.username);
       }
 
       router.push(`/dashboard`);
@@ -92,6 +96,9 @@ const LandingPage: React.FC =() => {
       }
       if (response.id) {
         setUserId(String(response.id));
+      }
+      if (response.username) {
+        setUsername(response.username);
       }
 
       // Navigate to the user overview
