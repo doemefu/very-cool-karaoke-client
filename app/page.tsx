@@ -31,6 +31,7 @@ const LandingPage: React.FC =() => {
   const apiService = useApi();
   const { set: setToken } = useLocalStorage("token", "");
   const { set: setUserId } = useLocalStorage("id", "");
+  const { set: setUsername } = useLocalStorage("username", "");
 
   const [activeTab, setActiveTab] = useState('login');
   const [loading, setLoading] = useState(false);
@@ -51,6 +52,9 @@ const LandingPage: React.FC =() => {
       }
       if (response.id) {
         setUserId(String(response.id));
+      }
+      if (response.username) {
+        setUsername(response.username);
       }
 
       router.push(`/dashboard`);
@@ -92,6 +96,9 @@ const LandingPage: React.FC =() => {
       }
       if (response.id) {
         setUserId(String(response.id));
+      }
+      if (response.username) {
+        setUsername(response.username);
       }
 
       // Navigate to the user overview
@@ -252,9 +259,8 @@ const LandingPage: React.FC =() => {
             <Card style={{ maxWidth: 500, width: '100%', margin: '0 auto' }}>
               {error && (
                   <Alert
-                      title={error}
+                      description={error}
                       type="error"
-                      closable={{}}
                       style={{ marginBottom: 24 }}
                   />
               )}
