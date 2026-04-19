@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Button, Typography, message } from "antd";
+import { Alert, Button, Card, Progress, Typography } from "antd";
 import { useApi } from "@/hooks/useApi";
 import { VotingRound } from "@/types/voting";
 import { Song } from "@/types/song";
@@ -26,7 +26,9 @@ export default function VotingPhase({
   const [hasVoted, setHasVoted] = useState(false);
   const [votedSongId, setVotedSongId] = useState<number | null>(null);
   const [voting, setVoting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Poll the round to keep vote counts up to date
   const fetchRound = useCallback(async () => {
     try {
       const updated = await apiService.get<VotingRound>(
@@ -62,86 +64,97 @@ export default function VotingPhase({
         setHasVoted(true);
         setVotedSongId(song.id);
       } else if (status === 410) {
-        message.info("Voting round already closed.");
         onRoundClosed();
       } else {
-        message.error("Could not cast vote. Please try again.");
+        setError("Could not cast vote. Please try again.");
       }
     } finally {
       setVoting(false);
     }
   };
 
+  const maxVotes = Math.max(...candidates.map((s) => s.currentVoteCount ?? 0), 1);
+
   return (
     <div
       style={{
-        minHeight: "100vh",
-        background: "#0D0D1A",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "32px 16px",
+        position: "fixed",
+        inset: 0,
+        background: "rgba(13, 13, 26, 0.98)",
+        overflow: "auto",
+        padding: 24,
+        zIndex: 1000,
       }}
     >
-      <Title style={{ color: "#FF2D7E", marginBottom: 8 }}>Vote for the next song</Title>
-      <Text style={{ color: "rgba(255,255,255,0.45)", marginBottom: 40, display: "block" }}>
-        {hasVoted ? "Your vote has been cast!" : "Pick one — buttons lock after voting."}
-      </Text>
+      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          width: "100%",
-          maxWidth: 560,
-        }}
-      >
-        {candidates.map((song) => {
-          const isVoted = votedSongId === song.id;
-          return (
-            <div
-              key={song.id}
-              style={{
-                background: isVoted ? "rgba(255, 45, 126, 0.12)" : "rgba(255,255,255,0.04)",
-                border: `1px solid ${isVoted ? "#FF2D7E" : "rgba(255,255,255,0.1)"}`,
-                borderRadius: 12,
-                padding: "16px 20px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>
-                <div style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
-                  {song.title}
-                </div>
-                <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
-                  {song.artist}
-                </div>
-              </div>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <Title level={1} style={{ color: "#FFFFFF", marginBottom: 16 }}>
+            Vote for the next song! ⚡
+          </Title>
+          {hasVoted && (
+            <Text style={{ color: "rgba(255,255,255,0.45)", display: "block", marginTop: 12 }}>
+              Your vote has been cast!
+            </Text>
+          )}
+          {error && (
+            <Alert type="error" title={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
+          )}
+        </div>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Text style={{ color: "#00C2FF", fontWeight: 700, fontSize: 18, minWidth: 32, textAlign: "right" }}>
-                  {song.currentVoteCount}
-                </Text>
-                <Button
-                  type="primary"
-                  disabled={hasVoted || voting}
-                  onClick={() => handleVote(song)}
-                  style={
-                    isVoted
-                      ? { background: "#FF2D7E", borderColor: "#FF2D7E" }
-                      : {}
-                  }
-                >
-                  {isVoted ? "Voted" : "Vote"}
-                </Button>
-              </div>
-            </div>
-          );
-        })}
+        {/* Song Cards */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {candidates.map((song) => {
+            const isVoted = votedSongId === song.id;
+            const votePercentage = ((song.currentVoteCount ?? 0) / maxVotes) * 100;
+
+            return (
+              <Card
+                key={song.id}
+                style={{
+                  background: isVoted
+                    ? "linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)"
+                    : "#1A1A2E",
+                  border: isVoted ? "2px solid #FF2D7E" : "1px solid rgba(255,255,255,0.1)",
+                }}
+              >
+                <div style={{ marginBottom: 16 }}>
+                  <Text strong style={{ color: "#FFFFFF", fontSize: 16, display: "block", marginBottom: 4 }}>
+                    {song.title}
+                  </Text>
+                  <Text style={{ color: "rgba(255,255,255,0.65)" }}>{song.artist}</Text>
+                </div>
+
+                <Progress
+                  percent={votePercentage}
+                  showInfo={false}
+                  strokeColor="#00C2FF"
+                  railColor="rgba(255,255,255,0.1)"
+                  style={{ marginBottom: 12 }}
+                />
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <Text style={{ color: "#FFFFFF" }}>{song.currentVoteCount ?? 0} votes</Text>
+                  <Button
+                    type={isVoted ? "default" : "primary"}
+                    disabled={hasVoted || voting}
+                    onClick={() => handleVote(song)}
+                  >
+                    {isVoted ? "Voted" : "Vote"}
+                  </Button>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+
       </div>
     </div>
   );

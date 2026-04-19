@@ -62,6 +62,18 @@ export default function SessionPage() {
   const { queue, refresh: refreshQueue } = useSongQueue(sessionId);
 
   const openRound = useVotingRound(sessionId);
+  // test data for voting phase UI development 
+  // const openRound = {
+  //   id: 1,
+  //   roundNumber: 1,
+  //   status: "OPEN" as const,
+  //   startedAt: new Date().toISOString(),
+  //   endsAt: null,
+  //   candidates: [
+  //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
+  //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
+  //   ],
+  // };
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
