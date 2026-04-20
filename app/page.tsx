@@ -50,7 +50,7 @@ const LandingPage: React.FC =() => {
         setToken(response.token);
       }
       if (response.id) {
-        setUserId(String(response.id));
+        setUserId(response.id);
       }
 
       router.push(`/dashboard`);
@@ -91,7 +91,7 @@ const LandingPage: React.FC =() => {
         setToken(response.token);
       }
       if (response.id) {
-        setUserId(String(response.id));
+        setUserId(response.id);
       }
 
       // Navigate to the user overview

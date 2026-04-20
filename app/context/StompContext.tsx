@@ -1,45 +1,38 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, ReactNode } from "react";
+import {createContext, useContext, useEffect, ReactNode, useState} from "react";
 import { Client } from "@stomp/stompjs";
 import { getApiDomain } from "@/utils/domain";
+import SockJS from "sockjs-client";
 
 const StompContext = createContext<Client | null>(null);
 
 export function StompProvider({ children }: { children: ReactNode }) {
-    const clientRef = useRef<Client | null>(null);
+    const [client, setClient] = useState<Client | null>(null);
 
-    if (!clientRef.current) {
-        const wsUrl = getApiDomain()
-            .replace("https://", "wss://")
-            .replace("http://", "ws://") + "/ws";
+    useEffect(() => {
+        let token = "";
+        try { token = JSON.parse(localStorage.getItem("token") ?? ""); }
+        catch { /* no token */ }
 
-        const token = (() => {
-            try { return JSON.parse(localStorage.getItem("token") ?? ""); }
-            catch { return ""; }
-        })();
-
-        clientRef.current = new Client({
-            brokerURL: wsUrl,
+        const stompClient = new Client({
+            webSocketFactory: () => new SockJS(`${getApiDomain()}/ws`),
             connectHeaders: { token },
         });
 
-        clientRef.current.activate();
-    }
+        stompClient.activate();
+        setClient(stompClient)
 
-    useEffect(() => {
-        return () => { clientRef.current?.deactivate(); };
+        return () => { stompClient.deactivate(); };
     }, []);
 
     return (
-        <StompContext.Provider value={clientRef.current}>
+        <StompContext.Provider value={client}>
             {children}
         </StompContext.Provider>
     );
 }
 
-export function useStomp(): Client {
-    const client = useContext(StompContext);
-    if (!client) throw new Error("useStomp must be used inside StompProvider");
-    return client;
+export function useStomp(): Client | null {
+    return useContext(StompContext);
 }

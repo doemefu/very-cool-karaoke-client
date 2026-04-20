@@ -16,7 +16,7 @@ import { useSongQueue } from "@/hooks/useSongQueue";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
-import { StompProvider } from "@/context/StompContext";
+// import { StompProvider } from "@/context/StompContext";
 import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
 import { useApi } from "@/hooks/useApi";
@@ -46,7 +46,7 @@ export default function SessionPage() {
       setIsAdmin(String(session.admin?.id) === String(userId));
       setGamePin(session.gamePin ?? "");
     }).catch(() => {/* silently ignore */});
-  }, [sessionId, userId]);
+  }, [apiService, sessionId, userId]);
 
   // All lyrics state comes from the hook — this page stays thin
   const {
@@ -58,7 +58,7 @@ export default function SessionPage() {
     refresh,
   } = useLyrics(sessionId);
 
-  const { queue, refresh: refreshQueue } = useSongQueue(sessionId);
+  const { queue } = useSongQueue(sessionId);
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
@@ -74,12 +74,11 @@ export default function SessionPage() {
   };
 
   const handleAddSong = () => {
-        refreshQueue();
+        // refreshQueue();
         setSearchDrawerOpen(false);
     };
 
     return (
-      <StompProvider>
         <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
 
       {/* Header bar */}
@@ -222,7 +221,7 @@ export default function SessionPage() {
                         >
                             <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
                             <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
-                                {song.artist} · {song.addedBy.username}
+                                {song.artist}
                             </div>
                         </div>
                     ))
@@ -242,6 +241,5 @@ export default function SessionPage() {
       <ReactionBar sessionId={sessionId} />
 
     </Layout>
-  </StompProvider>
   );
 }
