@@ -69,8 +69,8 @@ export default function RootLayout({
                 itemHoverColor: '#FF2D7E',
               },
               Alert: {
-                colorErrorBg: '#7A3B00',
-                colorErrorBorder: 'transparent',
+                colorErrorBg: 'rgba(255, 45, 126, 0.15)',
+                colorErrorBorder: 'rgba(255, 45, 126, 0.4)',
               },
               Drawer: {
                 colorBgElevated: '#16181D',
