@@ -7,17 +7,20 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Layout, Button, Typography, Tooltip, Badge } from "antd";
+import { Layout, Button, Typography, Tooltip, Badge, message } from "antd";
 import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
-// import { useAuth } from "@/hooks/useAuth";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
+import { StompProvider } from "@/context/StompContext";
+import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
+import { useApi } from "@/hooks/useApi";
+import { Session } from "@/types/session";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -28,11 +31,22 @@ export default function SessionPage() {
 
   // const params  = useParams();
   const router  = useRouter();
+  const apiService = useApi();
 
-  // const sessionId = params?.sessionId as string;
   const { value: sessionId } = useLocalStorage<string>("sessionId", "");
+  const { value: userId } = useLocalStorage<string>("id", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [gamePin, setGamePin] = useState<string>("");
+
+  useEffect(() => {
+    if (!sessionId || !userId) return;
+    apiService.get<Session>(`/sessions/${sessionId}`).then((session) => {
+      setIsAdmin(String(session.admin?.id) === String(userId));
+      setGamePin(session.gamePin ?? "");
+    }).catch(() => {/* silently ignore */});
+  }, [sessionId, userId]);
 
   // All lyrics state comes from the hook — this page stays thin
   const {
@@ -49,13 +63,24 @@ export default function SessionPage() {
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
 
-    const handleAddSong = () => {
+  const handleLeaveSession = async () => {
+    try {
+      await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Failed to leave session:", err);
+      message.error("Could not leave the session. Please try again.");
+    }
+  };
+
+  const handleAddSong = () => {
         refreshQueue();
         setSearchDrawerOpen(false);
     };
 
-  return (
-    <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
+    return (
+      <StompProvider>
+        <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
 
       {/* Header bar */}
       <Header
@@ -72,15 +97,31 @@ export default function SessionPage() {
           height: 56,
         }}
       >
-        {/* Leave session -> back to dashboard */}
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={() => router.push("/dashboard")}
-          style={{ color: "rgba(255,255,255,0.65)", fontSize: 14 }}
-        >
-          Leave Session
-        </Button>
+        {/* Admin: show game pin | Participant: leave button */}
+        {isAdmin && gamePin ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
+            <Text
+              style={{
+                color: "#FF2D7E",
+                fontWeight: 700,
+                fontSize: 20,
+                letterSpacing: "0.18em",
+              }}
+            >
+              {gamePin}
+            </Text>
+          </div>
+        ) : (!isAdmin && userId && (
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={handleLeaveSession}
+            style={{ color: "rgba(255,255,255,0.65)", fontSize: 14 }}
+          >
+            Leave Session
+          </Button>
+        ))}
 
         {/* Live indicator */}
         <Text
@@ -116,7 +157,7 @@ export default function SessionPage() {
       </Header>
 
       {/* Main content */}
-        <Layout style={{ background: "transparent" }}>
+        <Layout style={{ background: "transparent", paddingBottom: 80 }}>
 
             {/* Lyrics */}
             <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px" }}>
@@ -165,7 +206,6 @@ export default function SessionPage() {
                     </Text>
                 </div>
 
-                {/* ← kein List mehr, natives map */}
                 {queue.length === 0 ? (
                     <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
                 ) : (
@@ -199,6 +239,9 @@ export default function SessionPage() {
         sessionId={sessionId}
       />
 
+      <ReactionBar sessionId={sessionId} />
+
     </Layout>
+  </StompProvider>
   );
 }

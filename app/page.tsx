@@ -29,14 +29,14 @@ const { Title, Text } = Typography;
 const LandingPage: React.FC =() => {
   const router = useRouter();
   const apiService = useApi();
+  const { set: setToken } = useLocalStorage("token", "");
+  const { set: setUserId } = useLocalStorage("id", "");
+
   const [activeTab, setActiveTab] = useState('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
-
-  const { set: setToken } = useLocalStorage<string>("token", "");
-
 
   const handleRegister = async (values: RegisterFormValues) => {
     setLoading(true);
@@ -48,6 +48,9 @@ const LandingPage: React.FC =() => {
 
       if (response.token) {
         setToken(response.token);
+      }
+      if (response.id) {
+        setUserId(String(response.id));
       }
 
       router.push(`/dashboard`);
@@ -84,9 +87,11 @@ const LandingPage: React.FC =() => {
       // Call the API service and let it handle JSON serialization and error handling
       const response = await apiService.post<User>("/auth/login", values);
 
-      // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
         setToken(response.token);
+      }
+      if (response.id) {
+        setUserId(String(response.id));
       }
 
       // Navigate to the user overview
@@ -247,10 +252,8 @@ const LandingPage: React.FC =() => {
             <Card style={{ maxWidth: 500, width: '100%', margin: '0 auto' }}>
               {error && (
                   <Alert
-                      title={error}
                       type="error"
-                      closable={{}}
-                      style={{ marginBottom: 24 }}
+                      description={error}
                   />
               )}
               <Tabs
