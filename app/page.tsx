@@ -252,10 +252,8 @@ const LandingPage: React.FC =() => {
             <Card style={{ maxWidth: 500, width: '100%', margin: '0 auto' }}>
               {error && (
                   <Alert
-                      title={error}
                       type="error"
-                      closable={{}}
-                      style={{ marginBottom: 24 }}
+                      description={error}
                   />
               )}
               <Tabs
