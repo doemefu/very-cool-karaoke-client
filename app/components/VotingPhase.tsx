@@ -118,7 +118,7 @@ export default function VotingPhase({
                 percent={timerPercent}
                 format={() => `${secondsLeft}s`}
                 strokeColor={timerColor}
-                trailColor="rgba(255, 255, 255, 0.1)"
+                railColor="rgba(255, 255, 255, 0.1)"
                 size={80}
               />
             </div>
