@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 
 declare global {
     interface Window {
@@ -10,33 +10,35 @@ export function useSpotifyPlayer(accessToken: string | null) {
     const [deviceId, setDeviceId] = useState<string | null>(null);
     const [isReady, setIsReady] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [player, setPlayer] = useState<Spotify.Player | null>(null);
 
     useEffect(() => {
         if (!accessToken) return;
 
         const initPlayer = () => {
-            const player = new window.Spotify.Player({
+            const newPlayer = new window.Spotify.Player({
                 name: 'Karaoke Host Player',
                 getOAuthToken: (cb) => cb(accessToken),
                 volume: 0.8,
             });
+            setPlayer(newPlayer);
 
-            player.addListener('ready', ({ device_id }) => {
+            newPlayer.addListener('ready', ({ device_id }) => {
                 setDeviceId(device_id);
                 setIsReady(true);
                 localStorage.setItem('spotify_device_id', device_id);
             });
 
-            player.addListener('not_ready', () => {
+            newPlayer.addListener('not_ready', () => {
                 setIsReady(false);
-                setError('Spotify Player ist offline gegangen.');
+                setError('Spotify Player is currently offline');
             });
 
-            player.addListener('initialization_error', ({ message }) => setError(`Initialisierungsfehler: ${message}`));
-            player.addListener('authentication_error', ({ message }) => setError(`Authentifizierungsfehler: ${message}`));
-            player.addListener('account_error', () => setError('Spotify Premium wird benötigt.'));
+            newPlayer.addListener('initialization_error', ({ message }) => setError(`Initialization error: ${message}`));
+            newPlayer.addListener('authentication_error', ({ message }) => setError(`Authentication error: ${message}`));
+            newPlayer.addListener('account_error', () => setError('Spotify Premium is required.'));
 
-            player.connect();
+            newPlayer.connect();
         };
 
         if (window.Spotify) {
@@ -48,7 +50,12 @@ export function useSpotifyPlayer(accessToken: string | null) {
             document.body.appendChild(script);
             window.onSpotifyWebPlaybackSDKReady = initPlayer;
         }
-    }, [accessToken]);
 
-    return { deviceId, isReady, error };
+        return () => {
+            player?.disconnect();
+            setPlayer(null);
+        };
+    }, [accessToken, player]);
+
+    return { deviceId, isReady, error, player };
 }

@@ -1,6 +1,6 @@
 // This page wires useLyrics (data) -> LyricsDisplay (render).
 // All participants navigate to this same URL for the same sessionId,
-// poll the same backend endpoint, and therefore see the same
+// subscribe to the same WebSocket topics
 // current song and lyrics — satisfying "all participants see the same
 // lyrics view" from the issue requirements.
 
@@ -9,7 +9,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Layout, Button, Typography, Tooltip, Badge, message } from "antd";
+import {Layout, Button, Typography, Tooltip, Badge, message, Progress} from "antd";
 import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
@@ -21,6 +21,10 @@ import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
 import { useApi } from "@/hooks/useApi";
 import { Session } from "@/types/session";
+import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
+import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
+import { useSpotifyPlayback } from "@/hooks/useSpotifyPlayback";
+
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -62,6 +66,36 @@ export default function SessionPage() {
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
+
+
+  const { accessToken } = useSpotifyAuth();
+  const { deviceId, player } = useSpotifyPlayer(accessToken);
+  useSpotifyPlayback({
+      sessionId,
+      currentSong,
+      deviceId,
+      accessToken,
+      player,
+      isAdmin,
+  });
+
+  const [localProgress, setLocalProgress] = useState(0);
+
+    useEffect(() => {
+        if (!currentSong) return;
+        setLocalProgress(0);
+        const duration = currentSong.durationMs ?? 0;
+        if (!duration) return;
+
+        const interval = setInterval(() => {
+            setLocalProgress(prev => {
+                const next = prev + (100 / (duration / 1000));
+                return next >= 100 ? 100 : next;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [currentSong?.id]);
 
   const handleLeaveSession = async () => {
     try {
@@ -157,6 +191,29 @@ export default function SessionPage() {
 
       {/* Main content */}
         <Layout style={{ background: "transparent", paddingBottom: 80 }}>
+
+            {/* Song Info + Progress  */}
+            {currentSong && (
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <div>
+                            <Text style={{ color: "#FFFFFF", fontWeight: 700, fontSize: 16 }}>
+                                {currentSong.title}
+                            </Text>
+                            <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginLeft: 8 }}>
+                                {currentSong.artist}
+                            </Text>
+                        </div>
+                    </div>
+                    <Progress
+                        percent={Math.round(localProgress)}
+                        showInfo={false}
+                        strokeColor="#1DB954"
+                        railColor="rgba(255,255,255,0.1)"
+                    />
+                </div>
+            )}
+
 
             {/* Lyrics */}
             <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px" }}>
