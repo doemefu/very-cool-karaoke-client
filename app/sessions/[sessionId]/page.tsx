@@ -188,6 +188,19 @@ export default function SessionPage() {
               Play Now
             </Button>
           )}
+          {isAdmin && playerActivated && deviceId && (
+            <Button
+              type="primary"
+              style={{ background: "#1DB954", borderColor: "#1DB954" }}
+              onClick={() => {
+                apiService
+                  .post(`/sessions/${sessionId}/songs/next`, {})
+                  .catch(console.error);
+              }}
+            >
+              Skip
+            </Button>
+          )}
           <Tooltip title="Refresh current song">
             <Button
               type="text"
