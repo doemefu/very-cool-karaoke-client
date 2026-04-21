@@ -56,8 +56,8 @@ export function useSpotifyAuth() {
             if (data.access_token) {
                 localStorage.setItem('spotify_access_token', data.access_token);
                 localStorage.setItem('spotify_token_expiry', String(Date.now() + data.expires_in * 1000));
-                if (data.refresh_token) {                                                                    // ← NEU
-                    localStorage.setItem('spotify_refresh_token', data.refresh_token);                      // ← NEU
+                if (data.refresh_token) {
+                    localStorage.setItem('spotify_refresh_token', data.refresh_token);
                 }
                 localStorage.removeItem('spotify_code_verifier');
                 setAccessToken(data.access_token);

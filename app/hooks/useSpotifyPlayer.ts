@@ -15,8 +15,10 @@ export function useSpotifyPlayer(accessToken: string | null) {
     useEffect(() => {
         if (!accessToken) return;
 
+        let newPlayer: Spotify.Player | null = null;
+
         const initPlayer = () => {
-            const newPlayer = new window.Spotify.Player({
+            newPlayer = new window.Spotify.Player({
                 name: 'Karaoke Host Player',
                 getOAuthToken: (cb) => cb(accessToken),
                 volume: 0.8,
@@ -52,10 +54,9 @@ export function useSpotifyPlayer(accessToken: string | null) {
         }
 
         return () => {
-            player?.disconnect();
-            setPlayer(null);
+            newPlayer?.disconnect();
         };
-    }, [accessToken, player]);
+    }, [accessToken]);
 
     return { deviceId, isReady, error, player };
 }
