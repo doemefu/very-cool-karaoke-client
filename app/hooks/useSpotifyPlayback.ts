@@ -21,14 +21,17 @@ export function useSpotifyPlayback({
 }: UseSpotifyPlaybackOptions) {
     const apiService = useApi();
     const prevSongIdRef = useRef<number | null>(null);
+    const advancedRef = useRef(false);
 
+    useEffect(() => {
+        advancedRef.current = false;
+    }, [currentSong?.id]);
 
     useEffect(() => {
         if (!isAdmin || !currentSong || !deviceId || !accessToken) return;
         if (currentSong.id === prevSongIdRef.current) return;
 
         prevSongIdRef.current = currentSong.id;
-
 
         fetch(`https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`, {
             method: 'PUT',
@@ -46,29 +49,25 @@ export function useSpotifyPlayback({
             }
         }).catch(console.error);
 
-        // tell Backend that song has started -> triggers lyrics broadcast
-        apiService
-            .put(`/sessions/${sessionId}/songs/${currentSong.id}/played`, {})
-            .catch(console.error);
+    }, [currentSong, deviceId, accessToken, isAdmin]);
 
-    }, [currentSong, deviceId, accessToken, isAdmin, sessionId, apiService]);
-
-    // Detect track end and go on in queue
+    // Detect track end and advance to next song
     useEffect(() => {
         if (!isAdmin || !player || !currentSong) return;
 
         const handleStateChange = (state: Spotify.PlaybackState | null) => {
             if (!state) return;
 
-            // Track ends when paused + position 0 + previous track exists
+            // Track ends when paused at position 0 after having played something
             const trackEnded =
                 state.paused &&
                 state.position === 0 &&
                 state.track_window.previous_tracks.length > 0;
 
-            if (trackEnded) {
+            if (trackEnded && !advancedRef.current) {
+                advancedRef.current = true;
                 apiService
-                    .post(`/sessions/${sessionId}/songs/skip`, {})
+                    .post(`/sessions/${sessionId}/songs/next`, {})
                     .catch(console.error);
             }
         };

@@ -62,6 +62,7 @@ export default function SessionPage() {
   } = useLyrics(sessionId);
 
   const { queue } = useSongQueue(sessionId);
+  const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
@@ -274,14 +275,14 @@ export default function SessionPage() {
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                     <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
-                        Party Playlist <Badge count={queue.length} style={{ backgroundColor: "#FF2D7E" }} />
+                        Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
                     </Text>
                 </div>
 
-                {queue.length === 0 ? (
+                {displayQueue.length === 0 ? (
                     <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
                 ) : (
-                    queue.map((song: Song) => (
+                    displayQueue.map((song: Song) => (
                         <div
                             key={song.id}
                             style={{
