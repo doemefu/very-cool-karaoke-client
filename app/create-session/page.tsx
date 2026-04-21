@@ -8,8 +8,7 @@ import { ApiService } from '@/api/apiService';
 import { Session } from '@/types/session';
 // import { useAuth } from '@/hooks/useAuth'
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { useSpotifyAuth } from '@/hooks/useSpotifyAuth';
-import { useSpotifyPlayer } from '@/hooks/useSpotifyPlayer';
+import { useSpotifyPlayerContext } from '@/context/SpotifyPlayerContext';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -33,8 +32,7 @@ export default function CreateSession() {
 
   const { set: setSessionId, value: SessionId } = useLocalStorage<string>("sessionId", "");
 
-  const { accessToken, initiateLogin, error: spotifyError } = useSpotifyAuth();
-  const { deviceId, isReady, error: playerError } = useSpotifyPlayer(accessToken);
+  const { deviceId, isReady, initiateLogin, spotifyAuthError: spotifyError, playerError } = useSpotifyPlayerContext();
 
   const spotifyConnected = isReady && !!deviceId;
   const currentStep = !spotifyConnected ? 0 : !sessionCreated ? 1 : 2;

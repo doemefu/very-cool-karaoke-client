@@ -39,6 +39,11 @@ export function useSpotifyPlayback({
             body: JSON.stringify({
                 uris: [`spotify:track:${currentSong.spotifyId}`],
             }),
+        }).then(async (res) => {
+            if (!res.ok) {
+                const body = await res.text();
+                console.error(`Spotify play failed: ${res.status}`, body);
+            }
         }).catch(console.error);
 
         // tell Backend that song has started -> triggers lyrics broadcast

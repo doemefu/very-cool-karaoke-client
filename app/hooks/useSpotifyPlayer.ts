@@ -26,9 +26,23 @@ export function useSpotifyPlayer(accessToken: string | null) {
             setPlayer(newPlayer);
 
             newPlayer.addListener('ready', ({ device_id }) => {
-                setDeviceId(device_id);
-                setIsReady(true);
-                localStorage.setItem('spotify_device_id', device_id);
+                // Transfer playback to this device before exposing deviceId.
+                // The SDK 'ready' event fires when the local WebSocket is up, but
+                // Spotify's REST API registers the device asynchronously. Calling
+                // PUT /v1/me/player forces the API to acknowledge the device, preventing
+                // the 404 "Device not found" race condition on the first play call.
+                fetch('https://api.spotify.com/v1/me/player', {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ device_ids: [device_id], play: false }),
+                }).finally(() => {
+                    setDeviceId(device_id);
+                    setIsReady(true);
+                    localStorage.setItem('spotify_device_id', device_id);
+                });
             });
 
             newPlayer.addListener('not_ready', () => {

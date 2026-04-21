@@ -21,8 +21,7 @@ import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
 import { useApi } from "@/hooks/useApi";
 import { Session } from "@/types/session";
-import { useSpotifyAuth } from "@/hooks/useSpotifyAuth";
-import { useSpotifyPlayer } from "@/hooks/useSpotifyPlayer";
+import { useSpotifyPlayerContext } from "@/context/SpotifyPlayerContext";
 import { useSpotifyPlayback } from "@/hooks/useSpotifyPlayback";
 
 
@@ -68,15 +67,16 @@ export default function SessionPage() {
   // if (!isAuthenticated) return null;
 
 
-  const { accessToken } = useSpotifyAuth();
-  const { deviceId, player } = useSpotifyPlayer(accessToken);
+  const [playerActivated, setPlayerActivated] = useState(false);
+
+  const { accessToken, deviceId, player } = useSpotifyPlayerContext();
   useSpotifyPlayback({
       sessionId,
       currentSong,
       deviceId,
       accessToken,
       player,
-      isAdmin,
+      isAdmin: isAdmin && playerActivated,
   });
 
   const [localProgress, setLocalProgress] = useState(0);
@@ -171,6 +171,22 @@ export default function SessionPage() {
         {/* Manual refresh button — picks up the new song immediately
             instead of waiting for the next 5-second poll tick */}
         <div style={{ display: "flex", gap: 8 }}>
+          {isAdmin && !playerActivated && deviceId && (
+            <Button
+              type="primary"
+              style={{ background: "#1DB954", borderColor: "#1DB954" }}
+              onClick={() => {
+                // activateElement() resumes the SDK's AudioContext synchronously
+                // within this user gesture, satisfying Safari's autoplay policy.
+                // Must be called before playback starts, not after.
+                player?.activateElement();
+                setPlayerActivated(true);
+                refresh();
+              }}
+            >
+              Play Now
+            </Button>
+          )}
           <Tooltip title="Refresh current song">
             <Button
               type="text"
