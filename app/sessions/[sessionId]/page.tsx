@@ -9,8 +9,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {Layout, Button, Typography, Tooltip, Badge, message, Progress} from "antd";
-import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
+import {Avatar, Dropdown, Layout, Button, Typography, Tooltip, Badge, message, Progress} from "antd";
+import { ArrowLeftOutlined, LogoutOutlined, PlusOutlined, ReloadOutlined, UserOutlined } from "@ant-design/icons";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
 import LyricsDisplay from "../../components/LyricsDisplay";
@@ -38,6 +38,8 @@ export default function SessionPage() {
 
   const { value: sessionId } = useLocalStorage<string>("sessionId", "");
   const { value: userId } = useLocalStorage<string>("id", "");
+  const { value: username } = useLocalStorage<string>("username", "");
+  const { clear: clearToken } = useLocalStorage<string>("token", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -216,6 +218,30 @@ export default function SessionPage() {
           >
             Add Song
           </Button>
+          <Dropdown
+            placement="bottomRight"
+            menu={{
+              items: [
+                {
+                  key: "dashboard",
+                  label: "Dashboard",
+                  onClick: () => router.push("/dashboard"),
+                },
+                { type: "divider" as const },
+                {
+                  key: "logout",
+                  icon: <LogoutOutlined />,
+                  label: "Logout",
+                  onClick: () => { clearToken(); router.push("/"); },
+                },
+              ],
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <Text style={{ color: "#FFFFFF" }}>{username}</Text>
+              <Avatar icon={<UserOutlined />} style={{ background: "#FF2D7E" }} size="small" />
+            </div>
+          </Dropdown>
         </div>
       </Header>
 
