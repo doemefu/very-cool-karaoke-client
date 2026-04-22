@@ -2,7 +2,7 @@
 // All participants navigate to this same URL for the same sessionId,
 // subscribe to the same WebSocket topics
 // current song and lyrics — satisfying "all participants see the same
-// lyrics view" from the issue requirements.
+// lyrics view" from the issue requirements..
 
 
 "use client";
