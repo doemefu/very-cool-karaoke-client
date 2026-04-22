@@ -1,21 +1,25 @@
 "use client";
 
-import { Avatar, Card, Dropdown, Layout, Typography } from 'antd';
-import { LockOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
+import React from "react";
 import { useRouter } from 'next/navigation';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { Avatar, Card, Dropdown, Layout, Typography } from 'antd';
+import { LockOutlined, LogoutOutlined, UserOutlined } from '@ant-design/icons';
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
-export default function Dashboard() {
+const Dashboard: React.FC = () => {
   const router = useRouter();
 
-  const { value: username } = useLocalStorage<string>('username', '');
   const { clear: clearToken } = useLocalStorage<string>('token', '');
+  const { clear: clearUserId } = useLocalStorage<string>('id', '');
+  const { clear: clearUsername, value: username } = useLocalStorage<string>('username', '');
 
   const handleLogout = () => {
     clearToken();
+    clearUserId();
+    clearUsername();
     router.push('/');
   };
 
@@ -113,4 +117,6 @@ export default function Dashboard() {
       </Content>
     </Layout>
   );
-}
+};
+
+export default Dashboard;
