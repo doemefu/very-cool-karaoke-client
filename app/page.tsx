@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useApi } from '@/hooks/useApi';
-import useLocalStorage from '@/hooks/useLocalStorage';
-import { User } from '@/types/user';
-import { ApplicationError } from '@/types/error';
-import { Layout, Card, Input, Button, Tabs, Alert, Typography, Form } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useApi } from "@/hooks/useApi";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { User } from "@/types/user";
+import { ApplicationError } from "@/types/error";
+import { Layout, Card, Input, Button, Tabs, Alert, Typography, Form } from "antd";
+import { UserOutlined, LockOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -23,16 +23,16 @@ interface LoginFormValues {
   password: string;
 }
 
-const LandingPage: React.FC = () => {
+export default function LandingPage() {
   const router = useRouter();
   const apiService = useApi();
-  const { set: setToken } = useLocalStorage('token', '');
-  const { set: setUserId } = useLocalStorage('id', '');
-  const { set: setUsername } = useLocalStorage('username', '');
+  const { set: setToken } = useLocalStorage("token", "");
+  const { set: setUserId } = useLocalStorage("id", "");
+  const { set: setUsername } = useLocalStorage("username", "");
 
-  const [activeTab, setActiveTab] = useState('login');
+  const [activeTab, setActiveTab] = useState("login");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loginForm] = Form.useForm();
   const [registerForm] = Form.useForm();
 
@@ -41,7 +41,7 @@ const LandingPage: React.FC = () => {
     try {
       const { username, password } = values;
 
-      const response = await apiService.post<User>('/users', { username, password });
+      const response = await apiService.post<User>("/users", { username, password });
       // console.log(response);
 
       if (response.token) {
@@ -54,11 +54,11 @@ const LandingPage: React.FC = () => {
         setUsername(response.username);
       }
 
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (error) {
       // Network error: fetch throws TypeError when server is unreachable
       if (error instanceof TypeError) {
-        setError('Server unreachable. Please check your connection.');
+        setError("Server unreachable. Please check your connection.");
         return;
       }
 
@@ -68,12 +68,12 @@ const LandingPage: React.FC = () => {
       if (status === 409) {
         registerForm.setFields([
           {
-            name: 'username',
-            errors: ['Username already taken, please choose another'],
+            name: "username",
+            errors: ["Username already taken, please choose another"],
           },
         ]);
       } else {
-        setError('Registration failed. Please try again.');
+        setError("Registration failed. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -83,7 +83,7 @@ const LandingPage: React.FC = () => {
   const handleLogin = async (values: LoginFormValues) => {
     setLoading(true);
     try {
-      const response = await apiService.post<User>('/auth/login', values);
+      const response = await apiService.post<User>("/auth/login", values);
 
       if (response.token) {
         setToken(response.token);
@@ -95,13 +95,13 @@ const LandingPage: React.FC = () => {
         setUsername(response.username);
       }
 
-      router.push('/dashboard');
+      router.push("/dashboard");
     } catch (error) {
       const status = (error as ApplicationError).status;
       if (status === 401) {
-        setError('Invalid credentials. Please check your username and password.');
+        setError("Invalid credentials. Please check your username and password.");
       } else {
-        setError('Server unreachable. Please check your connection.');
+        setError("Server unreachable. Please check your connection.");
       }
     } finally {
       setLoading(false);
@@ -109,23 +109,23 @@ const LandingPage: React.FC = () => {
   };
 
   const loginTab = (
-    <Form form={loginForm} onFinish={handleLogin} layout='vertical' size='large' onChange={() => setError('')}>
+    <Form form={loginForm} onFinish={handleLogin} layout="vertical" size="large" onChange={() => setError("")}>
       <Form.Item
-        name='username'
-        rules={[{ required: true, message: 'Please enter your username' }]}
+        name="username"
+        rules={[{ required: true, message: "Please enter your username" }]}
       >
-        <Input prefix={<UserOutlined />} placeholder='Username' />
+        <Input prefix={<UserOutlined />} placeholder="Username" />
       </Form.Item>
 
       <Form.Item
-        name='password'
-        rules={[{ required: true, message: 'Please enter your password' }]}
+        name="password"
+        rules={[{ required: true, message: "Please enter your password" }]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder='Password' />
+        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
       </Form.Item>
 
       <Form.Item>
-        <Button type='primary' htmlType='submit' size='large' block loading={loading}>
+        <Button type="primary" htmlType="submit" size="large" block loading={loading}>
           Login
         </Button>
       </Form.Item>
@@ -133,44 +133,44 @@ const LandingPage: React.FC = () => {
   );
 
   const registerTab = (
-    <Form form={registerForm} onFinish={handleRegister} layout='vertical' size='large' onChange={() => setError('')}>
+    <Form form={registerForm} onFinish={handleRegister} layout="vertical" size="large" onChange={() => setError("")}>
       <Form.Item
-        name='username'
-        rules={[{ required: true, message: 'Please enter a username' }]}
+        name="username"
+        rules={[{ required: true, message: "Please enter a username" }]}
       >
-        <Input prefix={<UserOutlined />} placeholder='Username' />
+        <Input prefix={<UserOutlined />} placeholder="Username" />
       </Form.Item>
 
       <Form.Item
-        name='password'
+        name="password"
         rules={[
-          { required: true, message: 'Please enter a password' },
-          { min: 6, message: 'Password must be at least 6 characters' },
+          { required: true, message: "Please enter a password" },
+          { min: 6, message: "Password must be at least 6 characters" },
         ]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder='Password' />
+        <Input.Password prefix={<LockOutlined />} placeholder="Password" />
       </Form.Item>
 
       <Form.Item
-        name='confirmPassword'
-        dependencies={['password']}
+        name="confirmPassword"
+        dependencies={["password"]}
         rules={[
-          { required: true, message: 'Please confirm your password' },
+          { required: true, message: "Please confirm your password" },
           ({ getFieldValue }) => ({
             validator(_, value) {
-              if (!value || getFieldValue('password') === value) {
+              if (!value || getFieldValue("password") === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('Passwords do not match'));
+              return Promise.reject(new Error("Passwords do not match"));
             },
           }),
         ]}
       >
-        <Input.Password prefix={<LockOutlined />} placeholder='Confirm Password' />
+        <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" />
       </Form.Item>
 
       <Form.Item>
-        <Button type='primary' htmlType='submit' size='large' block loading={loading}>
+        <Button type="primary" htmlType="submit" size="large" block loading={loading}>
           Register
         </Button>
       </Form.Item>
@@ -179,43 +179,43 @@ const LandingPage: React.FC = () => {
 
   const tabItems = [
     {
-      key: 'login',
-      label: 'Login',
+      key: "login",
+      label: "Login",
       children: loginTab,
     },
     {
-      key: 'register',
-      label: 'Register',
+      key: "register",
+      label: "Register",
       children: registerTab,
     },
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#0D0D1A' }}>
+    <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
       <Content
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '24px',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
         }}
       >
         <div
           style={{
-            width: '100%',
+            width: "100%",
             maxWidth: 1200,
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
             gap: 48,
-            alignItems: 'center',
+            alignItems: "center",
           }}
         >
           {/* Left Column - Branding */}
-          <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+          <div style={{ textAlign: "center", padding: "48px 24px" }}>
             <Title
               level={1}
               style={{
-                color: '#FF2D7E',
+                color: "#FF2D7E",
                 fontSize: 64,
                 marginBottom: 24,
                 fontWeight: 800,
@@ -225,10 +225,10 @@ const LandingPage: React.FC = () => {
             </Title>
             <Text
               style={{
-                color: '#00C2FF',
+                color: "#00C2FF",
                 fontSize: 28,
                 fontWeight: 300,
-                display: 'block',
+                display: "block",
               }}
             >
               Your night. Your songs.
@@ -245,11 +245,11 @@ const LandingPage: React.FC = () => {
           </div>
 
           {/* Right Column - Auth Forms */}
-          <Card style={{ maxWidth: 500, width: '100%', margin: '0 auto' }}>
+          <Card style={{ maxWidth: 500, width: "100%", margin: "0 auto" }}>
             {error && (
               <Alert
                 description={error}
-                type='error'
+                type="error"
                 style={{ marginBottom: 24 }}
               />
             )}
@@ -257,13 +257,11 @@ const LandingPage: React.FC = () => {
               activeKey={activeTab}
               onChange={setActiveTab}
               items={tabItems}
-              size='large'
+              size="large"
             />
           </Card>
         </div>
       </Content>
     </Layout>
   );
-};
-
-export default LandingPage;
+}

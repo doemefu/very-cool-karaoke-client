@@ -165,7 +165,7 @@ const SongHeader: React.FC<{ title: string; artist: string }> = ({
 const LyricsBlock: React.FC<{ lyrics: string }> = ({ lyrics }) => (
   <div
     style={{
-      height: "52vh",
+      height: "65vh",
       overflowY: "auto",
       padding: "24px 40px 40px",
       scrollbarWidth: "thin",

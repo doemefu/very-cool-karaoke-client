@@ -40,13 +40,10 @@ export default function ReactionBar({ sessionId }: ReactionBarProps) {
         <div
             style={{
                 position: "fixed",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                display: "flex",
-                justifyContent: "center",
+                left: 16,
+                top: "50%",
+                transform: "translateY(-50%)",
                 zIndex: 200,
-                padding: "12px 16px",
                 pointerEvents: "none",
             }}
         >
@@ -59,18 +56,18 @@ export default function ReactionBar({ sessionId }: ReactionBarProps) {
                         style={{
                             position: "absolute",
                             bottom: 60,
-                            left: `${r.x}%`,
+                            left: "50%",
                             fontSize: 28,
                             animation: "floatUp 1.5s ease-out forwards",
                             pointerEvents: "none",
                         }}
                     >
-                    {r.emoji}
-                </span>
+                        {r.emoji}
+                    </span>
                 ))}
 
                 {/* Buttons */}
-                <div style={{ display: "flex", gap: 12, justifyContent: "center", padding: "16px 0" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                     {EMOJIS.map(({ emoji, type }) => (
                         <button
                             key={type}
@@ -80,7 +77,7 @@ export default function ReactionBar({ sessionId }: ReactionBarProps) {
                                 background: "rgba(255,255,255,0.08)",
                                 border: "1px solid rgba(255,255,255,0.15)",
                                 borderRadius: 12,
-                                padding: "10px 18px",
+                                padding: "10px 14px",
                                 cursor: "pointer",
                                 transition: "transform 0.1s",
                             }}
@@ -93,11 +90,11 @@ export default function ReactionBar({ sessionId }: ReactionBarProps) {
                 </div>
 
                 <style>{`
-                @keyframes floatUp {
-                    0%   { opacity: 1; transform: translateY(0); }
-                    100% { opacity: 0; transform: translateY(-80px); }
-                }
-            `}</style>
+                    @keyframes floatUp {
+                        0%   { opacity: 1; transform: translateY(0); }
+                        100% { opacity: 0; transform: translateY(-80px); }
+                    }
+                `}</style>
 
             </div>
         </div>

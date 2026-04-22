@@ -18,6 +18,9 @@ export function StompProvider({ children }: { children: ReactNode }) {
         const stompClient = new Client({
             webSocketFactory: () => new SockJS(`${getApiDomain()}/ws`),
             connectHeaders: { token },
+            reconnectDelay: 5000,
+            onStompError: () => {},
+            onWebSocketError: () => {},
         });
 
         stompClient.activate();
