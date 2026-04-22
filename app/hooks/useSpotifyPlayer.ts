@@ -38,10 +38,16 @@ export function useSpotifyPlayer(accessToken: string | null) {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ device_ids: [device_id], play: false }),
-                }).finally(() => {
-                    setDeviceId(device_id);
-                    setIsReady(true);
-                    localStorage.setItem('spotify_device_id', device_id);
+                }).then((res) => {
+                    if (res.ok) {
+                        setDeviceId(device_id);
+                        setIsReady(true);
+                        localStorage.setItem('spotify_device_id', device_id);
+                    } else {
+                        setError(`Spotify device transfer failed: ${res.status}`);
+                    }
+                }).catch(() => {
+                    setError('Spotify device transfer failed: network error');
                 });
             });
 

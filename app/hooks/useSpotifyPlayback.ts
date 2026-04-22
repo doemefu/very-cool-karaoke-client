@@ -28,7 +28,7 @@ export function useSpotifyPlayback({
     }, [currentSong?.id]);
 
     useEffect(() => {
-        if (!isAdmin || !currentSong || !deviceId || !accessToken) return;
+        if (!isAdmin || !currentSong || !currentSong.spotifyId || !deviceId || !accessToken) return;
         if (currentSong.id === prevSongIdRef.current) return;
 
         prevSongIdRef.current = currentSong.id;
