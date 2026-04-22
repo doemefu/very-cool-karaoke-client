@@ -55,9 +55,9 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
         try {
             await apiService.post(`/sessions/${sessionId}/songs`, {
                 spotifyId: song.spotifyId,
-                geniusId: song.geniusId,
                 title: song.title,
                 artist: song.artist,
+                durationMs: song.durationMs,
             });
 
             onAddSong(song);

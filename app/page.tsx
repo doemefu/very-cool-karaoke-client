@@ -51,7 +51,7 @@ const LandingPage: React.FC =() => {
         setToken(response.token);
       }
       if (response.id) {
-        setUserId(String(response.id));
+        setUserId(response.id);
       }
       if (response.username) {
         setUsername(response.username);
@@ -95,7 +95,7 @@ const LandingPage: React.FC =() => {
         setToken(response.token);
       }
       if (response.id) {
-        setUserId(String(response.id));
+        setUserId(response.id);
       }
       if (response.username) {
         setUsername(response.username);
