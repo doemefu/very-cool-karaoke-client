@@ -14,7 +14,7 @@ export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
     useEffect(() => { onReactionRef.current = onReaction; }, [onReaction]);
 
     useEffect(() => {
-        if (!sessionId) return;
+        if (!sessionId || !client) return;
 
         let sub: { unsubscribe: () => void } = { unsubscribe: () => {} };
 
@@ -44,7 +44,7 @@ export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
     }, [sessionId, client]);
 
     const sendReaction = useCallback((type: ReactionType) => {
-        if (!client.connected) return;
+        if (!client || !client.connected) return;
         client.publish({
             destination: `/app/sessions/${sessionId}/reactions`,
             body: JSON.stringify({ type }),
