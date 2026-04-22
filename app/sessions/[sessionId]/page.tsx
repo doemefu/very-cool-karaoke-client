@@ -30,18 +30,6 @@ import { useSpotifyPlayback } from "@/hooks/useSpotifyPlayback";
 const { Header, Content } = Layout;
 const { Text } = Typography;
 
-const MOCK_ROUND = {
-  id: 1,
-  roundNumber: 1,
-  status: "OPEN" as const,
-  startedAt: new Date().toISOString(),
-  endsAt: new Date(Date.now() + 30_000).toISOString(),
-  candidates: [
-    { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
-    { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
-  ],
-};
-
 export default function SessionPage() {
   // Redirect to "/" if no token in localStorage
   // const { isAuthenticated } = useAuth();
@@ -80,9 +68,20 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
-  // const openRound = useVotingRound(sessionId);
-  // test data for voting phase UI development
-  const openRound = MOCK_ROUND;
+  const openRound = useVotingRound(sessionId);
+// test data for voting phase UI development
+//   const MOCK_ROUND = {
+//   id: 1,
+//   roundNumber: 1,
+//   status: "OPEN" as const,
+//   startedAt: new Date().toISOString(),
+//   endsAt: new Date(Date.now() + 30_000).toISOString(),
+//   candidates: [
+//     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
+//     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
+//   ],
+// };
+//   const openRound = MOCK_ROUND;
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
