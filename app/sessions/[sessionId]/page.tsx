@@ -13,7 +13,9 @@ import {Avatar, Dropdown, Layout, Button, Typography, Tooltip, Badge, message, P
 import { ArrowLeftOutlined, LogoutOutlined, PlusOutlined, ReloadOutlined, UserOutlined } from "@ant-design/icons";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
+import { useVotingRound } from "@/hooks/useVotingRound";
 import LyricsDisplay from "../../components/LyricsDisplay";
+import VotingPhase from "../../components/VotingPhase";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 // import { StompProvider } from "@/context/StompContext";
@@ -66,6 +68,21 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
+  const openRound = useVotingRound(sessionId);
+// test data for voting phase component
+//   const MOCK_ROUND = {
+//   id: 1,
+//   roundNumber: 1,
+//   status: "OPEN" as const,
+//   startedAt: new Date().toISOString(),
+//   endsAt: new Date(Date.now() + 30_000).toISOString(),
+//   candidates: [
+//     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
+//     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
+//   ],
+// };
+//   const openRound = MOCK_ROUND;
+
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
 
@@ -109,6 +126,16 @@ export default function SessionPage() {
       message.error("Could not leave the session. Please try again.");
     }
   };
+
+  if (openRound) {
+    return (
+      <VotingPhase
+        sessionId={sessionId}
+        round={openRound}
+        onRoundClosed={() => {/* hook picks up the change automatically on next poll */}}
+      />
+    );
+  }
 
   const handleAddSong = () => {
         // refreshQueue();
@@ -290,6 +317,8 @@ export default function SessionPage() {
                             noSongPlaying={noSongPlaying}
                             fetchError={fetchError}
                         />
+
+                        
                     </div>
 
                     {!isLoading && !fetchError && (
