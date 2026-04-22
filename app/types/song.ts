@@ -18,6 +18,7 @@ export interface Song {
   lyrics: string | null;
   currentVoteCount: number;
   performed: boolean;
+  durationMs: number | null;
 }
 
 /** Lightweight DTO returned by GET /songs/search — not a full playlist entry. */

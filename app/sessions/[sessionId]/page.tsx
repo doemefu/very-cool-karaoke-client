@@ -1,15 +1,15 @@
 // This page wires useLyrics (data) -> LyricsDisplay (render).
 // All participants navigate to this same URL for the same sessionId,
-// poll the same backend endpoint, and therefore see the same
+// subscribe to the same WebSocket topics
 // current song and lyrics — satisfying "all participants see the same
-// lyrics view" from the issue requirements.
+// lyrics view" from the issue requirements..
 
 
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Layout, Button, Typography, Tooltip, Badge, message } from "antd";
+import {Layout, Button, Typography, Tooltip, Badge, message, Progress} from "antd";
 import { ArrowLeftOutlined, PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
@@ -21,6 +21,9 @@ import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
 import { useApi } from "@/hooks/useApi";
 import { Session } from "@/types/session";
+import { useSpotifyPlayerContext } from "@/context/SpotifyPlayerContext";
+import { useSpotifyPlayback } from "@/hooks/useSpotifyPlayback";
+
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -59,9 +62,41 @@ export default function SessionPage() {
   } = useLyrics(sessionId);
 
   const { queue } = useSongQueue(sessionId);
+  const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
   // Do not render anything while useAuth is redirecting
   // if (!isAuthenticated) return null;
+
+
+  const [playerActivated, setPlayerActivated] = useState(false);
+
+  const { accessToken, deviceId, player } = useSpotifyPlayerContext();
+  useSpotifyPlayback({
+      sessionId,
+      currentSong,
+      deviceId,
+      accessToken,
+      player,
+      isAdmin: isAdmin && playerActivated,
+  });
+
+  const [localProgress, setLocalProgress] = useState(0);
+
+    useEffect(() => {
+        if (!currentSong) return;
+        setLocalProgress(0);
+        const duration = currentSong.durationMs ?? 0;
+        if (!duration) return;
+
+        const interval = setInterval(() => {
+            setLocalProgress(prev => {
+                const next = prev + (100 / (duration / 1000));
+                return next >= 100 ? 100 : next;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [currentSong?.id]);
 
   const handleLeaveSession = async () => {
     try {
@@ -137,6 +172,35 @@ export default function SessionPage() {
         {/* Manual refresh button — picks up the new song immediately
             instead of waiting for the next 5-second poll tick */}
         <div style={{ display: "flex", gap: 8 }}>
+          {isAdmin && !playerActivated && deviceId && (
+            <Button
+              type="primary"
+              style={{ background: "#1DB954", borderColor: "#1DB954" }}
+              onClick={() => {
+                // activateElement() resumes the SDK's AudioContext synchronously
+                // within this user gesture, satisfying Safari's autoplay policy.
+                // Must be called before playback starts, not after.
+                player?.activateElement();
+                setPlayerActivated(true);
+                refresh();
+              }}
+            >
+              Play Now
+            </Button>
+          )}
+          {isAdmin && playerActivated && deviceId && (
+            <Button
+              type="primary"
+              style={{ background: "#1DB954", borderColor: "#1DB954" }}
+              onClick={() => {
+                apiService
+                  .post(`/sessions/${sessionId}/songs/next`, {})
+                  .catch(console.error);
+              }}
+            >
+              Skip
+            </Button>
+          )}
           <Tooltip title="Refresh current song">
             <Button
               type="text"
@@ -157,6 +221,29 @@ export default function SessionPage() {
 
       {/* Main content */}
         <Layout style={{ background: "transparent", paddingBottom: 80 }}>
+
+            {/* Song Info + Progress  */}
+            {currentSong && (
+                <div style={{ marginBottom: 16 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                        <div>
+                            <Text style={{ color: "#FFFFFF", fontWeight: 700, fontSize: 16 }}>
+                                {currentSong.title}
+                            </Text>
+                            <Text style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginLeft: 8 }}>
+                                {currentSong.artist}
+                            </Text>
+                        </div>
+                    </div>
+                    <Progress
+                        percent={Math.round(localProgress)}
+                        showInfo={false}
+                        strokeColor="#1DB954"
+                        railColor="rgba(255,255,255,0.1)"
+                    />
+                </div>
+            )}
+
 
             {/* Lyrics */}
             <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px" }}>
@@ -201,14 +288,14 @@ export default function SessionPage() {
             >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                     <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
-                        Party Playlist <Badge count={queue.length} style={{ backgroundColor: "#FF2D7E" }} />
+                        Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
                     </Text>
                 </div>
 
-                {queue.length === 0 ? (
+                {displayQueue.length === 0 ? (
                     <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
                 ) : (
-                    queue.map((song: Song) => (
+                    displayQueue.map((song: Song) => (
                         <div
                             key={song.id}
                             style={{
