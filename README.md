@@ -11,7 +11,7 @@ during performances.
 
 ## Overview
 
-**Karaokee** lets users host and join live karaoke sessions. The host authenticates via Spotify, picks songs from a shared queue, and every participant sees synchronized lyrics in real time — no extra setup needed.
+**Karaokee** lets users host and join live karaoke sessions. The host picks songs from a shared queue, and every participant sees synchronized lyrics in real time — no extra setup needed.
 
 ---
 
@@ -20,7 +20,7 @@ during performances.
 | Feature | Description |
 |---|---|
 | **Session Management** | Create or join sessions using a Game PIN |
-| **Spotify Integration** | Host authenticates via Spotify OAuth PKCE — plays music directly from their account |
+| **YouTube Playback** | Host plays music via YouTube — songs are searched automatically by title and artist |
 | **Real-Time Lyrics** | Lyrics are pushed to all participants over WebSocket (STOMP) |
 | **Song Queue** | Any participant can search and add songs to the shared queue |
 | **Reactions** | Live emoji reactions during playback |
@@ -37,7 +37,7 @@ during performances.
 | Language | TypeScript 5 |
 | UI | [Ant Design 6](https://ant.design/) |
 | Real-Time | [STOMP.js](https://stomp-js.github.io/) over SockJS WebSocket |
-| Music | [Spotify Web Playback SDK](https://developer.spotify.com/documentation/web-playback-sdk/) + OAuth PKCE |
+| Music | [YouTube IFrame Player API](https://developers.google.com/youtube/iframe_api_reference) + YouTube Data API v3 |
 | Runtime | Node.js / [Deno](https://deno.com/) |
 | Deployment | Docker + GitHub Actions → DockerHub |
 
@@ -48,7 +48,7 @@ during performances.
 ### Prerequisites
 
 - Node.js or Deno installed, **or** use the automated setup below
-- A Spotify Premium account (required for the host role)
+- A [YouTube Data API v3 key](https://console.cloud.google.com/) (required for the host role)
 
 ### Quick Setup (macOS / Linux / WSL)
 
@@ -77,8 +77,9 @@ app/
 ├── components/          # Shared UI components
 │   ├── LyricsDisplay    # Real-time lyrics view
 │   ├── ReactionBar      # Live emoji reactions
-│   └── SongSearchDrawer # Spotify song search
-├── context/             # React contexts (Spotify player, STOMP)
+│   ├── SongSearchDrawer # Song search
+│   └── YouTubePlayer    # YouTube playback (admin only)
+├── context/             # React contexts (STOMP)
 ├── hooks/               # Custom hooks (lyrics, queue, playback, …)
 ├── sessions/[sessionId] # Live karaoke session page
 ├── dashboard/           # User dashboard
