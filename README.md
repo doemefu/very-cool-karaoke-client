@@ -82,9 +82,9 @@ app/
 ├── hooks/               # Custom hooks (lyrics, queue, playback, …)
 ├── sessions/[sessionId] # Live karaoke session page
 ├── dashboard/           # User dashboard
+├── change-password/     # Change User Password   
 ├── create-session/      # Host flow
-├── join-session/        # Guest flow
-└── users/[id]/          # User profiles
+└── join-session/        # Guest flow
 ```
 
 ---
