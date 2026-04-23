@@ -88,10 +88,13 @@ reason).
 
 ---
 
-## Contributions Week 4 - [Begin Date] to [End Date]
+## Contributions Week 4 - 20.04.2026 to 27.04.2026
 
-_Continue with the same table format as above._
-
+| **Student**                                       | **Date**   | **Link to Commit**                                                   | **Description**                                                                | **Relevance** |
+|---------------------------------------------------|------------|----------------------------------------------------------------------|--------------------------------------------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #39 Implement Spotify OAuth PKCE flow for host authentication                  | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #40 Initialize Spotify Web Playback SDK and register as Spotify Connect device | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #41 Trigger Spotify playback from queue and handle track transitions           | major         |
 ---
 
 ## Contributions Week 5 - [Begin Date] to [End Date]

@@ -16,6 +16,7 @@ export interface Song {
    * string → display in the scrollable lyrics block
    */
   lyrics: string | null;
+  albumArt: string | null;
   currentVoteCount: number;
   performed: boolean;
   durationMs: number | null;
