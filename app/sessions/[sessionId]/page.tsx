@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
+import { useApi } from "@/hooks/useApi";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
-import { useApi } from "@/hooks/useApi";
 import { Session } from "@/types/session";
 import { ApplicationError } from "@/types/error";
 import { useSpotifyPlayerContext } from "@/context/SpotifyPlayerContext";
@@ -26,6 +26,7 @@ export default function SessionPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const apiService = useApi();
   const { value: userId } = useLocalStorage<string>("id", "");
+  const { clear: clearSessionId } = useLocalStorage<string>("sessionId", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -44,8 +45,6 @@ export default function SessionPage() {
   const {
     currentSong,
     isLoading,
-    lyricsNotAvailable,
-    noSongPlaying,
     fetchError,
     refresh
   } = useLyrics(sessionId);
@@ -67,10 +66,12 @@ export default function SessionPage() {
     setError("");
     try {
       await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
+      clearSessionId();
       router.push("/dashboard");
     } catch (err) {
       const status = (err as ApplicationError).status;
       if (status === 404) {
+        clearSessionId();
         router.push("/dashboard");
       } else {
         setError("Could not leave the session. Please try again.");
@@ -100,7 +101,7 @@ export default function SessionPage() {
         <Button
           type="text"
           icon={<ArrowLeftOutlined />}
-          onClick={isAdmin ? () => router.push("/dashboard") : handleLeaveSession}
+          onClick={isAdmin ? async () => { await player?.pause(); clearSessionId(); router.push("/dashboard"); } : handleLeaveSession}
           style={{ color: "#FFFFFF" }}
         >
           Back to Dashboard
@@ -119,17 +120,20 @@ export default function SessionPage() {
         {/* Right: playback controls + add song */}
         <div style={{ display: "flex", gap: 8 }}>
           {isAdmin && !playerActivated && deviceId && (
-            <Button
-              type="primary"
-              style={{ background: "#1DB954", borderColor: "#1DB954" }}
-              onClick={() => {
-                player?.activateElement();
-                setPlayerActivated(true);
-                refresh();
-              }}
-            >
-              Play Now
-            </Button>
+            <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
+              <Button
+                type="primary"
+                disabled={queue.length === 0}
+                style={{ background: "#1DB954", borderColor: "#1DB954" }}
+                onClick={() => {
+                  player?.activateElement();
+                  setPlayerActivated(true);
+                  refresh();
+                }}
+              >
+                Play Now
+              </Button>
+            </Tooltip>
           )}
           {isAdmin && playerActivated && deviceId && (
             <Tooltip title={displayQueue.length === 0 ? "No songs in queue" : ""}>
@@ -191,8 +195,6 @@ export default function SessionPage() {
               <LyricsDisplay
                 currentSong={currentSong}
                 isLoading={isLoading}
-                lyricsNotAvailable={lyricsNotAvailable}
-                noSongPlaying={noSongPlaying}
                 fetchError={fetchError}
               />
             </div>

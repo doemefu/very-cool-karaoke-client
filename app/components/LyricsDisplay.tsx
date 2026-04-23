@@ -1,17 +1,8 @@
-// Receives all state as props from useLyrics hook.
-// Handles exactly four visual states:
-//   1. isLoading         → spinner (first fetch not yet complete)
-//   2. fetchError        → error message
-//   3. noSongPlaying     → "No song currently playing"
-//   4. song exists
-//      a. lyricsNotAvailable → "Lyrics not available for this song"
-//      b. lyrics present     → scrollable lyrics block
-
 "use client";
 
-import React from "react";
-import { Spin, Typography } from "antd";
+import { FC } from "react";
 import { Song } from "@/types/song";
+import { Spin, Typography } from "antd";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -19,24 +10,22 @@ const { Title, Text, Paragraph } = Typography;
 interface LyricsDisplayProps {
   currentSong: Song | null;
   isLoading: boolean;
-  lyricsNotAvailable: boolean;
-  noSongPlaying: boolean;
   fetchError: string | null;
 }
 
-//State sub-components
+// Shared style for centered state containers
+const centeredStateStyle: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  height: 420,
+};
 
-const LoadingState: React.FC = () => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: 420,
-      gap: 16,
-    }}
-  >
+// State sub-components
+
+const LoadingState: FC = () => (
+  <div style={{ ...centeredStateStyle, gap: 16 }}>
     <Spin size="large" />
     <Text style={{ color: "#00C2FF", fontSize: 14 }}>
       Loading current song…
@@ -44,18 +33,8 @@ const LoadingState: React.FC = () => (
   </div>
 );
 
-const ErrorState: React.FC<{ message: string }> = ({ message }) => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: 420,
-      gap: 12,
-      padding: "0 32px",
-    }}
-  >
+const ErrorState: FC<{ message: string }> = ({ message }) => (
+  <div style={{ ...centeredStateStyle, gap: 12, padding: "0 32px" }}>
     <span style={{ fontSize: 40 }}>⚠️</span>
     <Text style={{ color: "#FF2D7E", fontSize: 16, textAlign: "center" }}>
       {message}
@@ -63,17 +42,8 @@ const ErrorState: React.FC<{ message: string }> = ({ message }) => (
   </div>
 );
 
-const NoSongState: React.FC = () => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: 420,
-      gap: 12,
-    }}
-  >
+const NoSongState: FC = () => (
+  <div style={{ ...centeredStateStyle, gap: 12 }}>
     <span style={{ fontSize: 56 }}>🎤</span>
     <Text
       style={{
@@ -95,7 +65,7 @@ const NoSongState: React.FC = () => (
  * Show "Lyrics not available for this song" message
  * when song.lyrics === null.
  */
-const LyricsNotAvailableState: React.FC = () => (
+const LyricsNotAvailableState: FC = () => (
   <div
     style={{
       display: "flex",
@@ -123,7 +93,7 @@ const LyricsNotAvailableState: React.FC = () => (
   </div>
 );
 
-const SongHeader: React.FC<{ title: string; artist: string }> = ({
+const SongHeader: FC<{ title: string; artist: string }> = ({
   title,
   artist,
 }) => (
@@ -162,7 +132,7 @@ const SongHeader: React.FC<{ title: string; artist: string }> = ({
  * Static scrollable lyrics block.
  * TBD: auto-scroll lyrics.
  */
-const LyricsBlock: React.FC<{ lyrics: string }> = ({ lyrics }) => (
+const LyricsBlock: FC<{ lyrics: string }> = ({ lyrics }) => (
   <div
     style={{
       height: "65vh",
@@ -188,26 +158,24 @@ const LyricsBlock: React.FC<{ lyrics: string }> = ({ lyrics }) => (
   </div>
 );
 
-//Main export
+// Main export
 
-const LyricsDisplay: React.FC<LyricsDisplayProps> = ({
+const LyricsDisplay: FC<LyricsDisplayProps> = ({
   currentSong,
   isLoading,
-  lyricsNotAvailable,
-  noSongPlaying,
   fetchError,
 }) => {
   if (isLoading) return <LoadingState />;
   if (fetchError) return <ErrorState message={fetchError} />;
-  if (noSongPlaying || !currentSong) return <NoSongState />;
+  if (!currentSong) return <NoSongState />;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <SongHeader title={currentSong.title} artist={currentSong.artist} />
-      {lyricsNotAvailable ? (
+      {currentSong.lyrics === null ? (
         <LyricsNotAvailableState />
       ) : (
-        <LyricsBlock lyrics={currentSong.lyrics!} />
+        <LyricsBlock lyrics={currentSong.lyrics} />
       )}
     </div>
   );
