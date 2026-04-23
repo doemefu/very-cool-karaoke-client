@@ -12,8 +12,7 @@ import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
 import { Session } from "@/types/session";
 import { ApplicationError } from "@/types/error";
-import { useSpotifyPlayerContext } from "@/context/SpotifyPlayerContext";
-import { useSpotifyPlayback } from "@/hooks/useSpotifyPlayback";
+import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
 import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
 import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
@@ -52,15 +51,6 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
-  const { accessToken, deviceId, player } = useSpotifyPlayerContext();
-  useSpotifyPlayback({
-    sessionId,
-    currentSong,
-    deviceId,
-    accessToken,
-    player,
-    isAdmin: isAdmin && playerActivated,
-  });
 
   const handleLeaveSession = async () => {
     setError("");
@@ -101,7 +91,7 @@ export default function SessionPage() {
         <Button
           type="text"
           icon={<ArrowLeftOutlined />}
-          onClick={isAdmin ? async () => { await player?.pause(); clearSessionId(); router.push("/dashboard"); } : handleLeaveSession}
+          onClick={isAdmin ? () => { clearSessionId(); router.push("/dashboard"); } : handleLeaveSession}
           style={{ color: "#FFFFFF" }}
         >
           Back to Dashboard
@@ -119,14 +109,13 @@ export default function SessionPage() {
 
         {/* Right: playback controls + add song */}
         <div style={{ display: "flex", gap: 8 }}>
-          {isAdmin && !playerActivated && deviceId && (
+          {isAdmin && !playerActivated && (
             <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
               <Button
                 type="primary"
                 disabled={queue.length === 0}
                 style={{ background: "#1DB954", borderColor: "#1DB954" }}
                 onClick={() => {
-                  player?.activateElement();
                   setPlayerActivated(true);
                   refresh();
                 }}
@@ -135,7 +124,7 @@ export default function SessionPage() {
               </Button>
             </Tooltip>
           )}
-          {isAdmin && playerActivated && deviceId && (
+          {isAdmin && playerActivated && (
             <Tooltip title={displayQueue.length === 0 ? "No songs in queue" : ""}>
               <Button
                 type="primary"
@@ -277,6 +266,13 @@ export default function SessionPage() {
         onClose={() => setSearchDrawerOpen(false)}
         onAddSong={() => setSearchDrawerOpen(false)}
         sessionId={sessionId}
+      />
+
+      <YouTubePlayer
+        currentSong={currentSong}
+        isAdmin={isAdmin}
+        isActive={playerActivated}
+        onTrackEnd={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
       />
 
       <ReactionBar sessionId={sessionId} />

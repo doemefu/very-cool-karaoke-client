@@ -6,7 +6,6 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { ApplicationError } from "@/types/error";
 import { Session } from "@/types/session";
-import { useSpotifyPlayerContext } from "@/context/SpotifyPlayerContext";
 import { Layout, Button, Input, Card, Steps, Typography, Form, Alert } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
@@ -30,9 +29,7 @@ export default function CreateSession() {
 
   const { set: setSessionId, value: sessionId } = useLocalStorage<string>("sessionId", "");
 
-  const { deviceId, isReady, initiateLogin, spotifyAuthError: spotifyError, playerError } = useSpotifyPlayerContext();
-  const spotifyConnected = isReady && !!deviceId;
-  const currentStep = !spotifyConnected ? 0 : !sessionCreated ? 1 : 2;
+  const currentStep = !sessionCreated ? 0 : 1;
 
   const handleStartSession = async (values: SessionFormValues) => {
     setLoading(true);
@@ -84,7 +81,6 @@ export default function CreateSession() {
             <Steps
               current={currentStep}
               items={[
-                { title: "Connect Spotify" },
                 { title: "Setup" },
                 { title: "Session Created" },
               ]}
@@ -101,31 +97,8 @@ export default function CreateSession() {
               />
             )}
 
-            {!spotifyConnected && (
-              <div style={{ textAlign: "center", marginTop: 24 }}>
-                <Title level={3} style={{ color: "#FFFFFF" }}>
-                  Connect your Spotify account
-                </Title>
-                <Text style={{ color: "rgba(255,255,255,0.65)", display: "block", marginBottom: 32 }}>
-                  You need Spotify Premium to play music on your device
-                </Text>
-                {spotifyError && (
-                  <Alert type="error" description={spotifyError} showIcon style={{ marginBottom: 16 }} />
-                )}
-                <Button
-                  type="primary"
-                  size="large"
-                  block
-                  onClick={initiateLogin}
-                  style={{ height: 56, fontSize: 18, fontWeight: 600 }}
-                >
-                  Connect to Spotify
-                </Button>
-              </div>
-            )}
-
             <Form form={form} layout="vertical" onFinish={handleStartSession}>
-              {spotifyConnected && !sessionCreated && (
+              {!sessionCreated && (
                 <>
                   <Form.Item
                     name="name"
@@ -138,10 +111,23 @@ export default function CreateSession() {
                   <Form.Item name="description" label="Description">
                     <TextArea size="large" placeholder="Add a description (optional)" rows={4} />
                   </Form.Item>
+
+                  <Form.Item style={{ marginBottom: 0 }}>
+                    <Button
+                      type="primary"
+                      size="large"
+                      block
+                      htmlType="submit"
+                      loading={loading}
+                      style={{ marginTop: 24, height: 56, fontSize: 18, fontWeight: 600 }}
+                    >
+                      Start the session to generate a PIN
+                    </Button>
+                  </Form.Item>
                 </>
               )}
 
-              {spotifyConnected && sessionCreated && (
+              {sessionCreated && (
                 <div style={{ textAlign: "center", marginTop: 24 }}>
                   <Text strong style={{ fontSize: 16, display: "block", marginBottom: 16 }}>
                     Session PIN
@@ -173,9 +159,6 @@ export default function CreateSession() {
                       </Text>
                     )}
                   </div>
-                  {playerError && (
-                    <Alert type="error" description={playerError} showIcon style={{ marginBottom: 16 }} />
-                  )}
                   <Button
                     type="default"
                     size="large"
@@ -200,21 +183,6 @@ export default function CreateSession() {
                     Go to Lobby
                   </Button>
                 </div>
-              )}
-
-              {spotifyConnected && !sessionCreated && (
-                <Form.Item style={{ marginBottom: 0 }}>
-                  <Button
-                    type="primary"
-                    size="large"
-                    block
-                    htmlType="submit"
-                    loading={loading}
-                    style={{ marginTop: 24, height: 56, fontSize: 18, fontWeight: 600 }}
-                  >
-                    Start the session to generate a PIN
-                  </Button>
-                </Form.Item>
               )}
             </Form>
           </Card>
