@@ -16,7 +16,7 @@ export function StompProvider({ children }: { children: ReactNode }) {
     catch { /* no token */ }
 
     const stompClient = new Client({
-      webSocketFactory: () => new SockJS(`${getApiDomain()}/ws`, null, { transports: ["xhr-polling"] }),
+      webSocketFactory: () => new SockJS(`${getApiDomain()}/ws`),
       connectHeaders: { token },
       reconnectDelay: 5000,
       onStompError: (frame) => console.error("STOMP error", frame),
