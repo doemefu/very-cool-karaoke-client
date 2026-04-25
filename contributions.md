@@ -95,6 +95,8 @@ reason).
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #39 Implement Spotify OAuth PKCE flow for host authentication                  | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #40 Initialize Spotify Web Playback SDK and register as Spotify Connect device | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #41 Trigger Spotify playback from queue and handle track transitions           | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/108/commits | #69 Implement Voting Round Creation Logic   | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/95/commits | #33 Implement DELETE /sessions/{id}/playlist/{songId} endpoint (admin only)   | major    |
 ---
 
 ## Contributions Week 5 - [Begin Date] to [End Date]
