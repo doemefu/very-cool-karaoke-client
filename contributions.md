@@ -97,7 +97,11 @@ reason).
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #41 Trigger Spotify playback from queue and handle track transitions           | major         |
 | **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/108/commits | #69 Implement Voting Round Creation Logic   | major    |
 | **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/95/commits | #33 Implement DELETE /sessions/{id}/playlist/{songId} endpoint (admin only)   | major    |
+| **[@doemefu](https://github.com/doemefu)**        | 24.04.2026 |https://github.com/doemefu/very-cool-karaoke-server/issues/81| [BE] Prepare Milestone 3 deliverables #81          | critical                            |
+| **[@doemefu](https://github.com/doemefu)**        | 23.04.2026 |https://github.com/doemefu/very-cool-karaoke-server/pull/106| [BE] Adjust google deployment type to fullfill requirements         | critical                            |
 ---
+
+
 
 ## Contributions Week 5 - [Begin Date] to [End Date]
 
