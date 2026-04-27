@@ -99,8 +99,8 @@ reason).
 | **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/95/commits | #33 Implement DELETE /sessions/{id}/playlist/{songId} endpoint (admin only)   | major    |
 | **[@doemefu](https://github.com/doemefu)**        | 24.04.2026 |https://github.com/doemefu/very-cool-karaoke-server/issues/81| [BE] Prepare Milestone 3 deliverables #81          | critical                            |
 | **[@doemefu](https://github.com/doemefu)**        | 23.04.2026 |https://github.com/doemefu/very-cool-karaoke-server/pull/106| [BE] Adjust google deployment type to fullfill requirements         | critical                            |
-| **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 |https://github.com/doemefu/very-cool-karaoke-client/pull/56| #21 fe show live vote counts per song during voting | Major  |
-| **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/57| #22 fe display history dashboard with created and joined sessions | Major  |
+| **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 |https://github.com/doemefu/very-cool-karaoke-client/pull/56/changes| #21 fe show live vote counts per song during voting | Major  |
+| **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/57/changes| #22 fe display history dashboard with created and joined sessions | Major  |
 ---
 
 
