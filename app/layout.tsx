@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { App as AntdApp, ConfigProvider, theme } from "antd";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { SpotifyPlayerProvider } from "@/context/SpotifyPlayerContext";
 import "@/styles/globals.css";
 
 const geistSans = Geist({
@@ -59,7 +58,6 @@ export default function RootLayout({
                 labelColor: "#fff",
                 algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
               },
-              Card: {},
               Dropdown: {
                 colorBgElevated: '#16181D',
               },
@@ -72,6 +70,8 @@ export default function RootLayout({
               Alert: {
                 colorErrorBg: 'rgba(255, 45, 126, 0.15)',
                 colorErrorBorder: 'rgba(255, 45, 126, 0.4)',
+                colorSuccessBg: 'rgba(0, 194, 255, 0.15)',
+                colorSuccessBorder: 'rgba(0, 194, 255, 0.4)',
               },
               Drawer: {
                 colorBgElevated: '#16181D',
@@ -92,7 +92,7 @@ export default function RootLayout({
         >
           <AntdRegistry>
             <AntdApp>
-              <SpotifyPlayerProvider>{children}</SpotifyPlayerProvider>
+              {children}
             </AntdApp>
           </AntdRegistry>
         </ConfigProvider>

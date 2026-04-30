@@ -62,6 +62,8 @@ export default function Dashboard() {
   const { value: username } = useLocalStorage<string>('username', '');
   const { value: userId } = useLocalStorage<string>('id', '');
   const { clear: clearToken } = useLocalStorage<string>('token', '');
+  const { clear: clearUserId } = useLocalStorage<string>('id', '');
+  const { clear: clearUsername } = useLocalStorage<string>('username', '');
 
   const [sessions, setSessions] = useState<Session[]>([]);
 
@@ -74,7 +76,13 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     clearToken();
-    router.push('/');
+    clearUserId();
+    clearUsername();
+    localStorage.removeItem("spotify_access_token");
+    localStorage.removeItem("spotify_refresh_token");
+    localStorage.removeItem("spotify_token_expiry");
+    localStorage.removeItem("spotify_device_id");
+    router.push("/");
   };
 
   const handleRejoin = (sessionId: string) => {
@@ -87,16 +95,16 @@ export default function Dashboard() {
 
   const userMenuItems = [
     {
-      key: 'change-password',
+      key: "change-password",
       icon: <LockOutlined />,
-      label: 'Change Password',
-      onClick: () => router.push('/change-password'),
+      label: "Change Password",
+      onClick: () => router.push("/change-password"),
     },
     { type: 'divider' as const },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: 'Logout',
+      label: "Logout",
       onClick: handleLogout,
     },
   ];
@@ -129,24 +137,24 @@ export default function Dashboard() {
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#0D0D1A' }}>
+    <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
       <Header
         style={{
-          background: '#0D0D1A',
-          borderBottom: '1px solid rgba(255,255,255,0.1)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '0 24px',
+          background: "#0D0D1A",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "0 24px",
         }}
       >
-        <Title level={3} style={{ margin: 0, color: '#FF2D7E' }}>
+        <Title level={3} style={{ margin: 0, color: "#FF2D7E" }}>
           Karaokee
         </Title>
         <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-            <Text style={{ color: '#FFFFFF' }}>{username || 'User'}</Text>
-            <Avatar icon={<UserOutlined />} style={{ background: '#FF2D7E' }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+            <Text style={{ color: "#FFFFFF" }}>{username || "User"}</Text>
+            <Avatar icon={<UserOutlined />} style={{ background: "#FF2D7E" }} />
           </div>
         </Dropdown>
       </Header>
@@ -194,4 +202,4 @@ export default function Dashboard() {
       </Content>
     </Layout>
   );
-}
+};
