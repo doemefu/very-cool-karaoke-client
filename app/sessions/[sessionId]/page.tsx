@@ -259,11 +259,14 @@ export default function SessionPage() {
                       type="text"
                       size="small"
                       icon={<DeleteOutlined />}
-                      onClick={() =>
+                      onClick={() => {
+                        setError("");
                         apiService
-                          .delete(`/sessions/${sessionId}/playlist/${song.id}`)
-                          .catch(console.error)
-                      }
+                          .delete(`/sessions/${sessionId}/songs/${song.id}`)
+                          .catch((err: ApplicationError) => {
+                            setError(err.message ?? "Could not remove song. Please try again.");
+                          });
+                      }}
                       style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
                     />
                   </Tooltip>
