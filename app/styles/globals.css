@@ -60,3 +60,12 @@ a {
   min-height: 100vh;
   background-color: rgb(41, 44, 59);
 }
+
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-80px); }
+}
+
+.reaction-btn:active {
+  transform: scale(0.9);
+}

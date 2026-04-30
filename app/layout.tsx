@@ -58,7 +58,6 @@ export default function RootLayout({
                 labelColor: "#fff",
                 algorithm: theme.defaultAlgorithm, // specify a specifc algorithm instead of true/false
               },
-              Card: {},
               Dropdown: {
                 colorBgElevated: '#16181D',
               },
@@ -69,8 +68,10 @@ export default function RootLayout({
                 itemHoverColor: '#FF2D7E',
               },
               Alert: {
-                colorErrorBg: '#7A3B00',
-                colorErrorBorder: 'transparent',
+                colorErrorBg: 'rgba(255, 45, 126, 0.15)',
+                colorErrorBorder: 'rgba(255, 45, 126, 0.4)',
+                colorSuccessBg: 'rgba(0, 194, 255, 0.15)',
+                colorSuccessBorder: 'rgba(0, 194, 255, 0.4)',
               },
               Drawer: {
                 colorBgElevated: '#16181D',
@@ -90,7 +91,9 @@ export default function RootLayout({
           }}
         >
           <AntdRegistry>
-            <AntdApp>{children}</AntdApp>
+            <AntdApp>
+              {children}
+            </AntdApp>
           </AntdRegistry>
         </ConfigProvider>
       </body>

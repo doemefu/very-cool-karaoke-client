@@ -16,16 +16,18 @@ export interface Song {
    * string → display in the scrollable lyrics block
    */
   lyrics: string | null;
+  albumArt: string | null;
   currentVoteCount: number;
   performed: boolean;
-  addedBy: SongAddedBy;
+  durationMs: number | null;
 }
 
 /** Lightweight DTO returned by GET /songs/search — not a full playlist entry. */
 export interface SongSearchResult {
   spotifyId: string;
-  geniusId: string;
   title: string;
   artist: string;
+  albumArt: string | null;
+  durationMs: number;
   lyricsAvailable: boolean;
 }
