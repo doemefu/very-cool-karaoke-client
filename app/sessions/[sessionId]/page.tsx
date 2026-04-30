@@ -15,7 +15,7 @@ import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
 import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, LogoutOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -86,15 +86,36 @@ export default function SessionPage() {
           height: 56,
         }}
       >
-        {/* Left: Back to Dashboard */}
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={isAdmin ? () => { clearSessionId(); router.push("/dashboard"); } : handleLeaveSession}
-          style={{ color: "#FFFFFF" }}
-        >
-          Back to Dashboard
-        </Button>
+        {/* Left: Back to Dashboard + Leave Session */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            style={{ color: "#FFFFFF" }}
+          >
+            Back to Dashboard
+          </Button>
+          {!isAdmin && (
+            <Tooltip title="Leave Session">
+              <Button
+                onClick={handleLeaveSession}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,80,80,0.4)",
+                  borderRadius: 8,
+                  color: "rgba(255,100,100,0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "0 12px",
+                }}
+              >
+                <span style={{ fontSize: 13 }}>Leave</span>
+              </Button>
+            </Tooltip>
+          )}
+        </div>
 
         {/* Center: Game PIN */}
         {gamePin && (
