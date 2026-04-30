@@ -3,53 +3,55 @@ import { useStomp } from "@/context/StompContext";
 import { ReactionType, Reaction } from "@/types/reaction";
 
 interface UseReactionsOptions {
-    sessionId: string;
-    onReaction: (reaction: Reaction) => void;
+  sessionId: string;
+  onReaction: (reaction: Reaction) => void;
 }
 
 export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
-    const client = useStomp();
+  const client = useStomp();
 
-    const onReactionRef = useRef(onReaction);
-    useEffect(() => { onReactionRef.current = onReaction; }, [onReaction]);
+  const onReactionRef = useRef(onReaction);
+  useEffect(() => { onReactionRef.current = onReaction; }, [onReaction]);
 
-    useEffect(() => {
-        if (!sessionId || !client) return;
+  useEffect(() => {
+    if (!sessionId || !client) return;
 
-        let sub: { unsubscribe: () => void } = { unsubscribe: () => {} };
+    let sub: { unsubscribe: () => void } = { unsubscribe: () => {} };
 
-        const doSubscribe = () => {
-            sub = client.subscribe(
-                `/topic/sessions/${sessionId}/reactions`,
-                (msg) => {
-                    try {
-                        const reaction: Reaction = JSON.parse(msg.body);
-                        onReactionRef.current(reaction);
-                    } catch {
-                        console.error("Failed to parse reaction:", msg.body);
-                    }
-                }
-            );
-        };
-
-        if (client.connected) {
-            // Connection already established. Subscribe (e.g. session-change)
-            doSubscribe();
-        } else {
-            // not connection. Wait for Handshake.
-            client.onConnect = () => doSubscribe();
+    const doSubscribe = () => {
+      sub = client.subscribe(
+        `/topic/sessions/${sessionId}/reactions`,
+        (msg) => {
+          try {
+            const reaction: Reaction = JSON.parse(msg.body);
+            onReactionRef.current(reaction);
+          } catch {
+            console.error("Failed to parse reaction:", msg.body);
+          }
         }
+      );
+    };
 
-        return () => sub.unsubscribe();
-    }, [sessionId, client]);
+    if (client.connected) {
+      doSubscribe();
+    } else {
+      const prevOnConnect = client.onConnect;
+      client.onConnect = (frame) => {
+        prevOnConnect?.(frame);
+        doSubscribe();
+      };
+    }
 
-    const sendReaction = useCallback((type: ReactionType) => {
-        if (!client || !client.connected) return;
-        client.publish({
-            destination: `/app/sessions/${sessionId}/reactions`,
-            body: JSON.stringify({ type }),
-        });
-    }, [sessionId, client]);
+    return () => sub.unsubscribe();
+  }, [sessionId, client]);
 
-    return { sendReaction };
+  const sendReaction = useCallback((type: ReactionType) => {
+    if (!client || !client.connected) return;
+    client.publish({
+      destination: `/app/sessions/${sessionId}/reactions`,
+      body: JSON.stringify({ type }),
+    });
+  }, [sessionId, client]);
+
+  return { sendReaction };
 }
