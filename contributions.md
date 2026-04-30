@@ -103,11 +103,21 @@ reason).
 | **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/57/changes| #22 fe display history dashboard with created and joined sessions | Major  |
 ---
 
+## Contributions Week 5 - 27.04.2026 to 04.05.2026
 
+| **Student**                                       | **Date**   | **Link to Commit**                                                   | **Description**                                                                | **Relevance** |
+|---------------------------------------------------|------------|----------------------------------------------------------------------|--------------------------------------------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #39 Implement Spotify OAuth PKCE flow for host authentication                  | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #40 Initialize Spotify Web Playback SDK and register as Spotify Connect device | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #41 Trigger Spotify playback from queue and handle track transitions           | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/108/commits | #69 Implement Voting Round Creation Logic   | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/95/commits | #33 Implement DELETE /sessions/{id}/playlist/{songId} endpoint (admin only)   | major    |
+| **[@doemefu](https://github.com/doemefu)**        | 24.04.2026 |https://github.com/doemefu/very-cool-karaoke-server/issues/81| [BE] Prepare Milestone 3 deliverables #81          | critical                            |
+| **[@doemefu](https://github.com/doemefu)**        | 23.04.2026 |https://github.com/doemefu/very-cool-karaoke-server/pull/106| [BE] Adjust google deployment type to fullfill requirements         | critical                            |
+| **[@Spring987](https://github.com/Spring987)**    | 30.04.2026 |https://github.com/doemefu/very-cool-karaoke-client/pull/64/changes| #17-fe-show-remove-song-button-on-playlist-items-for-admin | Major  |
+| **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/57/changes| #22 fe display history dashboard with created and joined sessions | Major  |
+---
 
-## Contributions Week 5 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
 
 ---
 
