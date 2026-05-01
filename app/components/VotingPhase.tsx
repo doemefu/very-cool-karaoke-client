@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+import { Alert, Button, Progress, Typography } from "antd";
+=======
 import { Alert, Button, Card, Progress, Typography } from "antd";
+>>>>>>> dev
 import { useApi } from "@/hooks/useApi";
 import { VotingRound } from "@/types/voting";
 import { Song } from "@/types/song";
@@ -27,6 +31,25 @@ export default function VotingPhase({
   const [votedSongId, setVotedSongId] = useState<number | null>(null);
   const [voting, setVoting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+  const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
+  const [totalSeconds, setTotalSeconds] = useState<number | null>(null);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!round.endsAt) return;
+    const total = Math.max(0, Math.floor((new Date(round.endsAt).getTime() - new Date(round.startedAt).getTime()) / 1000));
+    setTotalSeconds(total);
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((new Date(round.endsAt!).getTime() - Date.now()) / 1000));
+      setSecondsLeft(diff);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [round.endsAt, round.startedAt]);
+=======
+>>>>>>> dev
 
   // Poll the round to keep vote counts up to date
   const fetchRound = useCallback(async () => {
@@ -60,7 +83,10 @@ export default function VotingPhase({
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status;
       if (status === 409) {
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+=======
         // already voted — treat as success
+>>>>>>> dev
         setHasVoted(true);
         setVotedSongId(song.id);
       } else if (status === 410) {
@@ -74,6 +100,11 @@ export default function VotingPhase({
   };
 
   const maxVotes = Math.max(...candidates.map((s) => s.currentVoteCount ?? 0), 1);
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+  const timerPercent = secondsLeft !== null && totalSeconds ? (secondsLeft / totalSeconds) * 100 : 0;
+  const timerColor = secondsLeft !== null && secondsLeft <= 10 ? "#FF2D7E" : "#00C2FF";
+=======
+>>>>>>> dev
 
   return (
     <div
@@ -93,13 +124,34 @@ export default function VotingPhase({
           <Title level={1} style={{ color: "#FFFFFF", marginBottom: 16 }}>
             Vote for the next song! ⚡
           </Title>
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+
+          {secondsLeft !== null && (
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
+              <Progress
+                type="circle"
+                percent={timerPercent}
+                format={() => `${secondsLeft}s`}
+                strokeColor={timerColor}
+                railColor="rgba(255, 255, 255, 0.1)"
+                size={80}
+              />
+            </div>
+          )}
+
+=======
+>>>>>>> dev
           {hasVoted && (
             <Text style={{ color: "rgba(255,255,255,0.45)", display: "block", marginTop: 12 }}>
               Your vote has been cast!
             </Text>
           )}
           {error && (
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+            <Alert type="error" message={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
+=======
             <Alert type="error" title={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
+>>>>>>> dev
           )}
         </div>
 
@@ -116,13 +168,22 @@ export default function VotingPhase({
             const votePercentage = ((song.currentVoteCount ?? 0) / maxVotes) * 100;
 
             return (
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+              <div
+=======
               <Card
+>>>>>>> dev
                 key={song.id}
                 style={{
                   background: isVoted
                     ? "linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)"
                     : "#1A1A2E",
                   border: isVoted ? "2px solid #FF2D7E" : "1px solid rgba(255,255,255,0.1)",
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+                  borderRadius: 8,
+                  padding: 16,
+=======
+>>>>>>> dev
                 }}
               >
                 <div style={{ marginBottom: 16 }}>
@@ -150,7 +211,11 @@ export default function VotingPhase({
                     {isVoted ? "Voted" : "Vote"}
                   </Button>
                 </div>
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
+              </div>
+=======
               </Card>
+>>>>>>> dev
             );
           })}
         </div>
