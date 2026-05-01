@@ -53,12 +53,8 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
-<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
-  const openRound = useVotingRound(sessionId);
-=======
   const { openRound, clearRound } = useVotingRound(sessionId);
 
->>>>>>> dev
   // test data for voting phase UI development
   // const openRound = {
   //   id: 1,
@@ -90,17 +86,7 @@ export default function SessionPage() {
   };
 
   if (openRound) {
-<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
-    return (
-      <VotingPhase
-        sessionId={sessionId}
-        round={openRound}
-        onRoundClosed={() => {/* hook picks up the change automatically on next poll */}}
-      />
-    );
-=======
     return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
->>>>>>> dev
   }
 
   return (
@@ -121,15 +107,36 @@ export default function SessionPage() {
           height: 56,
         }}
       >
-        {/* Left: Back to Dashboard */}
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={isAdmin ? () => { clearSessionId(); router.push("/dashboard"); } : handleLeaveSession}
-          style={{ color: "#FFFFFF" }}
-        >
-          Back to Dashboard
-        </Button>
+        {/* Left: Back to Dashboard + Leave Session */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            style={{ color: "#FFFFFF" }}
+          >
+            Back to Dashboard
+          </Button>
+          {!isAdmin && (
+            <Tooltip title="Leave Session">
+              <Button
+                onClick={handleLeaveSession}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,80,80,0.4)",
+                  borderRadius: 8,
+                  color: "rgba(255,100,100,0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "0 12px",
+                }}
+              >
+                <span style={{ fontSize: 13 }}>Leave</span>
+              </Button>
+            </Tooltip>
+          )}
+        </div>
 
         {/* Center: Game PIN */}
         {gamePin && (
