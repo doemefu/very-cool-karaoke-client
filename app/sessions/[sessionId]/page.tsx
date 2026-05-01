@@ -17,7 +17,7 @@ import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
 import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -275,10 +275,28 @@ export default function SessionPage() {
                 {song.albumArt && (
                   <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
                 )}
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
                   <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{song.artist}</div>
                 </div>
+                {isAdmin && (
+                  <Tooltip title="Remove song">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => {
+                        setError("");
+                        apiService
+                          .delete(`/sessions/${sessionId}/songs/${song.id}`)
+                          .catch((err: ApplicationError) => {
+                            setError(err.message ?? "Could not remove song. Please try again.");
+                          });
+                      }}
+                      style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
+                    />
+                  </Tooltip>
+                )}
               </div>
             ))
           )}
