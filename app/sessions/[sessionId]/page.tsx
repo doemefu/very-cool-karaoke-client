@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
+import { useVotingRound } from "@/hooks/useVotingRound";
 import { useApi } from "@/hooks/useApi";
 import LyricsDisplay from "../../components/LyricsDisplay";
+import VotingPhase from "../../components/VotingPhase";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import ReactionBar from "../../components/ReactionBar";
@@ -15,7 +17,7 @@ import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
 import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -51,6 +53,21 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
+  const { openRound, clearRound } = useVotingRound(sessionId);
+
+  // test data for voting phase UI development
+  // const openRound = {
+  //   id: 1,
+  //   roundNumber: 1,
+  //   status: "OPEN" as const,
+  //   startedAt: new Date().toISOString(),
+  //   endsAt: new Date(Date.now() + 30_000).toISOString(),
+  //   candidates: [
+  //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
+  //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
+  //   ],
+  // };
+
   const handleLeaveSession = async () => {
     setError("");
     try {
@@ -67,6 +84,10 @@ export default function SessionPage() {
       }
     }
   };
+
+  if (openRound) {
+    return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
+  }
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
@@ -261,10 +282,28 @@ export default function SessionPage() {
                 {song.albumArt && (
                   <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
                 )}
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
                   <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{song.artist}</div>
                 </div>
+                {isAdmin && (
+                  <Tooltip title="Remove song">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => {
+                        setError("");
+                        apiService
+                          .delete(`/sessions/${sessionId}/songs/${song.id}`)
+                          .catch((err: ApplicationError) => {
+                            setError(err.message ?? "Could not remove song. Please try again.");
+                          });
+                      }}
+                      style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
+                    />
+                  </Tooltip>
+                )}
               </div>
             ))
           )}
