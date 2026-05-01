@@ -53,7 +53,12 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
   const openRound = useVotingRound(sessionId);
+=======
+  const { openRound, clearRound } = useVotingRound(sessionId);
+
+>>>>>>> dev
   // test data for voting phase UI development
   // const openRound = {
   //   id: 1,
@@ -85,6 +90,7 @@ export default function SessionPage() {
   };
 
   if (openRound) {
+<<<<<<< 21-fe-show-live-vote-counts-per-song-during-voting
     return (
       <VotingPhase
         sessionId={sessionId}
@@ -92,6 +98,9 @@ export default function SessionPage() {
         onRoundClosed={() => {/* hook picks up the change automatically on next poll */}}
       />
     );
+=======
+    return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
+>>>>>>> dev
   }
 
   return (
