@@ -4,8 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
+import { useVotingRound } from "@/hooks/useVotingRound";
 import { useApi } from "@/hooks/useApi";
 import LyricsDisplay from "../../components/LyricsDisplay";
+import VotingPhase from "../../components/VotingPhase";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import ReactionBar from "../../components/ReactionBar";
@@ -51,6 +53,20 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
+  const { openRound, clearRound } = useVotingRound(sessionId);
+
+  // test data for voting phase UI development
+  // const openRound = {
+  //   id: 1,
+  //   roundNumber: 1,
+  //   status: "OPEN" as const,
+  //   startedAt: new Date().toISOString(),
+  //   endsAt: new Date(Date.now() + 30_000).toISOString(),
+  //   candidates: [
+  //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
+  //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
+  //   ],
+  // };
 
   const handleLeaveSession = async () => {
     setError("");
@@ -68,6 +84,10 @@ export default function SessionPage() {
       }
     }
   };
+
+  if (openRound) {
+    return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
+  }
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
@@ -140,14 +160,6 @@ export default function SessionPage() {
               </Button>
             </Tooltip>
           )}
-          {/* <Tooltip title="Refresh current song">
-            <Button
-              type="text"
-              icon={<ReloadOutlined />}
-              onClick={refresh}
-              style={{ color: "rgba(255,255,255,0.65)" }}
-            />
-          </Tooltip> */}
           <Button
             type="primary"
             icon={<PlusOutlined />}
