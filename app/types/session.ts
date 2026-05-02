@@ -9,4 +9,5 @@ export interface Session {
     createdAt?: string;
     admin?: { id: number; username: string };
     participants?: { id: number; username: string }[];
+    requiresSongSelection?: boolean;
 }

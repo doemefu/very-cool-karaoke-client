@@ -8,6 +8,7 @@ import { ApplicationError } from "@/types/error";
 import { Session } from "@/types/session";
 import { Layout, Button, Input, Card, Steps, Typography, Form, Alert } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import SongSearchContent from "@/components/SongSearchContent";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
@@ -25,11 +26,9 @@ export default function CreateSession() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pin, setPin] = useState("");
-  const [sessionCreated, setSessionCreated] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const { set: setSessionId, value: sessionId } = useLocalStorage<string>("sessionId", "");
-
-  const currentStep = !sessionCreated ? 0 : 1;
 
   const handleStartSession = async (values: SessionFormValues) => {
     setLoading(true);
@@ -37,7 +36,7 @@ export default function CreateSession() {
       const data = await apiService.post<Session>("/sessions", values);
       setPin(data.gamePin);
       setSessionId(data.id);
-      setSessionCreated(true);
+      setCurrentStep(1);
     } catch (err) {
       const status = (err as ApplicationError).status;
       if (status) {
@@ -83,6 +82,7 @@ export default function CreateSession() {
               items={[
                 { title: "Setup" },
                 { title: "Session Created" },
+                { title: "Add First Song" },
               ]}
             />
           </Card>
@@ -98,7 +98,7 @@ export default function CreateSession() {
             )}
 
             <Form form={form} layout="vertical" onFinish={handleStartSession}>
-              {!sessionCreated && (
+              {currentStep === 0 && (
                 <>
                   <Form.Item
                     name="name"
@@ -109,7 +109,11 @@ export default function CreateSession() {
                   </Form.Item>
 
                   <Form.Item name="description" label="Description">
-                    <TextArea size="large" placeholder="Add a description (optional)" rows={4} />
+                    <TextArea
+                      size="large"
+                      placeholder="Add a description (optional)"
+                      rows={4}
+                    />
                   </Form.Item>
 
                   <Form.Item style={{ marginBottom: 0 }}>
@@ -127,7 +131,7 @@ export default function CreateSession() {
                 </>
               )}
 
-              {sessionCreated && (
+              {currentStep === 1 && (
                 <div style={{ textAlign: "center", marginTop: 24 }}>
                   <Text strong style={{ fontSize: 16, display: "block", marginBottom: 16 }}>
                     Session PIN
@@ -140,24 +144,18 @@ export default function CreateSession() {
                       marginBottom: 16,
                     }}
                   >
-                    {pin ? (
-                      <Title
-                        level={1}
-                        style={{
-                          margin: 0,
-                          color: "#FFFFFF",
-                          fontSize: 64,
-                          letterSpacing: 16,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {pin}
-                      </Title>
-                    ) : (
-                      <Text style={{ color: "rgba(255, 255, 255, 0.9)", fontSize: 18 }}>
-                        Start the session to generate a PIN
-                      </Text>
-                    )}
+                    <Title
+                      level={1}
+                      style={{
+                        margin: 0,
+                        color: "#FFFFFF",
+                        fontSize: 64,
+                        letterSpacing: 16,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {pin}
+                    </Title>
                   </div>
                   <Button
                     type="default"
@@ -178,10 +176,31 @@ export default function CreateSession() {
                     size="large"
                     block
                     style={{ marginTop: 12 }}
-                    onClick={() => router.push(`/sessions/${sessionId}`)}
+                    onClick={() => setCurrentStep(2)}
                   >
-                    Go to Lobby
+                    Continue → Add First Song
                   </Button>
+                </div>
+              )}
+
+              {currentStep === 2 && (
+                <div style={{ padding: "8px 0" }}>
+                  <Title level={4} style={{ color: "#FFFFFF", marginBottom: 8 }}>
+                    Add a song to your queue
+                  </Title>
+                  <Text
+                    style={{
+                      color: "rgba(255, 255, 255, 0.65)",
+                      display: "block",
+                      marginBottom: 24,
+                    }}
+                  >
+                    Add at least one song before entering the lobby.
+                  </Text>
+                  <SongSearchContent
+                    sessionId={sessionId}
+                    onSongAdded={() => router.push(`/sessions/${sessionId}`)}
+                  />
                 </div>
               )}
             </Form>
