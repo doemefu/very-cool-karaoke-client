@@ -109,6 +109,7 @@ reason).
 |---------------------------------------------------|------------|---------------------------------------------------------------------|---------------------------------------------------------------|---------------|
 | **[@Spring987](https://github.com/Spring987)**    | 30.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/64/changes | #17-fe-show-remove-song-button-on-playlist-items-for-admin    | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/65         | #16-fe-show-mandatory-song-selection-step-during-session-join | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/66         | #29-fe-display-animated-emoji-reactions-on-screen             | major         |
 ---
 
 
