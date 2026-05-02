@@ -101,6 +101,8 @@ reason).
 | **[@doemefu](https://github.com/doemefu)**        | 23.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/106         | [BE] Adjust google deployment type to fullfill requirements         | critical                            |
 | **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/56/changes  | #21 fe show live vote counts per song during voting | Major  |
 | **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/57/changes  | #22 fe display history dashboard with created and joined sessions | Major  |
+| **[@Unick1](https://github.com/Unick1)**     | 20.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/87/changes  | #48 broadcast lyrics text via websocket when the song starts playing | Major  |
+| **[@Unick1](https://github.com/Unick1)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/89/commits  | Rest implementation to send messages instantly upon joining #89 | Major  |
 ---
 
 ## Contributions Week 5 - 27.04.2026 to 04.05.2026
