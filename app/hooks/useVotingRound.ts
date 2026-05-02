@@ -1,32 +1,43 @@
-import { useState, useEffect, useCallback } from "react";
-import { useApi } from "@/hooks/useApi";
+import { useState, useEffect } from "react";
 import { VotingRound } from "@/types/voting";
-
-const POLL_INTERVAL_MS = 3_000;
+import { useStomp } from "@/context/StompContext";
 
 export const useVotingRound = (sessionId: string): VotingRound | null => {
-  const apiService = useApi();
+  const stompClient = useStomp();
   const [openRound, setOpenRound] = useState<VotingRound | null>(null);
 
-  const fetchRounds = useCallback(async () => {
-    if (!sessionId) return;
-    try {
-      const rounds = await apiService.get<VotingRound[]>(
-        `/sessions/${sessionId}/votingRounds`
-      );
-      const open = rounds.find((r) => r.status === "OPEN") ?? null;
-      setOpenRound(open);
-    } catch {
-      // silently ignore — session page handles its own errors
-    }
-  }, [sessionId, apiService]);
-
   useEffect(() => {
-    if (!sessionId) return;
-    fetchRounds();
-    const id = setInterval(fetchRounds, POLL_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [sessionId, fetchRounds]);
+    if (!sessionId || !stompClient) return;
+
+    let sub = { unsubscribe: () => {} };
+
+    const doSubscribe = () => {
+      sub = stompClient.subscribe(
+        `/topic/sessions/${sessionId}/votingRound`,
+        (msg) => {
+          try {
+            const round: VotingRound = JSON.parse(msg.body);
+            if (round.status === "OPEN") {
+              setOpenRound(round);
+            } else {
+              // CLOSED — VotingPhase handles the winner screen, then clears
+              setOpenRound((prev) => prev ? { ...prev, status: "CLOSED", candidates: round.candidates } : null);
+            }
+          } catch {
+            console.error("Failed to parse votingRound message:", msg.body);
+          }
+        }
+      );
+    };
+
+    if (stompClient.connected) {
+      doSubscribe();
+    } else {
+      stompClient.onConnect = () => doSubscribe();
+    }
+
+    return () => sub.unsubscribe();
+  }, [sessionId, stompClient]);
 
   return openRound;
 };
