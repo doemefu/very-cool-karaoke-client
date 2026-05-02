@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useStomp } from "@/context/StompContext";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import { ReactionType, Reaction } from "@/types/reaction";
 
 interface UseReactionsOptions {
@@ -9,6 +10,7 @@ interface UseReactionsOptions {
 
 export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
   const client = useStomp();
+  const { value: userId } = useLocalStorage<string>("id", "");
 
   const onReactionRef = useRef(onReaction);
   useEffect(() => { onReactionRef.current = onReaction; }, [onReaction]);
@@ -46,12 +48,12 @@ export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
   }, [sessionId, client]);
 
   const sendReaction = useCallback((type: ReactionType) => {
-    if (!client || !client.connected) return;
+    if (!client || !client.connected || !userId) return;
     client.publish({
       destination: `/app/sessions/${sessionId}/reactions`,
-      body: JSON.stringify({ type }),
+      body: JSON.stringify({ type, userId }),
     });
-  }, [sessionId, client]);
+  }, [sessionId, client, userId]);
 
   return { sendReaction };
 }
