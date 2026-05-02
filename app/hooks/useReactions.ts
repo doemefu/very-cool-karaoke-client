@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useStomp } from "@/context/StompContext";
+import { useApi } from "@/hooks/useApi";
 import { ReactionType, Reaction } from "@/types/reaction";
 
 interface UseReactionsOptions {
@@ -9,6 +10,7 @@ interface UseReactionsOptions {
 
 export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
   const client = useStomp();
+  const apiService = useApi();
 
   const onReactionRef = useRef(onReaction);
   useEffect(() => { onReactionRef.current = onReaction; }, [onReaction]);
@@ -46,12 +48,8 @@ export function useReactions({ sessionId, onReaction }: UseReactionsOptions) {
   }, [sessionId, client]);
 
   const sendReaction = useCallback((type: ReactionType) => {
-    if (!client || !client.connected) return;
-    client.publish({
-      destination: `/app/sessions/${sessionId}/reactions`,
-      body: JSON.stringify({ type }),
-    });
-  }, [sessionId, client]);
+    apiService.post(`/sessions/${sessionId}/reactions`, { type }).catch(console.error);
+  }, [sessionId, apiService]);
 
   return { sendReaction };
 }
