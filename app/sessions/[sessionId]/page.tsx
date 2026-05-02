@@ -17,7 +17,7 @@ import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
 import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -53,7 +53,7 @@ export default function SessionPage() {
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
-  const openRound = useVotingRound(sessionId);
+  const { openRound, clearRound } = useVotingRound(sessionId);
   // test data for winner screen development
   // const openRound = {
   //   id: 1,
@@ -85,13 +85,7 @@ export default function SessionPage() {
   };
 
   if (openRound) {
-    return (
-      <VotingPhase
-        sessionId={sessionId}
-        round={openRound}
-        onRoundClosed={() => {/* hook picks up the change automatically on next poll */}}
-      />
-    );
+    return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
   }
 
   return (
@@ -112,15 +106,36 @@ export default function SessionPage() {
           height: 56,
         }}
       >
-        {/* Left: Back to Dashboard */}
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={isAdmin ? () => { clearSessionId(); router.push("/dashboard"); } : handleLeaveSession}
-          style={{ color: "#FFFFFF" }}
-        >
-          Back to Dashboard
-        </Button>
+        {/* Left: Back to Dashboard + Leave Session */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            style={{ color: "#FFFFFF" }}
+          >
+            Back to Dashboard
+          </Button>
+          {!isAdmin && (
+            <Tooltip title="Leave Session">
+              <Button
+                onClick={handleLeaveSession}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,80,80,0.4)",
+                  borderRadius: 8,
+                  color: "rgba(255,100,100,0.9)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "0 12px",
+                }}
+              >
+                <span style={{ fontSize: 13 }}>Leave</span>
+              </Button>
+            </Tooltip>
+          )}
+        </div>
 
         {/* Center: Game PIN */}
         {gamePin && (
@@ -266,10 +281,28 @@ export default function SessionPage() {
                 {song.albumArt && (
                   <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
                 )}
-                <div>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
                   <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{song.artist}</div>
                 </div>
+                {isAdmin && (
+                  <Tooltip title="Remove song">
+                    <Button
+                      type="text"
+                      size="small"
+                      icon={<DeleteOutlined />}
+                      onClick={() => {
+                        setError("");
+                        apiService
+                          .delete(`/sessions/${sessionId}/songs/${song.id}`)
+                          .catch((err: ApplicationError) => {
+                            setError(err.message ?? "Could not remove song. Please try again.");
+                          });
+                      }}
+                      style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
+                    />
+                  </Tooltip>
+                )}
               </div>
             ))
           )}

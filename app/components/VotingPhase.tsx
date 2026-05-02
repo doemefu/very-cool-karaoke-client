@@ -104,6 +104,7 @@ export default function VotingPhase({
     } catch (err: unknown) {
       const status = (err as { status?: number })?.status;
       if (status === 409) {
+        // already voted — treat as success
         setHasVoted(true);
         setVotedSongId(song.id);
       } else if (status === 410) {
@@ -217,7 +218,7 @@ export default function VotingPhase({
             </Text>
           )}
           {error && (
-            <Alert type="error" message={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
+            <Alert type="error" title={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
           )}
         </div>
 

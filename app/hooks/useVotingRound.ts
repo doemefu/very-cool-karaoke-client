@@ -1,43 +1,56 @@
-import { useState, useEffect } from "react";
-import { VotingRound } from "@/types/voting";
+import { useState, useEffect, useCallback } from "react";
 import { useStomp } from "@/context/StompContext";
+import { VotingRound } from "@/types/voting";
 
-export const useVotingRound = (sessionId: string): VotingRound | null => {
+export const useVotingRound = (sessionId: string): { openRound: VotingRound | null; clearRound: () => void } => {
   const stompClient = useStomp();
   const [openRound, setOpenRound] = useState<VotingRound | null>(null);
+
+  const clearRound = useCallback(() => setOpenRound(null), []);
 
   useEffect(() => {
     if (!sessionId || !stompClient) return;
 
-    let sub = { unsubscribe: () => {} };
-
-    const doSubscribe = () => {
-      sub = stompClient.subscribe(
+    const subscribe = () => {
+      return stompClient.subscribe(
         `/topic/sessions/${sessionId}/votingRound`,
-        (msg) => {
+        (frame) => {
           try {
-            const round: VotingRound = JSON.parse(msg.body);
-            if (round.status === "OPEN") {
-              setOpenRound(round);
-            } else {
-              // CLOSED — VotingPhase handles the winner screen, then clears
-              setOpenRound((prev) => prev ? { ...prev, status: "CLOSED", candidates: round.candidates } : null);
-            }
-          } catch {
-            console.error("Failed to parse votingRound message:", msg.body);
+            const round: VotingRound = JSON.parse(frame.body);
+            if (round.status === "OPEN") setOpenRound(round);
+          } catch (e) {
+            console.error("Failed to parse votingRound update:", e);
           }
         }
       );
     };
 
-    if (stompClient.connected) {
-      doSubscribe();
-    } else {
-      stompClient.onConnect = () => doSubscribe();
-    }
+    let subscription: ReturnType<typeof stompClient.subscribe> | null = null;
+    let unmounted = false;
 
-    return () => sub.unsubscribe();
+    if (stompClient.connected) {
+      subscription = subscribe();
+
+      return () => {
+        unmounted = true;
+        subscription?.unsubscribe();
+      };
+    } else {
+      const prevOnConnect = stompClient.onConnect;
+      stompClient.onConnect = (frame) => {
+        prevOnConnect?.(frame);
+        if (!unmounted) {
+          subscription = subscribe();
+        }
+      };
+
+      return () => {
+        unmounted = true;
+        stompClient.onConnect = prevOnConnect;
+        subscription?.unsubscribe();
+      };
+    }
   }, [sessionId, stompClient]);
 
-  return openRound;
+  return { openRound, clearRound };
 };
