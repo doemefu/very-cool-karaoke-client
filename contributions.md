@@ -115,6 +115,8 @@ reason).
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/44         | #29-fe-display-animated-emoji-reactions-on-screen             | major         |
 | **[@Unick1](https://github.com/Unick1)**    | 01.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/109/commits        | [BE] Implement reaction message handler: receive and broadcast emoji to session #35             | major         |
 | **[@Unick1](https://github.com/Unick1)**    | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/110/commits         | #52 Implement GET /sessions/{id}/review endpoint       | Major         |
+| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/111   | [BE] Integrate Spotify Recommendations API for no-lyrics fallback #68  | minor                            |
+| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/111  | [BE] Implement GET /songs/{id}/recommendations endpoint #69 | minor                            |
 
 ---
 
