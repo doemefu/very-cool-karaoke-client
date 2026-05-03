@@ -113,6 +113,9 @@ reason).
 | **[@Spring987](https://github.com/Spring987)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/67/changes| #30-fe-announce-winning-song-when-voting-round-closes | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/65         | #16-fe-show-mandatory-song-selection-step-during-session-join | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/44         | #29-fe-display-animated-emoji-reactions-on-screen             | major         |
+| **[@Unick1](https://github.com/Unick1)**    | 01.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/109/commits        | [BE] Implement reaction message handler: receive and broadcast emoji to session #35             | major         |
+| **[@Unick1](https://github.com/Unick1)**    | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/110/commits         | #52 Implement GET /sessions/{id}/review endpoint       | Major         |
+
 ---
 
 
