@@ -17,7 +17,7 @@ export interface UseLyricsResult {
 
 export const useLyrics = (sessionId: string): UseLyricsResult => {
   const apiService = useApi();
-  const stompClient = useStomp();
+  const { client, connected } = useStomp();
 
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -51,33 +51,23 @@ export const useLyrics = (sessionId: string): UseLyricsResult => {
 
   // WebSocket subscription for live updates
   useEffect(() => {
-    if (!sessionId || !stompClient) return;
+    if (!sessionId || !client || !connected) return;
 
-    let sub = { unsubscribe: () => {} };
-
-    const doSubscribe = () => {
-      sub = stompClient.subscribe(
-        `/topic/sessions/${sessionId}/currentSong`,
-        (msg) => {
-          try {
-            const song: Song | null = msg.body ? JSON.parse(msg.body) : null;
-            setFetchError(null);
-            setCurrentSong(song);
-          } catch {
-            console.error("Failed to parse currentSong message:", msg.body);
-          }
-        },
-      );
-    };
-
-    if (stompClient.connected) {
-      doSubscribe();
-    } else {
-      stompClient.onConnect = () => doSubscribe();
-    }
+    const sub = client.subscribe(
+      `/topic/sessions/${sessionId}/currentSong`,
+      (msg) => {
+        try {
+          const song: Song | null = msg.body ? JSON.parse(msg.body) : null;
+          setFetchError(null);
+          setCurrentSong(song);
+        } catch {
+          console.error("Failed to parse currentSong message:", msg.body);
+        }
+      },
+    );
 
     return () => sub.unsubscribe();
-  }, [sessionId, stompClient]);
+  }, [sessionId, client, connected]);
 
   return {
     currentSong,
