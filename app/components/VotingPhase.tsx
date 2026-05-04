@@ -142,7 +142,12 @@ export default function VotingPhase({
           <Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 16 }}>
             {winner.artist}
           </Text>
-          <div style={{ marginTop: 16 }}>
+          {winner.addedBy && (
+            <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, display: "block", marginTop: 12 }}>
+              🎤 {winner.addedBy.username}
+            </Text>
+          )}
+          <div style={{ marginTop: 8 }}>
             <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
               {winner.currentVoteCount ?? 0} votes
             </Text>
