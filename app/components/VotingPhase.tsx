@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Alert, Button, Progress, Typography } from "antd";
 import { useApi } from "@/hooks/useApi";
-import { useStomp } from "@/context/StompContext";
 import { VotingRound } from "@/types/voting";
 import { Song } from "@/types/song";
 import Image from "next/image";
@@ -24,7 +23,6 @@ export default function VotingPhase({
   onRoundClosed,
 }: VotingPhaseProps) {
   const apiService = useApi();
-  const stompClient = useStomp();
 
   const [candidates, setCandidates] = useState<Song[]>(round.candidates);
   const [hasVoted, setHasVoted] = useState(false);
@@ -37,12 +35,18 @@ export default function VotingPhase({
     round.status === "CLOSED" ? (round.candidates[0] ?? null) : null
   );
 
-  // If round is already closed on mount, auto-transition after display time
+  // Keep live vote bars in sync with incoming updates from the hook.
+  useEffect(() => {
+    setCandidates(round.candidates);
+  }, [round.candidates]);
+
+  // Trigger winner screen once when the round closes, with proper cleanup.
   useEffect(() => {
     if (round.status !== "CLOSED") return;
+    setWinner(round.candidates[0] ?? null);
     const id = setTimeout(() => onRoundClosed(), WINNER_DISPLAY_MS);
     return () => clearTimeout(id);
-  }, [round.status, onRoundClosed]);
+  }, [round.status, round.id, onRoundClosed, round.candidates]);
 
   // Countdown timer
   useEffect(() => {
@@ -58,39 +62,6 @@ export default function VotingPhase({
     return () => clearInterval(id);
   }, [round.endsAt, round.startedAt]);
 
-  // WebSocket subscription for live vote count updates and round close detection
-  useEffect(() => {
-    if (!stompClient) return;
-
-    let sub = { unsubscribe: () => {} };
-
-    const doSubscribe = () => {
-      sub = stompClient.subscribe(
-        `/topic/sessions/${sessionId}/votingRound`,
-        (msg) => {
-          try {
-            const updated: VotingRound = JSON.parse(msg.body);
-            if (updated.id !== round.id) return;
-            setCandidates(updated.candidates);
-            if (updated.status === "CLOSED") {
-              setWinner(updated.candidates[0] ?? null);
-              setTimeout(() => onRoundClosed(), WINNER_DISPLAY_MS);
-            }
-          } catch {
-            console.error("Failed to parse votingRound message:", msg.body);
-          }
-        }
-      );
-    };
-
-    if (stompClient.connected) {
-      doSubscribe();
-    } else {
-      stompClient.onConnect = () => doSubscribe();
-    }
-
-    return () => sub.unsubscribe();
-  }, [sessionId, round.id, stompClient, onRoundClosed]);
 
   const handleVote = async (song: Song) => {
     setVoting(true);
@@ -108,7 +79,8 @@ export default function VotingPhase({
         setHasVoted(true);
         setVotedSongId(song.id);
       } else if (status === 410) {
-        onRoundClosed();
+        setWinner(candidates[0] ?? null);
+        setTimeout(() => onRoundClosed(), WINNER_DISPLAY_MS);
       } else {
         setError("Could not cast vote. Please try again.");
       }
