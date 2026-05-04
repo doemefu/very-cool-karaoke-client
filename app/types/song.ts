@@ -20,6 +20,7 @@ export interface Song {
   currentVoteCount: number;
   performed: boolean;
   durationMs: number | null;
+  addedBy?: SongAddedBy;
 }
 
 /** Lightweight DTO returned by GET /songs/search — not a full playlist entry. */

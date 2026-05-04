@@ -285,6 +285,11 @@ export default function SessionPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
                   <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{song.artist}</div>
+                  {song.addedBy && (
+                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>
+                      🎤 {song.addedBy.username}
+                    </div>
+                  )}
                 </div>
                 {isAdmin && (
                   <Tooltip title="Remove song">

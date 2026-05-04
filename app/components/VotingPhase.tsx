@@ -164,6 +164,9 @@ export default function VotingPhase({
                     {song.title}
                   </Text>
                   <Text style={{ color: "rgba(255,255,255,0.65)" }}>{song.artist}</Text>
+                  {song.addedBy && (
+                    <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>🎤 {song.addedBy.username}</Text>
+                  )}
                 </div>
 
                 <Progress
