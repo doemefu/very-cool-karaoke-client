@@ -3,19 +3,17 @@
 import { useState, useEffect } from "react";
 import { useApi } from "@/hooks/useApi";
 import { SongSearchResult } from "@/types/song";
-import { Drawer, Input, Empty, Avatar, App } from "antd";
+import { Input, Avatar, Empty, App } from "antd";
 import { SearchOutlined, PlusOutlined, WarningOutlined } from "@ant-design/icons";
 
 const { Search } = Input;
 
-interface SongSearchDrawerProps {
-  open: boolean;
-  onClose: () => void;
-  onAddSong: (song: SongSearchResult) => void;
+interface SongSearchContentProps {
   sessionId: string;
+  onSongAdded: () => void;
 }
 
-export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }: SongSearchDrawerProps) {
+export default function SongSearchContent({ sessionId, onSongAdded }: SongSearchContentProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +22,6 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
 
   useEffect(() => {
     const query = searchQuery.trim();
-
     if (!query) {
       setSearchResults([]);
       return;
@@ -58,8 +55,6 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
         artist: song.artist,
         durationMs: song.durationMs,
       });
-
-      onAddSong(song);
       notification.success({
         title: "Song Added",
         description: `"${song.title}" by ${song.artist} has been added to the queue.`,
@@ -67,6 +62,7 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
       });
       setSearchQuery("");
       setSearchResults([]);
+      onSongAdded();
     } catch {
       notification.error({
         title: "Failed to add song",
@@ -75,23 +71,11 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
     }
   };
 
-  const handleClose = () => {
-    setSearchQuery("");
-    setSearchResults([]);
-    onClose();
-  };
-
-  const showEmpty = !isLoading && searchQuery && searchResults.length === 0;
+  const showEmpty = !isLoading && !!searchQuery.trim() && searchResults.length === 0;
   const showResults = !isLoading && searchResults.length > 0;
 
   return (
-    <Drawer
-      title="Search Songs"
-      placement="right"
-      onClose={handleClose}
-      open={open}
-      size={400}
-    >
+    <div>
       <div style={{ marginBottom: 24 }}>
         <Search
           placeholder="Search by title or artist"
@@ -104,9 +88,7 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
         />
       </div>
 
-      {showEmpty && (
-        <Empty description="No songs found" style={{ marginTop: 48 }} />
-      )}
+      {showEmpty && <Empty description="No songs found" style={{ marginTop: 48 }} />}
 
       {showResults && (
         <div>
@@ -145,7 +127,7 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
               </div>
               <PlusOutlined
                 onClick={() => handleAddSong(item)}
-                style={{ fontSize: 18, color: "#FF2D7E", cursor: "pointer" }}
+                style={{ fontSize: 18, color: "#FF2D7E", cursor: "pointer", marginRight: 16 }}
               />
             </div>
           ))}
@@ -153,8 +135,11 @@ export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }
       )}
 
       {!searchQuery && (
-        <Empty description="Search for songs to add to your queue" style={{ marginTop: 48 }} />
+        <Empty
+          description="Search for songs to add to your queue"
+          style={{ marginTop: 48 }}
+        />
       )}
-    </Drawer>
+    </div>
   );
 }
