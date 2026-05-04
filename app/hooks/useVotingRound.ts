@@ -16,7 +16,7 @@ export const useVotingRound = (sessionId: string): { openRound: VotingRound | nu
       (frame) => {
         try {
           const round: VotingRound = JSON.parse(frame.body);
-          if (round.status === "OPEN") setOpenRound(round);
+          setOpenRound(round);
         } catch (e) {
           console.error("Failed to parse votingRound update:", e);
         }

@@ -54,14 +54,13 @@ export default function SessionPage() {
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
   const { openRound, clearRound } = useVotingRound(sessionId);
-
-  // test data for voting phase UI development
+  // test data for winner screen development
   // const openRound = {
   //   id: 1,
   //   roundNumber: 1,
-  //   status: "OPEN" as const,
+  //   status: "CLOSED" as const,
   //   startedAt: new Date().toISOString(),
-  //   endsAt: new Date(Date.now() + 30_000).toISOString(),
+  //   endsAt: new Date(Date.now() - 1000).toISOString(),
   //   candidates: [
   //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
   //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },

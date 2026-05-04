@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Alert, Button, Progress, Typography } from "antd";
 import { useApi } from "@/hooks/useApi";
 import { VotingRound } from "@/types/voting";
 import { Song } from "@/types/song";
+import Image from "next/image";
 
 const { Title, Text } = Typography;
 
-const POLL_INTERVAL_MS = 3_000;
+const WINNER_DISPLAY_MS = 4_000;
 
 interface VotingPhaseProps {
   sessionId: string;
@@ -22,6 +23,7 @@ export default function VotingPhase({
   onRoundClosed,
 }: VotingPhaseProps) {
   const apiService = useApi();
+
   const [candidates, setCandidates] = useState<Song[]>(round.candidates);
   const [hasVoted, setHasVoted] = useState(false);
   const [votedSongId, setVotedSongId] = useState<number | null>(null);
@@ -29,6 +31,22 @@ export default function VotingPhase({
   const [error, setError] = useState<string | null>(null);
   const [secondsLeft, setSecondsLeft] = useState<number | null>(null);
   const [totalSeconds, setTotalSeconds] = useState<number | null>(null);
+  const [winner, setWinner] = useState<Song | null>(() =>
+    round.status === "CLOSED" ? (round.candidates[0] ?? null) : null
+  );
+
+  // Keep live vote bars in sync with incoming updates from the hook.
+  useEffect(() => {
+    setCandidates(round.candidates);
+  }, [round.candidates]);
+
+  // Trigger winner screen once when the round closes, with proper cleanup.
+  useEffect(() => {
+    if (round.status !== "CLOSED") return;
+    setWinner(round.candidates[0] ?? null);
+    const id = setTimeout(() => onRoundClosed(), WINNER_DISPLAY_MS);
+    return () => clearTimeout(id);
+  }, [round.status, round.id, onRoundClosed, round.candidates]);
 
   // Countdown timer
   useEffect(() => {
@@ -44,25 +62,6 @@ export default function VotingPhase({
     return () => clearInterval(id);
   }, [round.endsAt, round.startedAt]);
 
-  // Poll the round to keep vote counts up to date
-  const fetchRound = useCallback(async () => {
-    try {
-      const updated = await apiService.get<VotingRound>(
-        `/sessions/${sessionId}/votingRounds/${round.id}`
-      );
-      setCandidates(updated.candidates);
-      if (updated.status === "CLOSED") {
-        onRoundClosed();
-      }
-    } catch {
-      // silently ignore poll errors
-    }
-  }, [sessionId, round.id, apiService, onRoundClosed]);
-
-  useEffect(() => {
-    const id = setInterval(fetchRound, POLL_INTERVAL_MS);
-    return () => clearInterval(id);
-  }, [fetchRound]);
 
   const handleVote = async (song: Song) => {
     setVoting(true);
@@ -80,7 +79,8 @@ export default function VotingPhase({
         setHasVoted(true);
         setVotedSongId(song.id);
       } else if (status === 410) {
-        onRoundClosed();
+        setWinner(candidates[0] ?? null);
+        setTimeout(() => onRoundClosed(), WINNER_DISPLAY_MS);
       } else {
         setError("Could not cast vote. Please try again.");
       }
@@ -92,6 +92,65 @@ export default function VotingPhase({
   const maxVotes = Math.max(...candidates.map((s) => s.currentVoteCount ?? 0), 1);
   const timerPercent = secondsLeft !== null && totalSeconds ? (secondsLeft / totalSeconds) * 100 : 0;
   const timerColor = secondsLeft !== null && secondsLeft <= 10 ? "#FF2D7E" : "#00C2FF";
+
+  // Winner screen
+  if (winner) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(13, 13, 26, 0.98)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          padding: 24,
+        }}
+      >
+        <Text style={{ color: "#FFD700", fontSize: 18, letterSpacing: "0.15em", marginBottom: 16 }}>
+          🏆 WINNER
+        </Text>
+        <Title level={1} style={{ color: "#FFFFFF", textAlign: "center", marginBottom: 24 }}>
+          Next up...
+        </Title>
+
+        <div
+          style={{
+            background: "linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)",
+            borderRadius: 16,
+            padding: 32,
+            textAlign: "center",
+            maxWidth: 400,
+            width: "100%",
+            boxShadow: "0 0 60px rgba(255, 45, 126, 0.4)",
+          }}
+        >
+          {winner.albumArt && (
+            <Image
+              src={winner.albumArt}
+              alt="album art"
+              width={120}
+              height={120}
+              style={{ borderRadius: 8, marginBottom: 16 }}
+            />
+          )}
+          <Title level={2} style={{ color: "#FFFFFF", margin: 0 }}>
+            {winner.title}
+          </Title>
+          <Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 16 }}>
+            {winner.artist}
+          </Text>
+          <div style={{ marginTop: 16 }}>
+            <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
+              {winner.currentVoteCount ?? 0} votes
+            </Text>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
