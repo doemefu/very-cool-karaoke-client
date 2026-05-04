@@ -16,7 +16,7 @@ const EMOJIS: { emoji: string; type: ReactionType }[] = [
 interface FloatingReaction {
   id: number;
   emoji: string;
-  x: number;
+  top: number;
 }
 
 interface ReactionBarProps {
@@ -26,11 +26,16 @@ interface ReactionBarProps {
 export default function ReactionBar({ sessionId }: ReactionBarProps) {
   const [floating, setFloating] = useState<FloatingReaction[]>([]);
   const nextId = useRef(0);
+  const buttonRefs = useRef<Map<ReactionType, HTMLElement>>(new Map());
 
   const handleIncoming = useCallback((reaction: Reaction) => {
     const emoji = EMOJIS.find(e => e.type === reaction.type)?.emoji ?? "✨";
+    const buttonEl = buttonRefs.current.get(reaction.type);
+    const top = buttonEl
+      ? buttonEl.offsetTop + buttonEl.offsetHeight / 2 - 14
+      : 0;
     const id = nextId.current++;
-    setFloating(prev => [...prev, { id, emoji, x: Math.random() * 80 + 10 }]);
+    setFloating(prev => [...prev, { id, emoji, top }]);
     setTimeout(() => setFloating(prev => prev.filter(r => r.id !== id)), 1500);
   }, []);
 
@@ -49,17 +54,18 @@ export default function ReactionBar({ sessionId }: ReactionBarProps) {
     >
       <div style={{ position: "relative", pointerEvents: "auto" }}>
 
-        {/* Floating animations */}
+        {/* Floating animations — appear to the right of each button */}
         {floating.map(r => (
           <span
             key={r.id}
             style={{
               position: "absolute",
-              bottom: 60,
-              left: `${r.x}%`,
+              top: r.top,
+              left: "calc(100% + 8px)",
               fontSize: 28,
               animation: "floatUp 1.5s ease-out forwards",
               pointerEvents: "none",
+              whiteSpace: "nowrap",
             }}
           >
             {r.emoji}
@@ -71,6 +77,9 @@ export default function ReactionBar({ sessionId }: ReactionBarProps) {
           {EMOJIS.map(({ emoji, type }) => (
             <Button
               key={type}
+              ref={(el) => {
+                if (el) buttonRefs.current.set(type, el as unknown as HTMLElement);
+              }}
               className="reaction-btn"
               onClick={() => sendReaction(type)}
               style={{

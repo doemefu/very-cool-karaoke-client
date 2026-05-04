@@ -95,12 +95,14 @@ reason).
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #39 Implement Spotify OAuth PKCE flow for host authentication                  | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #40 Initialize Spotify Web Playback SDK and register as Spotify Connect device | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/53/changes  | #41 Trigger Spotify playback from queue and handle track transitions           | major         |
-| **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/108/commits | #69 Implement Voting Round Creation Logic   | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/108/commits | #96 Implement Voting Round Creation Logic   | major    |
 | **[@lurisz33](https://github.com/lurisz33)**      | 25.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/95/commits  | #33 Implement DELETE /sessions/{id}/playlist/{songId} endpoint (admin only)   | major    |
 | **[@doemefu](https://github.com/doemefu)**        | 24.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/81        | [BE] Prepare Milestone 3 deliverables #81          | critical                            |
 | **[@doemefu](https://github.com/doemefu)**        | 23.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/106         | [BE] Adjust google deployment type to fullfill requirements         | critical                            |
 | **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/56/changes  | #21 fe show live vote counts per song during voting | Major  |
 | **[@Spring987](https://github.com/Spring987)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/57/changes  | #22 fe display history dashboard with created and joined sessions | Major  |
+| **[@Unick1](https://github.com/Unick1)**     | 20.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/87/changes  | #48 broadcast lyrics text via websocket when the song starts playing | Major  |
+| **[@Unick1](https://github.com/Unick1)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/89/commits  | Rest implementation to send messages instantly upon joining #89 | Major  |
 ---
 
 ## Contributions Week 5 - 27.04.2026 to 04.05.2026
@@ -108,7 +110,16 @@ reason).
 | **Student**                                       | **Date**   | **Link to Commit**                                                  | **Description**                                               | **Relevance** |
 |---------------------------------------------------|------------|---------------------------------------------------------------------|---------------------------------------------------------------|---------------|
 | **[@Spring987](https://github.com/Spring987)**    | 30.04.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/64/changes | #17-fe-show-remove-song-button-on-playlist-items-for-admin    | major         |
+| **[@Spring987](https://github.com/Spring987)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/67/changes| #30-fe-announce-winning-song-when-voting-round-closes | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/65         | #16-fe-show-mandatory-song-selection-step-during-session-join | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 02.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/44         | #29-fe-display-animated-emoji-reactions-on-screen             | major         |
+| **[@Unick1](https://github.com/Unick1)**    | 01.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/109/commits        | [BE] Implement reaction message handler: receive and broadcast emoji to session #35             | major         |
+| **[@Unick1](https://github.com/Unick1)**    | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/110/commits         | #52 Implement GET /sessions/{id}/review endpoint       | Major         |
+| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/111   | [BE] Integrate Spotify Recommendations API for no-lyrics fallback #68  | minor                            |
+| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/111  | [BE] Implement GET /songs/{id}/recommendations endpoint #69 | minor                            |
+| **[@lurisz33](https://github.com/lurisz33)**      | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/112/commits | #99 Implement Automated Trigger for Voting Rounds   | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/112/commits | #38 Implement voting resolution: winner selection, tie-breaking, and auto-close   | major    |
+
 ---
 
 

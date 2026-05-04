@@ -5,10 +5,16 @@ import { Client } from "@stomp/stompjs";
 import { getApiDomain } from "@/utils/domain";
 import SockJS from "sockjs-client";
 
-const StompContext = createContext<Client | null>(null);
+interface StompContextValue {
+  client: Client | null;
+  connected: boolean;
+}
+
+const StompContext = createContext<StompContextValue>({ client: null, connected: false });
 
 export function StompProvider({ children }: { children: ReactNode }) {
   const [client, setClient] = useState<Client | null>(null);
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     let token = "";
@@ -19,6 +25,8 @@ export function StompProvider({ children }: { children: ReactNode }) {
       webSocketFactory: () => new SockJS(`${getApiDomain()}/ws`),
       connectHeaders: { token },
       reconnectDelay: 5000,
+      onConnect: () => setConnected(true),
+      onDisconnect: () => setConnected(false),
       onStompError: (frame) => console.error("STOMP error", frame),
       onWebSocketError: (event) => console.error("WebSocket error", event),
     });
@@ -30,12 +38,12 @@ export function StompProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <StompContext.Provider value={client}>
+    <StompContext.Provider value={{ client, connected }}>
       {children}
     </StompContext.Provider>
   );
 }
 
-export function useStomp(): Client | null {
+export function useStomp(): StompContextValue {
   return useContext(StompContext);
 }
