@@ -102,6 +102,7 @@ export default function ChangePassword() {
               <Alert
                 type="error"
                 description={error}
+                closable
                 style={{ marginBottom: 24 }}
               />
             )}

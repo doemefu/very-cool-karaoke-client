@@ -195,7 +195,7 @@ export default function VotingPhase({
             </Text>
           )}
           {error && (
-            <Alert type="error" title={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
+            <Alert type="error" title={error} showIcon closable style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
           )}
         </div>
 

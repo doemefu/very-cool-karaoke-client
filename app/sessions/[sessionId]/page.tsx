@@ -201,7 +201,7 @@ export default function SessionPage() {
                 type="error"
                 description={error}
                 closable
-                style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#2a0a2e", border: "1px solid #FF2D7E", color: "#fff" }}
+                style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#391b2c" }}
               />
             )}
             <div
