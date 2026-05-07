@@ -12,12 +12,12 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
-import { Session } from "@/types/session";
+import { Session, SessionStatus } from "@/types/session";
 import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
-import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { Layout, Button, Typography, Tooltip, Badge, Alert, Space, Popconfirm } from "antd";
+import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined, PauseCircleOutlined, PlayCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -33,6 +33,7 @@ export default function SessionPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [gamePin, setGamePin] = useState<string>("");
   const [playerActivated, setPlayerActivated] = useState(false);
+  const [sessionStatus, setSessionStatus] = useState<SessionStatus>("CREATED");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -40,8 +41,43 @@ export default function SessionPage() {
     apiService.get<Session>(`/sessions/${sessionId}`).then((session) => {
       setIsAdmin(String(session.admin?.id) === String(userId));
       setGamePin(session.gamePin ?? "");
+      if (session.status) setSessionStatus(session.status);
+      if (session.status === "ACTIVE" || session.status === "PAUSED") {
+        setPlayerActivated(true);
+      }
     }).catch(() => {/* silently ignore */});
   }, [apiService, sessionId, userId]);
+
+  const handleStart = async () => {
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: "ACTIVE" });
+      setSessionStatus("ACTIVE");
+      setPlayerActivated(true);
+      refresh();
+    } catch {
+      setError("Could not start the session. Please try again.");
+    }
+  };
+
+  const handlePauseResume = async () => {
+    const newStatus: SessionStatus = sessionStatus === "PAUSED" ? "ACTIVE" : "PAUSED";
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: newStatus });
+      setSessionStatus(newStatus);
+    } catch {
+      setError("Could not update session status. Please try again.");
+    }
+  };
+
+  const handleEndSession = async () => {
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
+      clearSessionId();
+      router.push("/dashboard");
+    } catch {
+      setError("Could not end the session. Please try again.");
+    }
+  };
 
   const {
     currentSong,
@@ -54,18 +90,6 @@ export default function SessionPage() {
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
 
   const { openRound, clearRound } = useVotingRound(sessionId);
-  // test data for winner screen development
-  // const openRound = {
-  //   id: 1,
-  //   roundNumber: 1,
-  //   status: "CLOSED" as const,
-  //   startedAt: new Date().toISOString(),
-  //   endsAt: new Date(Date.now() - 1000).toISOString(),
-  //   candidates: [
-  //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
-  //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
-  //   ],
-  // };
 
   const handleLeaveSession = async () => {
     setError("");
@@ -147,47 +171,51 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* Right: playback controls + add song */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {isAdmin && !playerActivated && (
-            <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
-              <Button
-                type="primary"
-                disabled={queue.length === 0}
-                style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                onClick={() => {
-                  setPlayerActivated(true);
-                  refresh();
-                }}
+        {/* Right: session controls (admin only) */}
+        {isAdmin && (
+          <Space size={8}>
+            {sessionStatus === "CREATED" && (
+              <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
+                <Button
+                  type="primary"
+                  disabled={queue.length === 0}
+                  style={{ background: "#1DB954", borderColor: "#1DB954" }}
+                  onClick={handleStart}
+                >
+                  Start
+                </Button>
+              </Tooltip>
+            )}
+            {(sessionStatus === "ACTIVE" || sessionStatus === "PAUSED") && (
+              <Tooltip title={sessionStatus === "PAUSED" ? "Resume" : "Pause"}>
+                <Button
+                  type="text"
+                  icon={sessionStatus === "PAUSED" ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+                  onClick={handlePauseResume}
+                  style={{ color: "#FFFFFF", fontSize: 20 }}
+                />
+              </Tooltip>
+            )}
+            {(sessionStatus === "ACTIVE" || sessionStatus === "PAUSED") && (
+              <Popconfirm
+                title="End Session"
+                description="Are you sure you want to end this session?"
+                onConfirm={handleEndSession}
+                okText="Yes"
+                cancelText="No"
               >
-                Play Now
-              </Button>
-            </Tooltip>
-          )}
-          {isAdmin && playerActivated && (
-            <Tooltip title={displayQueue.length === 0 ? "No songs in queue" : ""}>
-              <Button
-                type="primary"
-                style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                disabled={displayQueue.length === 0}
-                onClick={() => {
-                  apiService
-                    .post(`/sessions/${sessionId}/songs/next`, {})
-                    .catch(console.error);
-                }}
-              >
-                Skip
-              </Button>
-            </Tooltip>
-          )}
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setSearchDrawerOpen(true)}
-          >
-            Add Song
-          </Button>
-        </div>
+                <Tooltip title="End Session">
+                  <Button
+                    type="text"
+                    danger
+                    icon={<PoweroffOutlined />}
+                    style={{ fontSize: 20 }}
+                  />
+                </Tooltip>
+              </Popconfirm>
+            )}
+          </Space>
+        )}
       </Header>
 
       {/* Main content */}
@@ -236,6 +264,28 @@ export default function SessionPage() {
             <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
               Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
             </Text>
+            <Space size={8}>
+              {isAdmin && sessionStatus === "ACTIVE" && (
+                <Tooltip title={displayQueue.length === 0 ? "No songs in queue" : "Skip"}>
+                  <Button
+                    size="small"
+                    disabled={displayQueue.length === 0}
+                    style={{ background: "#1DB954", borderColor: "#1DB954", color: "#fff" }}
+                    onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
+                  >
+                    Skip
+                  </Button>
+                </Tooltip>
+              )}
+              <Button
+                size="small"
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => setSearchDrawerOpen(true)}
+              >
+                Add Song
+              </Button>
+            </Space>
           </div>
 
           {currentSong && (
@@ -322,6 +372,7 @@ export default function SessionPage() {
         currentSong={currentSong}
         isAdmin={isAdmin}
         isActive={playerActivated}
+        isPaused={sessionStatus === "PAUSED"}
         onTrackEnd={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
       />
 

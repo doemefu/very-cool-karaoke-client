@@ -13,15 +13,17 @@ interface Props {
   currentSong: Song | null;
   isAdmin: boolean;
   isActive: boolean;
+  isPaused: boolean;
   onTrackEnd: () => void;
 }
 
 const PLAYER_ID = "yt-player-hidden";
 
-export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackEnd }: Props) {
+export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused, onTrackEnd }: Props) {
   const playerRef = useRef<YT.Player | null>(null);
   const playerReadyRef = useRef(false);
   const pendingVideoIdRef = useRef<string | null>(null);
+  const lastPlayedSongIdRef = useRef<number | null>(null);
   const onTrackEndRef = useRef(onTrackEnd);
   onTrackEndRef.current = onTrackEnd;
 
@@ -74,6 +76,8 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
   // Search YouTube and play when song changes
   useEffect(() => {
     if (!isAdmin || !isActive || !ytReady || !currentSong) return;
+    if (currentSong.id === lastPlayedSongIdRef.current) return;
+    lastPlayedSongIdRef.current = currentSong.id;
 
     const searchAndPlay = async () => {
       const query = encodeURIComponent(`${currentSong.artist} ${currentSong.title}`);
@@ -99,6 +103,16 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
 
     searchAndPlay();
   }, [currentSong, isAdmin, isActive, ytReady]);
+
+  // Pause / resume when session status changes
+  useEffect(() => {
+    if (!playerReadyRef.current || !playerRef.current) return;
+    if (isPaused) {
+      playerRef.current.pauseVideo();
+    } else {
+      playerRef.current.playVideo();
+    }
+  }, [isPaused]);
 
   // Destroy player on unmount
   useEffect(() => {
