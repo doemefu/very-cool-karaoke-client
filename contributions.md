@@ -105,7 +105,7 @@ reason).
 | **[@Unick1](https://github.com/Unick1)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/89/commits  | Rest implementation to send messages instantly upon joining #89 | Major  |
 ---
 
-## Contributions Week 5 - 27.04.2026 to 04.05.2026
+## Contributions Week 5 - 27.04.2026 to 03.05.2026
 
 | **Student**                                       | **Date**   | **Link to Commit**                                                  | **Description**                                               | **Relevance** |
 |---------------------------------------------------|------------|---------------------------------------------------------------------|---------------------------------------------------------------|---------------|
@@ -119,12 +119,12 @@ reason).
 | **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/111  | [BE] Implement GET /songs/{id}/recommendations endpoint #69 | minor                            |
 | **[@lurisz33](https://github.com/lurisz33)**      | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/112/commits | #99 Implement Automated Trigger for Voting Rounds   | major    |
 | **[@lurisz33](https://github.com/lurisz33)**      | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/112/commits | #38 Implement voting resolution: winner selection, tie-breaking, and auto-close   | major    |
-
 ---
 
+## Contributions Week 6 - 04.05.2026 to 11.05.2026
 
+| **Student**                                       | **Date**   | **Link to Commit**                                          | **Description**                                                       | **Relevance** |
+|---------------------------------------------------|------------|-------------------------------------------------------------|-----------------------------------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/75 | #71 check if session is in voting round or not if somebody joins      | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/76 | #73 Create Sesssion Lobby, when Admin has not yet started the session | major         |
 ---
-
-## Contributions Week 6 - [Begin Date] to [End Date]
-
-_Continue with the same table format as above._
