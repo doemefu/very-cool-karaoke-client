@@ -127,4 +127,6 @@ reason).
 |---------------------------------------------------|------------|-------------------------------------------------------------|-----------------------------------------------------------------------|---------------|
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/75 | #71 check if session is in voting round or not if somebody joins      | major         |
 | **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/76 | #73 Create Sesssion Lobby, when Admin has not yet started the session | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/116 | #115 Implement Broadcast Real-Time Vote Counts to Frontend on Vote Cast   | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/120 | #119 Implement GET /sessions/{sessionId}/votingRounds   | major    |
 ---
