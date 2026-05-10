@@ -78,10 +78,6 @@ export default function SessionPage() {
     setStartingSession(true);
     try {
       await apiService.put(`/sessions/${sessionId}`, { status: "ACTIVE" });
-      if (queue.length > 0) {
-        await apiService.post(`/sessions/${sessionId}/songs/next`, {});
-        setPlayerActivated(true);
-      }
     } catch {
       setError("Could not start the session. Please try again.");
     } finally {
