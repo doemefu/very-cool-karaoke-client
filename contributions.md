@@ -131,4 +131,7 @@ reason).
 | **[@lurisz33](https://github.com/lurisz33)**      | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/120 | #119 Implement GET /sessions/{sessionId}/votingRounds   | major    |
 | **[@Spring987](https://github.com/Spring987)**    | 07.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/72/changes | #68-fe-display-singer-username-in-song-queue   | Beta Testing /Tutor Feedback     |
 | **[@Spring987](https://github.com/Spring987)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/77/changes| #15-fe-add-start-pause-and-end-session-controls-for-admin | major         |
+| **[@Unick1](https://github.com/Unick1)**   | 09.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/117/commits | #42 functionality to track the played songs | optional         |
+| **[@Unick1](https://github.com/Unick1)**   | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/commits | Implement SessionWebSocketPublisherImpl and update session service | major  |
+
 ---
