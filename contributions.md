@@ -133,5 +133,6 @@ reason).
 | **[@Spring987](https://github.com/Spring987)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/77/changes| #15-fe-add-start-pause-and-end-session-controls-for-admin | major         |
 | **[@Unick1](https://github.com/Unick1)**   | 09.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/117/commits | #42 functionality to track the played songs | optional         |
 | **[@Unick1](https://github.com/Unick1)**   | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/commits | Implement SessionWebSocketPublisherImpl and update session service | major  |
+| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | refer to week 3 plus work  |- | -                            |
 
 ---
