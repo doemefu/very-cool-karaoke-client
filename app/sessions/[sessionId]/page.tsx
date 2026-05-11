@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
 import { useVotingRound } from "@/hooks/useVotingRound";
+import { useSessionStatus } from "@/hooks/useSessionStatus";
 import { useApi } from "@/hooks/useApi";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import VotingPhase from "../../components/VotingPhase";
@@ -12,15 +13,28 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
-import { Session } from "@/types/session";
 import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
-import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Layout,
+  Button,
+  Typography,
+  Tooltip,
+  Badge,
+  Alert,
+  Spin,
+  Avatar,
+} from "antd";
+import {
+  ArrowLeftOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 
 const { Header, Content } = Layout;
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 export default function SessionPage() {
   const router = useRouter();
@@ -30,42 +44,17 @@ export default function SessionPage() {
   const { clear: clearSessionId } = useLocalStorage<string>("sessionId", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [gamePin, setGamePin] = useState<string>("");
   const [playerActivated, setPlayerActivated] = useState(false);
   const [error, setError] = useState("");
+  const [startingSession, setStartingSession] = useState(false);
 
-  useEffect(() => {
-    if (!sessionId || !userId) return;
-    apiService.get<Session>(`/sessions/${sessionId}`).then((session) => {
-      setIsAdmin(String(session.admin?.id) === String(userId));
-      setGamePin(session.gamePin ?? "");
-    }).catch(() => {/* silently ignore */});
-  }, [apiService, sessionId, userId]);
+  const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
+    useSessionStatus(sessionId, userId);
 
-  const {
-    currentSong,
-    isLoading,
-    fetchError,
-    refresh
-  } = useLyrics(sessionId);
-
+  const { currentSong, isLoading, fetchError, refresh } = useLyrics(sessionId);
   const { queue } = useSongQueue(sessionId);
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
-
   const { openRound, clearRound } = useVotingRound(sessionId);
-  // test data for winner screen development
-  // const openRound = {
-  //   id: 1,
-  //   roundNumber: 1,
-  //   status: "CLOSED" as const,
-  //   startedAt: new Date().toISOString(),
-  //   endsAt: new Date(Date.now() - 1000).toISOString(),
-  //   candidates: [
-  //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
-  //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
-  //   ],
-  // };
 
   const handleLeaveSession = async () => {
     setError("");
@@ -74,8 +63,8 @@ export default function SessionPage() {
       clearSessionId();
       router.push("/dashboard");
     } catch (err) {
-      const status = (err as ApplicationError).status;
-      if (status === 404) {
+      const appError = err as ApplicationError;
+      if (appError.status === 404) {
         clearSessionId();
         router.push("/dashboard");
       } else {
@@ -84,10 +73,284 @@ export default function SessionPage() {
     }
   };
 
+  const handleStartSession = async () => {
+    setError("");
+    setStartingSession(true);
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: "ACTIVE" });
+      if (queue.length > 0) {
+        await apiService.post(`/sessions/${sessionId}/songs/next`, {});
+      }
+    } catch {
+      setError("Could not start the session. Please try again.");
+    } finally {
+      setStartingSession(false);
+    }
+  };
+
   if (openRound) {
-    return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
+    return (
+      <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />
+    );
   }
 
+  // ── Loading state ────────────────────────────────────────────────────────────
+  if (sessionLoading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#0D0D1A",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // ── Waiting Lobby (status === "CREATED") ─────────────────────────────────────
+  if (status === "CREATED") {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#0D0D1A",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            background: "rgba(13, 13, 26, 0.97)",
+            borderBottom: "1px solid rgba(255, 45, 126, 0.20)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 24px",
+            height: 56,
+          }}
+        >
+          <Button
+            type="text"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            style={{ color: "#FFFFFF" }}
+          >
+            Back to Dashboard
+          </Button>
+
+          {gamePin && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
+              <Text
+                style={{
+                  color: "#FF2D7E",
+                  fontWeight: 700,
+                  fontSize: 20,
+                  letterSpacing: "0.18em",
+                }}
+              >
+                {gamePin}
+              </Text>
+            </div>
+          )}
+
+          <div style={{ width: 160 }} />
+        </div>
+
+        {/* Lobby content */}
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "40px 24px",
+            gap: 40,
+          }}
+        >
+          {/* Title */}
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                fontSize: 48,
+                marginBottom: 12,
+                filter: "drop-shadow(0 0 20px rgba(255, 45, 126, 0.5))",
+              }}
+            >
+              🎤
+            </div>
+            <Title
+              level={2}
+              style={{
+                color: "#FFFFFF",
+                margin: 0,
+                fontSize: 28,
+                fontWeight: 700,
+              }}
+            >
+              {sessionName || "Karaoke Session"}
+            </Title>
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.45)",
+                fontSize: 15,
+                display: "block",
+                marginTop: 8,
+              }}
+            >
+              {isAdmin
+                ? "Everyone ready? Let's get this party started!"
+                : "Waiting for the party to begin..."}
+            </Text>
+          </div>
+
+          {/* PIN card */}
+          {gamePin && (
+            <div
+              style={{
+                background: "rgba(255, 45, 126, 0.08)",
+                border: "1px solid rgba(255, 45, 126, 0.30)",
+                borderRadius: 12,
+                padding: "16px 40px",
+                textAlign: "center",
+              }}
+            >
+              <Text
+                style={{
+                  color: "rgba(255,255,255,0.45)",
+                  fontSize: 11,
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
+                  display: "block",
+                  marginBottom: 4,
+                }}
+              >
+                Join with PIN
+              </Text>
+              <Text
+                style={{
+                  color: "#FF2D7E",
+                  fontSize: 34,
+                  fontWeight: 800,
+                  letterSpacing: "0.22em",
+                }}
+              >
+                {gamePin}
+              </Text>
+            </div>
+          )}
+
+          {/* Participants list */}
+          <div
+            style={{
+              background: "rgba(255, 255, 255, 0.03)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: 12,
+              padding: "16px 24px",
+              width: "100%",
+              maxWidth: 400,
+            }}
+          >
+            <Text
+              style={{
+                color: "rgba(255,255,255,0.6)",
+                fontSize: 12,
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                display: "block",
+                marginBottom: 12,
+              }}
+            >
+              Teilnehmer{" "}
+              <Badge
+                count={participants.length}
+                style={{ backgroundColor: "#FF2D7E" }}
+              />
+            </Text>
+            {participants.length === 0 ? (
+              <Text style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
+                No participants yet...
+              </Text>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {participants.map((p) => (
+                  <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <Avatar
+                      size={30}
+                      icon={<UserOutlined />}
+                      style={{ background: "rgba(255, 45, 126, 0.3)", flexShrink: 0 }}
+                    />
+                    <Text style={{ color: "#FFFFFF", fontSize: 14 }}>{p.username}</Text>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Error message */}
+          {error && (
+            <Alert
+              type="error"
+              description={error}
+              closable
+              style={{ maxWidth: 400, width: "100%" }}
+            />
+          )}
+
+          {/* Start button (admin only) */}
+          {isAdmin && (
+            <Button
+              type="primary"
+              size="large"
+              loading={startingSession}
+              onClick={handleStartSession}
+              style={{ height: 56, fontSize: 18, fontWeight: 600 }}
+            >
+              🎉 Start the Party
+            </Button>
+          )}
+
+          {/* Pulsing dots + label for guests waiting */}
+          {!isAdmin && (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: "50%",
+                      background: "#FF2D7E",
+                      animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite`,
+                      opacity: 0.7,
+                    }}
+                  />
+                ))}
+                <style>{`
+                  @keyframes pulse {
+                    0%, 100% { transform: scale(1); opacity: 0.4; }
+                    50% { transform: scale(1.4); opacity: 1; }
+                  }
+                `}</style>
+              </div>
+              <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>
+                Waiting for the Admin to start the Party...
+              </Text>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── Main Session View (ACTIVE / PAUSED) ──────────────────────────────────────
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
 
