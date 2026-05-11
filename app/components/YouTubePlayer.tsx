@@ -13,12 +13,13 @@ interface Props {
   currentSong: Song | null;
   isAdmin: boolean;
   isActive: boolean;
+  isPaused: boolean;
   onTrackEnd: () => void;
 }
 
 const PLAYER_ID = "yt-player-hidden";
 
-export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackEnd }: Props) {
+export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused, onTrackEnd }: Props) {
   const playerRef = useRef<YT.Player | null>(null);
   const playerReadyRef = useRef(false);
   const pendingVideoIdRef = useRef<string | null>(null);
@@ -103,6 +104,16 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
 
     searchAndPlay();
   }, [currentSong, isAdmin, isActive, ytReady]);
+
+  // Pause / resume based on session status
+  useEffect(() => {
+    if (!playerReadyRef.current || !playerRef.current) return;
+    if (isPaused) {
+      playerRef.current.pauseVideo();
+    } else if (isActive) {
+      playerRef.current.playVideo();
+    }
+  }, [isPaused, isActive]);
 
   // Destroy player on unmount
   useEffect(() => {

@@ -16,22 +16,8 @@ import { Song } from "@/types/song";
 import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import Image from "next/image";
-import {
-  Layout,
-  Button,
-  Typography,
-  Tooltip,
-  Badge,
-  Alert,
-  Spin,
-  Avatar,
-} from "antd";
-import {
-  ArrowLeftOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { Layout, Button, Typography, Tooltip, Badge, Alert, Spin, Avatar, Space, Popconfirm } from "antd";
+import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined, UserOutlined, PauseCircleOutlined, PlayCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text, Title } = Typography;
@@ -44,12 +30,30 @@ export default function SessionPage() {
   const { clear: clearSessionId } = useLocalStorage<string>("sessionId", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
-  const [playerActivated, setPlayerActivated] = useState(false);
   const [error, setError] = useState("");
   const [startingSession, setStartingSession] = useState(false);
 
   const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
     useSessionStatus(sessionId, userId);
+
+  const handlePauseResume = async () => {
+    const newStatus = status === "PAUSED" ? "ACTIVE" : "PAUSED";
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: newStatus });
+    } catch {
+      setError("Could not update session status. Please try again.");
+    }
+  };
+
+  const handleEndSession = async () => {
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
+      clearSessionId();
+      router.push("/dashboard");
+    } catch {
+      setError("Could not end the session. Please try again.");
+    }
+  };
 
   const { currentSong, isLoading, fetchError, refresh } = useLyrics(sessionId);
   const { queue } = useSongQueue(sessionId);
@@ -87,7 +91,6 @@ export default function SessionPage() {
 
   const handleRoundClosed = () => {
     clearRound();
-    setPlayerActivated(true);
     refresh();
   };
 
@@ -100,15 +103,7 @@ export default function SessionPage() {
   // ── Loading state ────────────────────────────────────────────────────────────
   if (sessionLoading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#0D0D1A",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <div style={{ minHeight: "100vh", background: "#0D0D1A", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Spin size="large" />
       </div>
     );
@@ -117,15 +112,7 @@ export default function SessionPage() {
   // ── Waiting Lobby (status === "CREATED") ─────────────────────────────────────
   if (status === "CREATED") {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: "#0D0D1A",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {/* Header */}
+      <div style={{ minHeight: "100vh", background: "#0D0D1A", display: "flex", flexDirection: "column" }}>
         <div
           style={{
             background: "rgba(13, 13, 26, 0.97)",
@@ -145,150 +132,53 @@ export default function SessionPage() {
           >
             Back to Dashboard
           </Button>
-
           {gamePin && (
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
-              <Text
-                style={{
-                  color: "#FF2D7E",
-                  fontWeight: 700,
-                  fontSize: 20,
-                  letterSpacing: "0.18em",
-                }}
-              >
+              <Text style={{ color: "#FF2D7E", fontWeight: 700, fontSize: 20, letterSpacing: "0.18em" }}>
                 {gamePin}
               </Text>
             </div>
           )}
-
           <div style={{ width: 160 }} />
         </div>
 
-        {/* Lobby content */}
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: "40px 24px",
-            gap: 40,
-          }}
-        >
-          {/* Title */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", gap: 40 }}>
           <div style={{ textAlign: "center" }}>
-            <div
-              style={{
-                fontSize: 48,
-                marginBottom: 12,
-                filter: "drop-shadow(0 0 20px rgba(255, 45, 126, 0.5))",
-              }}
-            >
+            <div style={{ fontSize: 48, marginBottom: 12, filter: "drop-shadow(0 0 20px rgba(255, 45, 126, 0.5))" }}>
               🎤
             </div>
-            <Title
-              level={2}
-              style={{
-                color: "#FFFFFF",
-                margin: 0,
-                fontSize: 28,
-                fontWeight: 700,
-              }}
-            >
+            <Title level={2} style={{ color: "#FFFFFF", margin: 0, fontSize: 28, fontWeight: 700 }}>
               {sessionName || "Karaoke Session"}
             </Title>
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.45)",
-                fontSize: 15,
-                display: "block",
-                marginTop: 8,
-              }}
-            >
-              {isAdmin
-                ? "Everyone ready? Let's get this party started!"
-                : "Waiting for the party to begin..."}
+            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 15, display: "block", marginTop: 8 }}>
+              {isAdmin ? "Everyone ready? Let's get this party started!" : "Waiting for the party to begin..."}
             </Text>
           </div>
 
-          {/* PIN card */}
           {gamePin && (
-            <div
-              style={{
-                background: "rgba(255, 45, 126, 0.08)",
-                border: "1px solid rgba(255, 45, 126, 0.30)",
-                borderRadius: 12,
-                padding: "16px 40px",
-                textAlign: "center",
-              }}
-            >
-              <Text
-                style={{
-                  color: "rgba(255,255,255,0.45)",
-                  fontSize: 11,
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  display: "block",
-                  marginBottom: 4,
-                }}
-              >
+            <div style={{ background: "rgba(255, 45, 126, 0.08)", border: "1px solid rgba(255, 45, 126, 0.30)", borderRadius: 12, padding: "16px 40px", textAlign: "center" }}>
+              <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
                 Join with PIN
               </Text>
-              <Text
-                style={{
-                  color: "#FF2D7E",
-                  fontSize: 34,
-                  fontWeight: 800,
-                  letterSpacing: "0.22em",
-                }}
-              >
+              <Text style={{ color: "#FF2D7E", fontSize: 34, fontWeight: 800, letterSpacing: "0.22em" }}>
                 {gamePin}
               </Text>
             </div>
           )}
 
-          {/* Participants list */}
-          <div
-            style={{
-              background: "rgba(255, 255, 255, 0.03)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: 12,
-              padding: "16px 24px",
-              width: "100%",
-              maxWidth: 400,
-            }}
-          >
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.6)",
-                fontSize: 12,
-                letterSpacing: "0.1em",
-                textTransform: "uppercase",
-                display: "block",
-                marginBottom: 12,
-              }}
-            >
+          <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: 12, padding: "16px 24px", width: "100%", maxWidth: 400 }}>
+            <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: 12 }}>
               Teilnehmer{" "}
-              <Badge
-                count={participants.length}
-                style={{ backgroundColor: "#FF2D7E" }}
-              />
+              <Badge count={participants.length} style={{ backgroundColor: "#FF2D7E" }} />
             </Text>
             {participants.length === 0 ? (
-              <Text style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>
-                No participants yet...
-              </Text>
+              <Text style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>No participants yet...</Text>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {participants.map((p) => (
                   <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <Avatar
-                      size={30}
-                      icon={<UserOutlined />}
-                      style={{ background: "rgba(255, 45, 126, 0.3)", flexShrink: 0 }}
-                    />
+                    <Avatar size={30} icon={<UserOutlined />} style={{ background: "rgba(255, 45, 126, 0.3)", flexShrink: 0 }} />
                     <Text style={{ color: "#FFFFFF", fontSize: 14 }}>{p.username}</Text>
                   </div>
                 ))}
@@ -296,30 +186,16 @@ export default function SessionPage() {
             )}
           </div>
 
-          {/* Error message */}
           {error && (
-            <Alert
-              type="error"
-              description={error}
-              closable
-              style={{ maxWidth: 400, width: "100%" }}
-            />
+            <Alert type="error" description={error} closable style={{ maxWidth: 400, width: "100%" }} />
           )}
 
-          {/* Start button (admin only) */}
           {isAdmin && (
-            <Button
-              type="primary"
-              size="large"
-              loading={startingSession}
-              onClick={handleStartSession}
-              style={{ height: 56, fontSize: 18, fontWeight: 600 }}
-            >
+            <Button type="primary" size="large" loading={startingSession} onClick={handleStartSession} style={{ height: 56, fontSize: 18, fontWeight: 600 }}>
               🎉 Start the Party
             </Button>
           )}
 
-          {/* Pulsing dots + label for guests waiting */}
           {!isAdmin && (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -327,12 +203,8 @@ export default function SessionPage() {
                   <div
                     key={i}
                     style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background: "#FF2D7E",
-                      animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite`,
-                      opacity: 0.7,
+                      width: 8, height: 8, borderRadius: "50%", background: "#FF2D7E",
+                      animation: `pulse 1.4s ease-in-out ${i * 0.2}s infinite`, opacity: 0.7,
                     }}
                   />
                 ))}
@@ -357,7 +229,6 @@ export default function SessionPage() {
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
 
-      {/* Header bar */}
       <Header
         style={{
           background: "rgba(13, 13, 26, 0.97)",
@@ -372,7 +243,7 @@ export default function SessionPage() {
           height: 56,
         }}
       >
-        {/* Left: Back to Dashboard + Leave Session */}
+        {/* Left: Back + Leave */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Button
             type="text"
@@ -386,16 +257,7 @@ export default function SessionPage() {
             <Tooltip title="Leave Session">
               <Button
                 onClick={handleLeaveSession}
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(255,80,80,0.4)",
-                  borderRadius: 8,
-                  color: "rgba(255,100,100,0.9)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "0 12px",
-                }}
+                style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.4)", borderRadius: 8, color: "rgba(255,100,100,0.9)", display: "flex", alignItems: "center", gap: 6, padding: "0 12px" }}
               >
                 <span style={{ fontSize: 13 }}>Leave</span>
               </Button>
@@ -403,7 +265,7 @@ export default function SessionPage() {
           )}
         </div>
 
-        {/* Center: Game PIN */}
+        {/* Center: PIN */}
         {gamePin && (
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
@@ -413,76 +275,60 @@ export default function SessionPage() {
           </div>
         )}
 
-        {/* Right: playback controls + add song */}
-        <div style={{ display: "flex", gap: 8 }}>
+        {/* Right: controls */}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {isAdmin && (
-            <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
-              <Button
-                type="primary"
-                disabled={queue.length === 0}
-                style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                onClick={() => {
-                  apiService
-                    .post(`/sessions/${sessionId}/songs/next`, {})
-                    .catch(console.error);
-                }}
+            <Space size={8}>
+              <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
+                <Button
+                  type="primary"
+                  disabled={queue.length === 0}
+                  style={{ background: "#1DB954", borderColor: "#1DB954" }}
+                  onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
+                >
+                  Skip
+                </Button>
+              </Tooltip>
+              <Tooltip title={status === "PAUSED" ? "Resume" : "Pause"}>
+                <Button
+                  type="text"
+                  icon={status === "PAUSED" ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+                  onClick={handlePauseResume}
+                  style={{ color: "#FFFFFF", fontSize: 20 }}
+                />
+              </Tooltip>
+              <Popconfirm
+                title="End Session"
+                description="Are you sure you want to end this session?"
+                onConfirm={handleEndSession}
+                okText="Yes"
+                cancelText="No"
               >
-                Skip Song
-              </Button>
-            </Tooltip>
+                <Tooltip title="End Session">
+                  <Button type="text" danger icon={<PoweroffOutlined />} style={{ fontSize: 20 }} />
+                </Tooltip>
+              </Popconfirm>
+            </Space>
           )}
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setSearchDrawerOpen(true)}
-          >
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
             Add Song
           </Button>
         </div>
       </Header>
 
-      {/* Main content */}
       <Layout style={{ background: "transparent" }}>
-
-        {/* Lyrics */}
         <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px", flex: 1 }}>
           <div style={{ width: "100%", maxWidth: 860 }}>
             {error && (
-              <Alert
-                type="error"
-                description={error}
-                closable
-                style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#391b2c" }}
-              />
+              <Alert type="error" description={error} closable style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#391b2c" }} />
             )}
-            <div
-              style={{
-                background: "rgba(255, 255, 255, 0.04)",
-                border: "1px solid rgba(255, 45, 126, 0.15)",
-                borderRadius: 16,
-                overflow: "hidden",
-                height: "100%",
-              }}
-            >
-              <LyricsDisplay
-                currentSong={currentSong}
-                isLoading={isLoading}
-                fetchError={fetchError}
-              />
+            <div style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 45, 126, 0.15)", borderRadius: 16, overflow: "hidden", height: "100%" }}>
+              <LyricsDisplay currentSong={currentSong} isLoading={isLoading} fetchError={fetchError} />
             </div>
           </div>
         </Content>
 
-        {/* Queue Sidebar */}
-        <Layout.Sider
-          width={320}
-          style={{
-            background: "#1A1A2E",
-            borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
-            padding: 24,
-            overflowY: "auto",
-          }}
-        >
+        <Layout.Sider width={320} style={{ background: "#1A1A2E", borderLeft: "1px solid rgba(255, 255, 255, 0.1)", padding: 24, overflowY: "auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
               Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
@@ -490,18 +336,7 @@ export default function SessionPage() {
           </div>
 
           {currentSong && (
-            <div
-              style={{
-                background: "#0D0D1A",
-                borderRadius: 8,
-                border: "1px solid rgba(255, 45, 126, 0.4)",
-                marginBottom: 8,
-                padding: "10px 12px",
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
+            <div style={{ background: "#0D0D1A", borderRadius: 8, border: "1px solid rgba(255, 45, 126, 0.4)", marginBottom: 8, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}>
               {currentSong.albumArt && (
                 <Image src={currentSong.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
               )}
@@ -520,16 +355,7 @@ export default function SessionPage() {
             displayQueue.map((song: Song) => (
               <div
                 key={song.id}
-                style={{
-                  background: "#0D0D1A",
-                  borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  marginBottom: 8,
-                  padding: "10px 12px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                }}
+                style={{ background: "#0D0D1A", borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)", marginBottom: 8, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}
               >
                 {song.albumArt && (
                   <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
@@ -548,8 +374,7 @@ export default function SessionPage() {
                       icon={<DeleteOutlined />}
                       onClick={() => {
                         setError("");
-                        apiService
-                          .delete(`/sessions/${sessionId}/songs/${song.id}`)
+                        apiService.delete(`/sessions/${sessionId}/songs/${song.id}`)
                           .catch((err: ApplicationError) => {
                             setError(err.message ?? "Could not remove song. Please try again.");
                           });
@@ -562,10 +387,8 @@ export default function SessionPage() {
             ))
           )}
         </Layout.Sider>
-
       </Layout>
 
-      {/* Song Search Drawer */}
       <SongSearchDrawer
         open={searchDrawerOpen}
         onClose={() => setSearchDrawerOpen(false)}
@@ -576,7 +399,8 @@ export default function SessionPage() {
       <YouTubePlayer
         currentSong={currentSong}
         isAdmin={isAdmin}
-        isActive={playerActivated}
+        isActive={status === "ACTIVE" || status === "PAUSED"}
+        isPaused={status === "PAUSED"}
         onTrackEnd={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
       />
 
