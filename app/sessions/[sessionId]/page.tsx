@@ -201,7 +201,7 @@ export default function SessionPage() {
                 type="error"
                 description={error}
                 closable
-                style={{ marginBottom: 16, position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400 }}
+                style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#391b2c" }}
               />
             )}
             <div
@@ -256,7 +256,9 @@ export default function SessionPage() {
               )}
               <div>
                 <div style={{ color: "#FF2D7E", fontSize: 13, fontWeight: 600 }}>{currentSong.title}</div>
-                <div style={{ color: "rgba(255, 45, 126, 0.6)", fontSize: 12 }}>{currentSong.artist}</div>
+                <div style={{ color: "rgba(255, 45, 126, 0.6)", fontSize: 12 }}>
+                  {currentSong.artist}{currentSong.addedBy && <span style={{ marginLeft: 6, opacity: 0.7 }}>· 🎤 {currentSong.addedBy.username}</span>}
+                </div>
               </div>
             </div>
           )}
@@ -283,7 +285,9 @@ export default function SessionPage() {
                 )}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
-                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{song.artist}</div>
+                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+                    {song.artist}{song.addedBy && <span style={{ marginLeft: 6, opacity: 0.7 }}>· 🎤 {song.addedBy.username}</span>}
+                  </div>
                 </div>
                 {isAdmin && (
                   <Tooltip title="Remove song">
