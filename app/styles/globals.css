@@ -69,3 +69,13 @@ a {
 .reaction-btn:active {
   transform: scale(0.9);
 }
+
+.ant-alert-close-icon,
+.ant-alert-close-icon svg {
+  color: #FF2D7E !important;
+}
+
+.ant-alert-close-icon:hover,
+.ant-alert-close-icon:hover svg {
+  color: #6b0030 !important;
+}

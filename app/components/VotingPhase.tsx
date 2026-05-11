@@ -142,7 +142,12 @@ export default function VotingPhase({
           <Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 16 }}>
             {winner.artist}
           </Text>
-          <div style={{ marginTop: 16 }}>
+          {winner.addedBy && (
+            <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, display: "block", marginTop: 12 }}>
+              🎤 {winner.addedBy.username}
+            </Text>
+          )}
+          <div style={{ marginTop: 8 }}>
             <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
               {winner.currentVoteCount ?? 0} votes
             </Text>
@@ -190,7 +195,7 @@ export default function VotingPhase({
             </Text>
           )}
           {error && (
-            <Alert type="error" title={error} showIcon style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
+            <Alert type="error" title={error} showIcon closable style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
           )}
         </div>
 
@@ -223,6 +228,9 @@ export default function VotingPhase({
                     {song.title}
                   </Text>
                   <Text style={{ color: "rgba(255,255,255,0.65)" }}>{song.artist}</Text>
+                  {song.addedBy && (
+                    <Text style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>🎤 {song.addedBy.username}</Text>
+                  )}
                 </div>
 
                 <Progress

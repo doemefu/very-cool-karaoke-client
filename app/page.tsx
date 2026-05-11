@@ -250,6 +250,7 @@ export default function LandingPage() {
               <Alert
                 description={error}
                 type="error"
+                closable
                 style={{ marginBottom: 24 }}
               />
             )}

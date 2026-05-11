@@ -133,6 +133,7 @@ export default function JoinSession() {
                     type="error"
                     description={error}
                     showIcon
+                    closable
                     style={{ marginTop: 16, textAlign: "left" }}
                   />
                 )}

@@ -23,7 +23,7 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
   const playerRef = useRef<YT.Player | null>(null);
   const playerReadyRef = useRef(false);
   const pendingVideoIdRef = useRef<string | null>(null);
-  const lastPlayedSongIdRef = useRef<number | null>(null);
+  const currentSongIdRef = useRef<number | null>(null);
   const onTrackEndRef = useRef(onTrackEnd);
   onTrackEndRef.current = onTrackEnd;
 
@@ -78,6 +78,9 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
     if (!isAdmin || !isActive || !ytReady || !currentSong) return;
     if (currentSong.id === lastPlayedSongIdRef.current) return;
     lastPlayedSongIdRef.current = currentSong.id;
+
+    if (currentSong.id === currentSongIdRef.current) return;
+    currentSongIdRef.current = currentSong.id;
 
     const searchAndPlay = async () => {
       const query = encodeURIComponent(`${currentSong.artist} ${currentSong.title}`);
