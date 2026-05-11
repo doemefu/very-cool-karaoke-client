@@ -78,9 +78,6 @@ export default function SessionPage() {
     setStartingSession(true);
     try {
       await apiService.put(`/sessions/${sessionId}`, { status: "ACTIVE" });
-      if (queue.length > 0) {
-        await apiService.post(`/sessions/${sessionId}/songs/next`, {});
-      }
     } catch {
       setError("Could not start the session. Please try again.");
     } finally {
@@ -88,9 +85,15 @@ export default function SessionPage() {
     }
   };
 
+  const handleRoundClosed = () => {
+    clearRound();
+    setPlayerActivated(true);
+    refresh();
+  };
+
   if (openRound) {
     return (
-      <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />
+      <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={handleRoundClosed} />
     );
   }
 
@@ -412,34 +415,19 @@ export default function SessionPage() {
 
         {/* Right: playback controls + add song */}
         <div style={{ display: "flex", gap: 8 }}>
-          {isAdmin && !playerActivated && (
+          {isAdmin && (
             <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
               <Button
                 type="primary"
                 disabled={queue.length === 0}
                 style={{ background: "#1DB954", borderColor: "#1DB954" }}
                 onClick={() => {
-                  setPlayerActivated(true);
-                  refresh();
-                }}
-              >
-                Play Now
-              </Button>
-            </Tooltip>
-          )}
-          {isAdmin && playerActivated && (
-            <Tooltip title={displayQueue.length === 0 ? "No songs in queue" : ""}>
-              <Button
-                type="primary"
-                style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                disabled={displayQueue.length === 0}
-                onClick={() => {
                   apiService
                     .post(`/sessions/${sessionId}/songs/next`, {})
                     .catch(console.error);
                 }}
               >
-                Skip
+                Skip Song
               </Button>
             </Tooltip>
           )}
