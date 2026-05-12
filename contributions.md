@@ -140,5 +140,5 @@ reason).
 
 | **Student**                                       | **Date**   | **Link to Commit**                                            | **Description** | **Relevance** |
 |---------------------------------------------------|------------|---------------------------------------------------------------|-----------------|---------------|
-| **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/81   | #81 Bugfixes    | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 12.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/81   | #81 Bugfixes    | major         |
 ---
