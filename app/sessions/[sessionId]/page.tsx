@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
@@ -36,6 +36,13 @@ export default function SessionPage() {
   const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
     useSessionStatus(sessionId, userId);
 
+  useEffect(() => {
+    if (!sessionLoading && status === "ENDED") {
+      clearSessionId();
+      router.replace(`/sessions/${sessionId}/review`);
+    }
+  }, [status, sessionLoading, sessionId, router, clearSessionId]);
+
   const handlePauseResume = async () => {
     const newStatus = status === "PAUSED" ? "ACTIVE" : "PAUSED";
     try {
@@ -48,8 +55,10 @@ export default function SessionPage() {
   const handleEndSession = async () => {
     try {
       await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
+      // useEffect above handles the redirect for everyone via WebSocket broadcast.
+      // Push directly here in case the server doesn't echo back to the sender.
       clearSessionId();
-      router.push("/dashboard");
+      router.push(`/sessions/${sessionId}/review`);
     } catch {
       setError("Could not end the session. Please try again.");
     }
