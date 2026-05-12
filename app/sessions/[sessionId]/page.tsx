@@ -542,7 +542,7 @@ const handleStartSession = async () => {
         currentSong={currentSong}
         isAdmin={isAdmin}
         isActive={playerActivated}
-        onTrackEnd={() => { if (queue.length > 1) apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error); }}
+        onTrackEnd={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
       />
 
       <ReactionBar sessionId={sessionId} />
