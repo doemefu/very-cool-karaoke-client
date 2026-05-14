@@ -56,7 +56,7 @@ const NoSongState: FC = () => (
       No song currently playing
     </Text>
     <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>
-      The host will start the session shortly…
+      The queue is empty — add songs to keep the party going!
     </Text>
   </div>
 );

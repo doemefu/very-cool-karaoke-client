@@ -55,8 +55,6 @@ export default function SessionPage() {
   const handleEndSession = async () => {
     try {
       await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
-      // useEffect above handles the redirect for everyone via WebSocket broadcast.
-      // Push directly here in case the server doesn't echo back to the sender.
       clearSessionId();
       router.push(`/sessions/${sessionId}/review`);
     } catch {
@@ -69,24 +67,7 @@ export default function SessionPage() {
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
   const { openRound, clearRound } = useVotingRound(sessionId);
 
-  const handleLeaveSession = async () => {
-    setError("");
-    try {
-      await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
-      clearSessionId();
-      router.push("/dashboard");
-    } catch (err) {
-      const appError = err as ApplicationError;
-      if (appError.status === 404) {
-        clearSessionId();
-        router.push("/dashboard");
-      } else {
-        setError("Could not leave the session. Please try again.");
-      }
-    }
-  };
-
-  const handleStartSession = async () => {
+const handleStartSession = async () => {
     setError("");
     setStartingSession(true);
     try {
@@ -262,16 +243,6 @@ export default function SessionPage() {
           >
             Back to Dashboard
           </Button>
-          {!isAdmin && (
-            <Tooltip title="Leave Session">
-              <Button
-                onClick={handleLeaveSession}
-                style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.4)", borderRadius: 8, color: "rgba(255,100,100,0.9)", display: "flex", alignItems: "center", gap: 6, padding: "0 12px" }}
-              >
-                <span style={{ fontSize: 13 }}>Leave</span>
-              </Button>
-            </Tooltip>
-          )}
         </div>
 
         {/* Center: PIN */}
@@ -288,16 +259,6 @@ export default function SessionPage() {
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {isAdmin && (
             <Space size={8}>
-              <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
-                <Button
-                  type="primary"
-                  disabled={queue.length === 0}
-                  style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                  onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
-                >
-                  Skip
-                </Button>
-              </Tooltip>
               <Tooltip title={status === "PAUSED" ? "Resume" : "Pause"}>
                 <Button
                   type="text"
@@ -312,6 +273,7 @@ export default function SessionPage() {
                 onConfirm={handleEndSession}
                 okText="Yes"
                 cancelText="No"
+                overlayInnerStyle={{ backgroundColor: "#1A1A2E", color: "#FF2D7E", border: "1px solid rgba(255,45,126,0.3)", borderRadius: 8 }}
               >
                 <Tooltip title="End Session">
                   <Button type="text" danger icon={<PoweroffOutlined />} style={{ fontSize: 20 }} />
@@ -319,9 +281,6 @@ export default function SessionPage() {
               </Popconfirm>
             </Space>
           )}
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
-            Add Song
-          </Button>
         </div>
       </Header>
 
@@ -342,6 +301,24 @@ export default function SessionPage() {
             <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
               Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
             </Text>
+            <Space size={8}>
+              {isAdmin && (
+                <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
+                  <Button
+                    type="primary"
+                    disabled={queue.length === 0}
+                    size="small"
+                    style={{ background: "#1DB954", borderColor: "#1DB954" }}
+                    onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
+                  >
+                    Skip
+                  </Button>
+                </Tooltip>
+              )}
+              <Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
+                Add Song
+              </Button>
+            </Space>
           </div>
 
           {currentSong && (
