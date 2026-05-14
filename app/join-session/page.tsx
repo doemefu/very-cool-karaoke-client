@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Session } from "@/types/session";
@@ -14,6 +14,7 @@ const { Title, Text } = Typography;
 
 export default function JoinSession() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const apiService = useApi();
 
   const { set: setSessionId } = useLocalStorage<string>("sessionId", "");
@@ -23,6 +24,15 @@ export default function JoinSession() {
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"pin" | "song-selection">("pin");
   const [currentSessionId, setCurrentSessionId] = useState("");
+
+  useEffect(() => {
+    const sessionId = searchParams.get("sessionId");
+    const songSelection = searchParams.get("songSelection");
+    if (sessionId && songSelection === "true") {
+      setCurrentSessionId(sessionId);
+      setStep("song-selection");
+    }
+  }, [searchParams]);
 
   const handleJoinWithPin = async () => {
     setError("");

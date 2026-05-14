@@ -13,7 +13,7 @@ const { Title, Text } = Typography;
 
 const ACTIVE_STATUSES: SessionStatus[] = ["CREATED", "ACTIVE", "PAUSED"];
 
-function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (id: string) => void }) {
+function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (session: Session) => void }) {
   const isActive = session.status && ACTIVE_STATUSES.includes(session.status);
   const createdAt = session.createdAt ? new Date(session.createdAt).toLocaleDateString() : "—";
 
@@ -45,7 +45,7 @@ function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (id: s
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>{createdAt}</Text>
           {isActive && (
-            <Button type="link" onClick={() => onRejoin(session.id)} style={{ padding: 0 }}>
+            <Button type="link" onClick={() => onRejoin(session)} style={{ padding: 0 }}>
               Rejoin
             </Button>
           )}
@@ -85,9 +85,21 @@ export default function Dashboard() {
     router.push("/");
   };
 
-  const handleRejoin = (sessionId: string) => {
-    localStorage.setItem('sessionId', sessionId);
-    router.push(`/sessions/${sessionId}`);
+  const handleRejoin = async (session: Session) => {
+    localStorage.setItem('sessionId', session.id);
+    try {
+      const joined = await apiService.post<Session>(
+        `/sessions/${session.id}/participants`,
+        { gamePin: session.gamePin }
+      );
+      if (joined.requiresSongSelection) {
+        router.push(`/join-session?sessionId=${session.id}&songSelection=true`);
+      } else {
+        router.push(`/sessions/${session.id}`);
+      }
+    } catch {
+      router.push(`/sessions/${session.id}`);
+    }
   };
 
   const createdSessions = sessions.filter((s) => s.admin && String(s.admin.id) === String(userId));
