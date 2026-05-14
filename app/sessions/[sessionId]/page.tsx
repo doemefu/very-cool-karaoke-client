@@ -60,24 +60,7 @@ export default function SessionPage() {
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
   const { openRound, clearRound } = useVotingRound(sessionId);
 
-  const handleLeaveSession = async () => {
-    setError("");
-    try {
-      await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
-      clearSessionId();
-      router.push("/dashboard");
-    } catch (err) {
-      const appError = err as ApplicationError;
-      if (appError.status === 404) {
-        clearSessionId();
-        router.push("/dashboard");
-      } else {
-        setError("Could not leave the session. Please try again.");
-      }
-    }
-  };
-
-  const handleStartSession = async () => {
+const handleStartSession = async () => {
     setError("");
     setStartingSession(true);
     try {
@@ -253,16 +236,7 @@ export default function SessionPage() {
           >
             Back to Dashboard
           </Button>
-          {!isAdmin && (
-            <Tooltip title="Leave Session">
-              <Button
-                onClick={handleLeaveSession}
-                style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.4)", borderRadius: 8, color: "rgba(255,100,100,0.9)", display: "flex", alignItems: "center", gap: 6, padding: "0 12px" }}
-              >
-                <span style={{ fontSize: 13 }}>Leave</span>
-              </Button>
-            </Tooltip>
-          )}
+
         </div>
 
         {/* Center: PIN */}

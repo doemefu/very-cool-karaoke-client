@@ -134,5 +134,11 @@ reason).
 | **[@Unick1](https://github.com/Unick1)**   | 09.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/117/commits | #42 functionality to track the played songs | optional         |
 | **[@Unick1](https://github.com/Unick1)**   | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/commits | Implement SessionWebSocketPublisherImpl and update session service | major  |
 | **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | refer to week 3 plus work  |- | -                            |
+---
 
+## Contributions Week 7 - 11.05.2026 to 18.05.2026
+
+| **Student**                                       | **Date**   | **Link to Commit**                                            | **Description** | **Relevance** |
+|---------------------------------------------------|------------|---------------------------------------------------------------|-----------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 12.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/81   | #81 Bugfixes    | major         |
 ---
