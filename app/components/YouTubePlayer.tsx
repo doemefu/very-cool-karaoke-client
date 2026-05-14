@@ -76,9 +76,6 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
   // Search YouTube and play when song changes
   useEffect(() => {
     if (!isAdmin || !isActive || !ytReady || !currentSong) return;
-    if (currentSong.id === lastPlayedSongIdRef.current) return;
-    lastPlayedSongIdRef.current = currentSong.id;
-
     if (currentSong.id === currentSongIdRef.current) return;
     currentSongIdRef.current = currentSong.id;
 

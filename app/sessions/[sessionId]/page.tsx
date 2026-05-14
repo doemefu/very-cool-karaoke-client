@@ -253,22 +253,12 @@ const handleStartSession = async () => {
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {isAdmin && (
             <Space size={8}>
-              <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
-                <Button
-                  type="primary"
-                  disabled={queue.length === 0}
-                  style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                  onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
-                >
-                  Skip
-                </Button>
-              </Tooltip>
               <Tooltip title={status === "PAUSED" ? "Resume" : "Pause"}>
                 <Button
                   type="text"
                   icon={status === "PAUSED" ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
                   onClick={handlePauseResume}
-                  style={{ color: "#FFFFFF", fontSize: 20 }}
+                  style={{ color: "#ffffff", fontSize: 20 }}
                 />
               </Tooltip>
               <Popconfirm
@@ -277,6 +267,7 @@ const handleStartSession = async () => {
                 onConfirm={handleEndSession}
                 okText="Yes"
                 cancelText="No"
+                overlayInnerStyle={{ backgroundColor: "#1A1A2E", color: "#FF2D7E", border: "1px solid rgba(255,45,126,0.3)", borderRadius: 8 }}
               >
                 <Tooltip title="End Session">
                   <Button type="text" danger icon={<PoweroffOutlined />} style={{ fontSize: 20 }} />
@@ -284,9 +275,6 @@ const handleStartSession = async () => {
               </Popconfirm>
             </Space>
           )}
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
-            Add Song
-          </Button>
         </div>
       </Header>
 
@@ -307,6 +295,24 @@ const handleStartSession = async () => {
             <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
               Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
             </Text>
+            <Space size={8}>
+              {isAdmin && (
+                <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
+                  <Button
+                    type="primary"
+                    disabled={queue.length === 0}
+                    size="small"
+                    style={{ background: "#1DB954", borderColor: "#1DB954" }}
+                    onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
+                  >
+                    Skip
+                  </Button>
+                </Tooltip>
+              )}
+              <Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
+                Add Song
+              </Button>
+            </Space>
           </div>
 
           {currentSong && (
