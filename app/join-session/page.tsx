@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Session } from "@/types/session";
-import { Card, Typography, Layout, Button, Input, Alert } from "antd";
+import { Card, Typography, Layout, Button, Input, Alert, Steps } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import SongSearchContent from "@/components/SongSearchContent";
 
@@ -83,6 +83,16 @@ export default function JoinSession() {
 
       <Content style={{ padding: "48px 24px" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <Card style={{ marginBottom: 32 }}>
+            <Steps
+              current={step === "pin" ? 0 : 1}
+              items={[
+                { title: "Enter PIN" },
+                { title: "Add a Song" },
+              ]}
+            />
+          </Card>
+
           {step === "pin" && (
             <Card>
               <div style={{ textAlign: "center", padding: "48px 24px" }}>

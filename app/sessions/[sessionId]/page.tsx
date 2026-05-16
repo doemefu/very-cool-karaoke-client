@@ -98,7 +98,7 @@ const handleStartSession = async () => {
 
   if (openRound) {
     return (
-      <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={handleRoundClosed} />
+      <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={handleRoundClosed} currentSong={currentSong} />
     );
   }
 
