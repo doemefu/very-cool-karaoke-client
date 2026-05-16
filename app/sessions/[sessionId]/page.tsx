@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
@@ -36,6 +36,13 @@ export default function SessionPage() {
   const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
     useSessionStatus(sessionId, userId);
 
+  useEffect(() => {
+    if (!sessionLoading && status === "ENDED") {
+      clearSessionId();
+      router.replace(`/sessions/${sessionId}/review`);
+    }
+  }, [status, sessionLoading, sessionId, router, clearSessionId]);
+
   const handlePauseResume = async () => {
     const newStatus = status === "PAUSED" ? "ACTIVE" : "PAUSED";
     try {
@@ -49,7 +56,7 @@ export default function SessionPage() {
     try {
       await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
       clearSessionId();
-      router.push("/dashboard");
+      router.push(`/sessions/${sessionId}/review`);
     } catch {
       setError("Could not end the session. Please try again.");
     }
@@ -236,7 +243,6 @@ const handleStartSession = async () => {
           >
             Back to Dashboard
           </Button>
-
         </div>
 
         {/* Center: PIN */}
@@ -258,7 +264,7 @@ const handleStartSession = async () => {
                   type="text"
                   icon={status === "PAUSED" ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
                   onClick={handlePauseResume}
-                  style={{ color: "#ffffff", fontSize: 20 }}
+                  style={{ color: "#FFFFFF", fontSize: 20 }}
                 />
               </Tooltip>
               <Popconfirm

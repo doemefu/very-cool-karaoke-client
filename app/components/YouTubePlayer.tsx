@@ -104,15 +104,15 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
     searchAndPlay();
   }, [currentSong, isAdmin, isActive, ytReady]);
 
-  // Pause / resume when session status changes
+  // Pause / resume based on session status
   useEffect(() => {
     if (!playerReadyRef.current || !playerRef.current) return;
     if (isPaused) {
       playerRef.current.pauseVideo();
-    } else {
+    } else if (isActive) {
       playerRef.current.playVideo();
     }
-  }, [isPaused]);
+  }, [isPaused, isActive]);
 
   // Destroy player on unmount
   useEffect(() => {
