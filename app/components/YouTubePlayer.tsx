@@ -128,10 +128,10 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
     if (!playerReadyRef.current || !playerRef.current) return;
     if (isPaused) {
       playerRef.current.pauseVideo();
-    } else if (isActive) {
+    } else if (isActive && currentSong) {
       playerRef.current.playVideo();
     }
-  }, [isPaused, isActive]);
+  }, [isPaused, isActive, currentSong]);
 
   // Destroy player on unmount
   useEffect(() => {

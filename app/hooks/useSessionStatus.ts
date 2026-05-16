@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
 import { useStomp } from "@/context/StompContext";
 import { Session, SessionStatus } from "@/types/session";
@@ -12,8 +12,6 @@ export interface UseSessionStatusResult {
   isLoading: boolean;
 }
 
-const POLL_INTERVAL_MS = 3000;
-
 export const useSessionStatus = (sessionId: string, userId: string): UseSessionStatusResult => {
   const apiService = useApi();
   const { client, connected } = useStomp();
@@ -25,11 +23,8 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
   const [participants, setParticipants] = useState<{ id: number; username: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const statusRef = useRef<SessionStatus | null>(null);
-
   const applySession = useCallback((session: Session, currentUserId: string) => {
     const newStatus = session.status ?? null;
-    statusRef.current = newStatus;
     setStatus(newStatus);
     setIsAdmin(String(session.admin?.id) === String(currentUserId));
     setGamePin(session.gamePin ?? "");
@@ -67,7 +62,6 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
           const newStatus: SessionStatus =
             typeof data === "string" ? data : data.status;
           if (newStatus) {
-            statusRef.current = newStatus;
             setStatus(newStatus);
           }
           // If we got a full session, also update participants
@@ -97,20 +91,6 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
       participantsSub.unsubscribe();
     };
   }, [sessionId, client, connected]);
-
-  // Polling fallback while session is in CREATED state
-  // (in case the WebSocket publisher is not yet implemented server-side)
-  useEffect(() => {
-    if (!sessionId) return;
-
-    const interval = setInterval(() => {
-      if (statusRef.current === "CREATED") {
-        fetchSession();
-      }
-    }, POLL_INTERVAL_MS);
-
-    return () => clearInterval(interval);
-  }, [sessionId, fetchSession]);
 
   return { status, isAdmin, gamePin, sessionName, participants, isLoading };
 };
