@@ -138,8 +138,6 @@ const LyricsBlock: FC<{ lyrics: string }> = ({ lyrics }) => (
       height: "65vh",
       overflowY: "auto",
       padding: "24px 40px 40px",
-      scrollbarWidth: "thin",
-      scrollbarColor: "#FF2D7E transparent",
     }}
   >
     <Paragraph

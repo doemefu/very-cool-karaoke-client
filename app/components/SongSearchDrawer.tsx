@@ -1,83 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useApi } from "@/hooks/useApi";
-import { SongSearchResult } from "@/types/song";
-import { Drawer, Input, Empty, Avatar, App } from "antd";
+import { Drawer, Input, Empty, Avatar } from "antd";
 import { SearchOutlined, PlusOutlined, WarningOutlined } from "@ant-design/icons";
+import { useSongSearch } from "@/hooks/useSongSearch";
 
 const { Search } = Input;
 
 interface SongSearchDrawerProps {
   open: boolean;
   onClose: () => void;
-  onAddSong: (song: SongSearchResult) => void;
+  onAddSong: () => void;
   sessionId: string;
 }
 
 export default function SongSearchDrawer({ open, onClose, onAddSong, sessionId }: SongSearchDrawerProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<SongSearchResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { notification } = App.useApp();
-  const apiService = useApi();
-
-  useEffect(() => {
-    const query = searchQuery.trim();
-
-    if (!query) {
-      setSearchResults([]);
-      return;
-    }
-
-    const timeout = setTimeout(async () => {
-      setIsLoading(true);
-      try {
-        const params = new URLSearchParams({ query });
-        const data = await apiService.get<SongSearchResult[]>(`/songs/search?${params}`);
-        setSearchResults(data);
-      } catch {
-        notification.error({
-          title: "Search failed",
-          description: "Could not reach the server.",
-        });
-        setSearchResults([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }, 300);
-
-    return () => clearTimeout(timeout);
-  }, [searchQuery, notification, apiService]);
-
-  const handleAddSong = async (song: SongSearchResult) => {
-    try {
-      await apiService.post(`/sessions/${sessionId}/songs`, {
-        spotifyId: song.spotifyId,
-        title: song.title,
-        artist: song.artist,
-        durationMs: song.durationMs,
-      });
-
-      onAddSong(song);
-      notification.success({
-        title: "Song Added",
-        description: `"${song.title}" by ${song.artist} has been added to the queue.`,
-        placement: "bottomRight",
-      });
-      setSearchQuery("");
-      setSearchResults([]);
-    } catch {
-      notification.error({
-        title: "Failed to add song",
-        description: "Could not add the song to the queue.",
-      });
-    }
-  };
+  const { searchQuery, setSearchQuery, searchResults, isLoading, handleAddSong } = useSongSearch(sessionId, onAddSong);
 
   const handleClose = () => {
     setSearchQuery("");
-    setSearchResults([]);
     onClose();
   };
 

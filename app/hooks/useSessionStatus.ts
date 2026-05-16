@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
 import { useStomp } from "@/context/StompContext";
-import { Session, SessionStatus } from "@/types/session";
+import { Session, SessionStatus, Participant } from "@/types/session";
 
 export interface UseSessionStatusResult {
   status: SessionStatus | null;
   isAdmin: boolean;
   gamePin: string;
   sessionName: string;
-  participants: { id: number; username: string }[];
+  participants: Participant[];
   isLoading: boolean;
 }
 
@@ -20,7 +20,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
   const [isAdmin, setIsAdmin] = useState(false);
   const [gamePin, setGamePin] = useState("");
   const [sessionName, setSessionName] = useState("");
-  const [participants, setParticipants] = useState<{ id: number; username: string }[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const applySession = useCallback((session: Session, currentUserId: string) => {

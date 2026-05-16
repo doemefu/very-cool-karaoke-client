@@ -16,13 +16,12 @@ export default function JoinSession() {
   const router = useRouter();
   const apiService = useApi();
 
-  const { set: setSessionId } = useLocalStorage<string>("sessionId", "");
+  const { set: setSessionId, value: currentSessionId } = useLocalStorage<string>("sessionId", "");
 
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"pin" | "song-selection">("pin");
-  const [currentSessionId, setCurrentSessionId] = useState("");
 
   const handleJoinWithPin = async () => {
     setError("");
@@ -39,7 +38,6 @@ export default function JoinSession() {
         { gamePin: pin }
       );
       setSessionId(session.id);
-      setCurrentSessionId(session.id);
 
       if (joined.requiresSongSelection) {
         setStep("song-selection");
