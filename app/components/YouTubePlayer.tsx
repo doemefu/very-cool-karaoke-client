@@ -26,6 +26,8 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
   const currentSongIdRef = useRef<number | null>(null);
   const onTrackEndRef = useRef(onTrackEnd);
   onTrackEndRef.current = onTrackEnd;
+  const isPausedRef = useRef(isPaused);
+  isPausedRef.current = isPaused;
 
   const [ytReady, setYtReady] = useState(false);
 
@@ -60,7 +62,11 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
         onReady: () => {
           playerReadyRef.current = true;
           if (pendingVideoIdRef.current) {
-            playerRef.current?.loadVideoById(pendingVideoIdRef.current);
+            if (isPausedRef.current) {
+              playerRef.current?.cueVideoById(pendingVideoIdRef.current);
+            } else {
+              playerRef.current?.loadVideoById(pendingVideoIdRef.current);
+            }
             pendingVideoIdRef.current = null;
           }
         },
@@ -75,7 +81,16 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
 
   // Search YouTube and play when song changes
   useEffect(() => {
-    if (!isAdmin || !isActive || !ytReady || !currentSong) return;
+    if (!isAdmin || !isActive || !ytReady) return;
+
+    if (!currentSong) {
+      if (playerReadyRef.current && playerRef.current) {
+        playerRef.current.stopVideo();
+        currentSongIdRef.current = null;
+      }
+      return;
+    }
+
     if (currentSong.id === currentSongIdRef.current) return;
     currentSongIdRef.current = currentSong.id;
 
@@ -92,7 +107,11 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused
         if (!videoId) return;
 
         if (playerReadyRef.current && playerRef.current) {
-          playerRef.current.loadVideoById(videoId);
+          if (isPausedRef.current) {
+            playerRef.current.cueVideoById(videoId);
+          } else {
+            playerRef.current.loadVideoById(videoId);
+          }
         } else {
           pendingVideoIdRef.current = videoId;
         }

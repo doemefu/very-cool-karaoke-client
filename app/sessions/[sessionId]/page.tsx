@@ -67,6 +67,18 @@ export default function SessionPage() {
   const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
   const { openRound, clearRound } = useVotingRound(sessionId);
 
+const handleBackToDashboard = async () => {
+    if (isAdmin && status === "ACTIVE") {
+      try {
+        await apiService.put(`/sessions/${sessionId}`, { status: "PAUSED" });
+      } catch {
+        // navigate anyway even if pause fails
+      }
+    }
+    clearSessionId();
+    router.push("/dashboard");
+  };
+
 const handleStartSession = async () => {
     setError("");
     setStartingSession(true);
@@ -117,7 +129,7 @@ const handleStartSession = async () => {
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            onClick={handleBackToDashboard}
             style={{ color: "#FFFFFF" }}
           >
             Back to Dashboard
@@ -238,22 +250,34 @@ const handleStartSession = async () => {
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            onClick={handleBackToDashboard}
             style={{ color: "#FFFFFF" }}
           >
             Back to Dashboard
           </Button>
         </div>
 
-        {/* Center: PIN */}
-        {gamePin && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
-            <Text style={{ color: "#FF2D7E", fontWeight: 700, fontSize: 20, letterSpacing: "0.18em" }}>
-              {gamePin}
-            </Text>
-          </div>
-        )}
+        {/* Center: PIN + Status */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {gamePin && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
+              <Text style={{ color: "#FF2D7E", fontWeight: 700, fontSize: 20, letterSpacing: "0.18em" }}>
+                {gamePin}
+              </Text>
+            </div>
+          )}
+          {(status === "ACTIVE" || status === "PAUSED") && (
+            <Badge
+              status={status === "ACTIVE" ? "processing" : "warning"}
+              text={
+                <Text style={{ color: status === "ACTIVE" ? "#1DB954" : "#faad14", fontSize: 12 }}>
+                  {status === "ACTIVE" ? "Active" : "Paused"}
+                </Text>
+              }
+            />
+          )}
+        </div>
 
         {/* Right: controls */}
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -273,7 +297,7 @@ const handleStartSession = async () => {
                 onConfirm={handleEndSession}
                 okText="Yes"
                 cancelText="No"
-                overlayInnerStyle={{ backgroundColor: "#1A1A2E", color: "#FF2D7E", border: "1px solid rgba(255,45,126,0.3)", borderRadius: 8 }}
+                styles={{ root: { backgroundColor: "#1A1A2E", border: "1px solid rgba(255,45,126,0.3)", borderRadius: 8 }, container: { backgroundColor: "#1A1A2E", borderRadius: 8 } }}
               >
                 <Tooltip title="End Session">
                   <Button type="text" danger icon={<PoweroffOutlined />} style={{ fontSize: 20 }} />

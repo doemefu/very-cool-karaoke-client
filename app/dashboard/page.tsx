@@ -13,8 +13,9 @@ const { Title, Text } = Typography;
 
 const ACTIVE_STATUSES: SessionStatus[] = ["CREATED", "ACTIVE", "PAUSED"];
 
-function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (id: string) => void }) {
+function SessionCard({ session, onRejoin, onViewReview }: { session: Session; onRejoin: (id: string) => void; onViewReview: (id: string) => void }) {
   const isActive = session.status && ACTIVE_STATUSES.includes(session.status);
+  const isEnded = session.status === "ENDED";
   const createdAt = session.createdAt ? new Date(session.createdAt).toLocaleDateString() : "—";
 
   return (
@@ -47,6 +48,11 @@ function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (id: s
           {isActive && (
             <Button type="link" onClick={() => onRejoin(session.id)} style={{ padding: 0 }}>
               Rejoin
+            </Button>
+          )}
+          {isEnded && (
+            <Button type="link" onClick={() => onViewReview(session.id)} style={{ padding: 0, color: "#FF2D7E" }}>
+              View Results
             </Button>
           )}
         </div>
@@ -90,6 +96,10 @@ export default function Dashboard() {
     router.push(`/sessions/${sessionId}`);
   };
 
+  const handleViewReview = (sessionId: string) => {
+    router.push(`/sessions/${sessionId}/review`);
+  };
+
   const createdSessions = sessions.filter((s) => s.admin && String(s.admin.id) === String(userId));
   const joinedSessions  = sessions.filter((s) => !s.admin || String(s.admin.id) !== String(userId));
 
@@ -117,7 +127,7 @@ export default function Dashboard() {
         <div style={{ marginTop: 16 }}>
           {createdSessions.length === 0
             ? <Text style={{ color: "rgba(255,255,255,0.3)" }}>No created sessions yet</Text>
-            : createdSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} />)
+            : createdSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} onViewReview={handleViewReview} />)
           }
         </div>
       ),
@@ -129,7 +139,7 @@ export default function Dashboard() {
         <div style={{ marginTop: 16 }}>
           {joinedSessions.length === 0
             ? <Text style={{ color: "rgba(255,255,255,0.3)" }}>No joined sessions yet</Text>
-            : joinedSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} />)
+            : joinedSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} onViewReview={handleViewReview} />)
           }
         </div>
       ),
