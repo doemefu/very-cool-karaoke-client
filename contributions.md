@@ -144,4 +144,6 @@ reason).
 | **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/126/changes | #125 Extract promotion logic of next song from nextSong   | major    |
 | **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/129 | #127 Implememnt auto-start first song on session activation   | major    |
 | **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/131 | #130 Fix NPE when broadcasting null currentSong over WebSocket   | major    |
+| **[@Spring987](https://github.com/Spring987)**    | 14.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/83 | #78-fe-display-review-screen-after-ending-session   | major     |
+| **[@Spring987](https://github.com/Spring987)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/86| #79-fe-implement-song-selection-when-rejoining | major         |
 ---
