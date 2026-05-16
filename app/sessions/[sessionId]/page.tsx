@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
@@ -36,6 +36,13 @@ export default function SessionPage() {
   const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
     useSessionStatus(sessionId, userId);
 
+  useEffect(() => {
+    if (!sessionLoading && status === "ENDED") {
+      clearSessionId();
+      router.replace(`/sessions/${sessionId}/review`);
+    }
+  }, [status, sessionLoading, sessionId, router, clearSessionId]);
+
   const handlePauseResume = async () => {
     const newStatus = status === "PAUSED" ? "ACTIVE" : "PAUSED";
     try {
@@ -49,7 +56,7 @@ export default function SessionPage() {
     try {
       await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
       clearSessionId();
-      router.push("/dashboard");
+      router.push(`/sessions/${sessionId}/review`);
     } catch {
       setError("Could not end the session. Please try again.");
     }
@@ -236,7 +243,6 @@ const handleStartSession = async () => {
           >
             Back to Dashboard
           </Button>
-
         </div>
 
         {/* Center: PIN */}
@@ -258,7 +264,7 @@ const handleStartSession = async () => {
                   type="text"
                   icon={status === "PAUSED" ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
                   onClick={handlePauseResume}
-                  style={{ color: "#ffffff", fontSize: 20 }}
+                  style={{ color: "#FFFFFF", fontSize: 20 }}
                 />
               </Tooltip>
               <Popconfirm
@@ -278,8 +284,8 @@ const handleStartSession = async () => {
         </div>
       </Header>
 
-      <Layout style={{ background: "transparent" }}>
-        <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px", flex: 1 }}>
+      <Layout style={{ background: "transparent", height: "calc(100vh - 56px)", overflow: "hidden" }}>
+        <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px", flex: 1, overflowY: "auto" }}>
           <div style={{ width: "100%", maxWidth: 860 }}>
             {error && (
               <Alert type="error" description={error} closable style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#391b2c" }} />
@@ -290,82 +296,153 @@ const handleStartSession = async () => {
           </div>
         </Content>
 
-        <Layout.Sider width={320} style={{ background: "#1A1A2E", borderLeft: "1px solid rgba(255, 255, 255, 0.1)", padding: 24, overflowY: "auto" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
-              Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
-            </Text>
-            <Space size={8}>
-              {isAdmin && (
-                <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
-                  <Button
-                    type="primary"
-                    disabled={queue.length === 0}
-                    size="small"
-                    style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                    onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
-                  >
-                    Skip
-                  </Button>
-                </Tooltip>
-              )}
-              <Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
-                Add Song
-              </Button>
-            </Space>
-          </div>
+        <Layout.Sider
+          width={320}
+          style={{
+            background: "#1A1A2E",
+            borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          {/* Wrapper gives the sider a real flex column height */}
+          <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>
 
-          {currentSong && (
-            <div style={{ background: "#0D0D1A", borderRadius: 8, border: "1px solid rgba(255, 45, 126, 0.4)", marginBottom: 8, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}>
-              {currentSong.albumArt && (
-                <Image src={currentSong.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
-              )}
-              <div>
-                <div style={{ color: "#FF2D7E", fontSize: 13, fontWeight: 600 }}>{currentSong.title}</div>
-                <div style={{ color: "rgba(255, 45, 126, 0.6)", fontSize: 12 }}>
-                  {currentSong.artist}{currentSong.addedBy && <span style={{ marginLeft: 6, opacity: 0.7 }}>· 🎤 {currentSong.addedBy.username}</span>}
+            {/* ── Queue section (70%) ── */}
+            <div style={{ flex: "7 1 0", minHeight: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              {/* Fixed header */}
+              <div style={{ padding: "24px 24px 0 24px", flexShrink: 0 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
+                    Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
+                  </Text>
+                  <Space size={8}>
+                    {isAdmin && (
+                      <Tooltip title={queue.length === 0 ? "No songs in queue" : "Skip Song"}>
+                        <Button
+                          type="primary"
+                          disabled={queue.length === 0}
+                          size="small"
+                          style={{ background: "#1DB954", borderColor: "#1DB954" }}
+                          onClick={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
+                        >
+                          Skip
+                        </Button>
+                      </Tooltip>
+                    )}
+                    <Button type="primary" size="small" icon={<PlusOutlined />} onClick={() => setSearchDrawerOpen(true)}>
+                      Add Song
+                    </Button>
+                  </Space>
                 </div>
+              </div>
+
+              {/* Scrollable song list */}
+              <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 24px 12px 24px" }}>
+                {currentSong && (
+                  <div style={{ background: "#0D0D1A", borderRadius: 8, border: "1px solid rgba(255, 45, 126, 0.4)", marginBottom: 8, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}>
+                    {currentSong.albumArt && (
+                      <Image src={currentSong.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
+                    )}
+                    <div>
+                      <div style={{ color: "#FF2D7E", fontSize: 13, fontWeight: 600 }}>{currentSong.title}</div>
+                      <div style={{ color: "rgba(255, 45, 126, 0.6)", fontSize: 12 }}>
+                        {currentSong.artist}{currentSong.addedBy && <span style={{ marginLeft: 6, opacity: 0.7 }}>· 🎤 {currentSong.addedBy.username}</span>}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {displayQueue.length === 0 ? (
+                  <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
+                ) : (
+                  displayQueue.map((song: Song) => (
+                    <div
+                      key={song.id}
+                      style={{ background: "#0D0D1A", borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)", marginBottom: 8, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}
+                    >
+                      {song.albumArt && (
+                        <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
+                      )}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
+                        <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
+                          {song.artist}{song.addedBy && <span style={{ marginLeft: 6, opacity: 0.7 }}>· 🎤 {song.addedBy.username}</span>}
+                        </div>
+                      </div>
+                      {isAdmin && (
+                        <Tooltip title="Remove song">
+                          <Button
+                            type="text"
+                            size="small"
+                            icon={<DeleteOutlined />}
+                            onClick={() => {
+                              setError("");
+                              apiService.delete(`/sessions/${sessionId}/songs/${song.id}`)
+                                .catch((err: ApplicationError) => {
+                                  setError(err.message ?? "Could not remove song. Please try again.");
+                                });
+                            }}
+                            style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
+                          />
+                        </Tooltip>
+                      )}
+                    </div>
+                  ))
+                )}
               </div>
             </div>
-          )}
 
-          {displayQueue.length === 0 ? (
-            <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
-          ) : (
-            displayQueue.map((song: Song) => (
-              <div
-                key={song.id}
-                style={{ background: "#0D0D1A", borderRadius: 8, border: "1px solid rgba(255,255,255,0.08)", marginBottom: 8, padding: "10px 12px", display: "flex", alignItems: "center", gap: 10 }}
-              >
-                {song.albumArt && (
-                  <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
-                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>
-                    {song.artist}{song.addedBy && <span style={{ marginLeft: 6, opacity: 0.7 }}>· 🎤 {song.addedBy.username}</span>}
-                  </div>
-                </div>
-                {isAdmin && (
-                  <Tooltip title="Remove song">
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<DeleteOutlined />}
-                      onClick={() => {
-                        setError("");
-                        apiService.delete(`/sessions/${sessionId}/songs/${song.id}`)
-                          .catch((err: ApplicationError) => {
-                            setError(err.message ?? "Could not remove song. Please try again.");
-                          });
+            {/* ── Participants section (30%) ── */}
+            <div
+              style={{
+                flex: "3 1 0",
+                minHeight: 0,
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              {/* Fixed header */}
+              <div style={{ padding: "12px 24px 0 24px", flexShrink: 0 }}>
+                <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15, display: "block", marginBottom: 12 }}>
+                  Party People <Badge count={participants.length} style={{ backgroundColor: "#00C2FF" }} />
+                </Text>
+              </div>
+
+              {/* Scrollable participants list */}
+              <div style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "0 24px 24px 24px" }}>
+                {participants.length === 0 ? (
+                  <Text style={{ color: "rgba(255,255,255,0.3)" }}>No one here yet</Text>
+                ) : (
+                  participants.map((p) => (
+                    <div
+                      key={p.id}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 10,
+                        marginBottom: 8,
+                        padding: "6px 8px",
+                        borderRadius: 8,
+                        background: String(p.id) === String(userId) ? "rgba(0, 194, 255, 0.08)" : "transparent",
                       }}
-                      style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
-                    />
-                  </Tooltip>
+                    >
+                      <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
+                      <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
+                        {p.username}
+                        {String(p.id) === String(userId) && (
+                          <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>
+                            {isAdmin ? "(host)" : "(you)"}
+                          </span>
+                        )}
+                      </Text>
+                    </div>
+                  ))
                 )}
               </div>
-            ))
-          )}
+            </div>
+
+          </div>
         </Layout.Sider>
       </Layout>
 
