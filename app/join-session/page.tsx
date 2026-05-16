@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -12,7 +12,7 @@ import SongSearchContent from "@/components/SongSearchContent";
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
-export default function JoinSession() {
+function JoinSessionContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const apiService = useApi();
@@ -176,5 +176,13 @@ export default function JoinSession() {
         </div>
       </Content>
     </Layout>
+  );
+}
+
+export default function JoinSession() {
+  return (
+    <Suspense>
+      <JoinSessionContent />
+    </Suspense>
   );
 }
