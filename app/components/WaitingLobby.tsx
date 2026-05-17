@@ -76,7 +76,7 @@ export default function WaitingLobby({ sessionName, gamePin, participants, isAdm
 
         <div style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.08)", borderRadius: 12, padding: "16px 24px", width: "100%", maxWidth: 400 }}>
           <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", display: "block", marginBottom: 12 }}>
-            Teilnehmer{" "}
+            Participants{" "}
             <Badge count={participants.length} style={{ backgroundColor: "#FF2D7E" }} />
           </Text>
           {participants.length === 0 ? (

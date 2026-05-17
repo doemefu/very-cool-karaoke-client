@@ -94,6 +94,7 @@ export default function VotingPhase({
   const timerPercent = secondsLeft !== null && totalSeconds ? (secondsLeft / totalSeconds) * 100 : 0;
   const timerColor = secondsLeft !== null && secondsLeft <= 10 ? "#FF2D7E" : "#00C2FF";
   const sortedCandidates = [...candidates].sort((a, b) => (b.currentVoteCount ?? 0) - (a.currentVoteCount ?? 0));
+  const winnerSong = currentSong ?? sortedCandidates[0] ?? null;
 
   // Winner screen
   if (showWinner) {
@@ -118,7 +119,7 @@ export default function VotingPhase({
           Next up...
         </Title>
 
-        {currentSong && (
+        {winnerSong && (
           <div
             style={{
               background: "linear-gradient(135deg, #FF2D7E 0%, #C91F5E 100%)",
@@ -130,9 +131,9 @@ export default function VotingPhase({
               boxShadow: "0 0 60px rgba(255, 45, 126, 0.4)",
             }}
           >
-            {currentSong.albumArt && (
+            {winnerSong.albumArt && (
               <Image
-                src={currentSong.albumArt}
+                src={winnerSong.albumArt}
                 alt="album art"
                 width={120}
                 height={120}
@@ -140,19 +141,19 @@ export default function VotingPhase({
               />
             )}
             <Title level={2} style={{ color: "#FFFFFF", margin: 0 }}>
-              {currentSong.title}
+              {winnerSong.title}
             </Title>
             <Text style={{ color: "rgba(255,255,255,0.8)", fontSize: 16 }}>
-              {currentSong.artist}
+              {winnerSong.artist}
             </Text>
-            {currentSong.addedBy && (
+            {winnerSong.addedBy && (
               <Text style={{ color: "rgba(255,255,255,0.7)", fontSize: 15, display: "block", marginTop: 12 }}>
-                🎤 {currentSong.addedBy.username}
+                🎤 {winnerSong.addedBy.username}
               </Text>
             )}
             <div style={{ marginTop: 8 }}>
               <Text style={{ color: "rgba(255,255,255,0.6)", fontSize: 14 }}>
-                {currentSong.currentVoteCount ?? 0} votes
+                {winnerSong.currentVoteCount ?? 0} votes
               </Text>
             </div>
           </div>
