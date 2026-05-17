@@ -57,11 +57,14 @@ export const useLyrics = (sessionId: string): UseLyricsResult => {
       `/topic/sessions/${sessionId}/currentSong`,
       (msg) => {
         try {
-          const payload: { song: Song | null } = msg.body
-              ? JSON.parse(msg.body)
-              : { song: null };
+          const body = msg.body ? JSON.parse(msg.body) : null;
+          const song: Song | null = body === null
+            ? null
+            : body && "song" in body
+              ? body.song
+              : body;
           setFetchError(null);
-          setCurrentSong(payload.song);
+          setCurrentSong(song);
         } catch {
           console.error("Failed to parse currentSong message:", msg.body);
         }

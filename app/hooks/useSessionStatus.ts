@@ -33,7 +33,10 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
   }, []);
 
   const fetchSession = useCallback(async () => {
-    if (!sessionId || !userId) return;
+    if (!sessionId || !userId) {
+      setIsLoading(false);
+      return;
+    }
     try {
       const session = await apiService.get<Session>(`/sessions/${sessionId}`);
       applySession(session, userId);
@@ -56,20 +59,21 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
     const sub = client.subscribe(
       `/topic/sessions/${sessionId}/status`,
       (frame) => {
+        let data: unknown;
         try {
-          const data = JSON.parse(frame.body);
-          // Server may send full session DTO or just the status string
-          const newStatus: SessionStatus =
-            typeof data === "string" ? data : data.status;
-          if (newStatus) {
-            setStatus(newStatus);
-          }
-          // If we got a full session, also update participants
-          if (data && typeof data === "object" && data.participants) {
-            setParticipants(data.participants);
-          }
+          data = JSON.parse(frame.body);
         } catch {
-          console.error("Failed to parse status update:", frame.body);
+          // Raw string payload (e.g. "ACTIVE")
+          data = frame.body;
+        }
+        // Server may send full session DTO or just a raw status string
+        const newStatus: SessionStatus =
+          typeof data === "string" ? data as SessionStatus : (data as { status?: SessionStatus })?.status ?? null;
+        if (newStatus) {
+          setStatus(newStatus);
+        }
+        if (data && typeof data === "object" && (data as { participants?: unknown }).participants) {
+          setParticipants((data as { participants: typeof participants }).participants);
         }
       }
     );

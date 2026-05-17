@@ -23,7 +23,6 @@ export default function VotingPhase({
   sessionId,
   round,
   onRoundClosed,
-  currentSong,
 }: VotingPhaseProps) {
   const apiService = useApi();
 
@@ -94,7 +93,7 @@ export default function VotingPhase({
   const timerPercent = secondsLeft !== null && totalSeconds ? (secondsLeft / totalSeconds) * 100 : 0;
   const timerColor = secondsLeft !== null && secondsLeft <= 10 ? "#FF2D7E" : "#00C2FF";
   const sortedCandidates = [...candidates].sort((a, b) => (b.currentVoteCount ?? 0) - (a.currentVoteCount ?? 0));
-  const winnerSong = currentSong ?? sortedCandidates[0] ?? null;
+  const winnerSong = candidates.find(c => c.id === round.winnerId) ?? sortedCandidates[0] ?? null;
 
   // Winner screen
   if (showWinner) {

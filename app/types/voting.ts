@@ -9,4 +9,5 @@ export interface VotingRound {
   startedAt: string;
   endsAt: string | null;
   candidates: Song[]; // Song hat bereits currentVoteCount
+  winnerId?: number;
 }
