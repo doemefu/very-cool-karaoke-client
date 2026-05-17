@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Session } from "@/types/session";
@@ -12,8 +12,9 @@ import SongSearchContent from "@/components/SongSearchContent";
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
-export default function JoinSession() {
+function JoinSessionContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const apiService = useApi();
 
   const { set: setSessionId, value: currentSessionId } = useLocalStorage<string>("sessionId", "");
@@ -22,6 +23,15 @@ export default function JoinSession() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"pin" | "song-selection">("pin");
+
+  useEffect(() => {
+    const sessionId = searchParams.get("sessionId");
+    const songSelection = searchParams.get("songSelection");
+    if (sessionId && songSelection === "true") {
+      setSessionId(sessionId);
+      setStep("song-selection");
+    }
+  }, [searchParams]);
 
   const handleJoinWithPin = async () => {
     setError("");
@@ -174,5 +184,13 @@ export default function JoinSession() {
         </div>
       </Content>
     </Layout>
+  );
+}
+
+export default function JoinSession() {
+  return (
+    <Suspense>
+      <JoinSessionContent />
+    </Suspense>
   );
 }
