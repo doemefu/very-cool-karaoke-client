@@ -194,11 +194,6 @@ export default function VotingPhase({
             </div>
           )}
 
-          {hasVoted && (
-            <Text style={{ color: "rgba(255,255,255,0.45)", display: "block", marginTop: 12 }}>
-              Your vote has been cast!
-            </Text>
-          )}
           {error && (
             <Alert type="error" title={error} showIcon closable style={{ marginTop: 16, maxWidth: 560, margin: "16px auto 0" }} />
           )}

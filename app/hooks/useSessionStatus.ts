@@ -33,7 +33,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
   }, []);
 
   const fetchSession = useCallback(async () => {
-    if (!sessionId) return;
+    if (!sessionId || !userId) return;
     try {
       const session = await apiService.get<Session>(`/sessions/${sessionId}`);
       applySession(session, userId);
