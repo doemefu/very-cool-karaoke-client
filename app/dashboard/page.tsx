@@ -13,7 +13,7 @@ const { Title, Text } = Typography;
 
 const ACTIVE_STATUSES: SessionStatus[] = ["CREATED", "ACTIVE", "PAUSED"];
 
-function SessionCard({ session, onRejoin, onViewReview }: { session: Session; onRejoin: (id: string) => void; onViewReview: (id: string) => void }) {
+function SessionCard({ session, onRejoin, onViewReview }: { session: Session;  onRejoin: (session: Session) => void; onViewReview: (id: string) => void }) {
   const isActive = session.status && ACTIVE_STATUSES.includes(session.status);
   const isEnded = session.status === "ENDED";
   const createdAt = session.createdAt ? new Date(session.createdAt).toLocaleDateString() : "—";
@@ -70,6 +70,7 @@ export default function Dashboard() {
   const { clear: clearToken } = useLocalStorage<string>('token', '');
   const { clear: clearUserId } = useLocalStorage<string>('id', '');
   const { clear: clearUsername } = useLocalStorage<string>('username', '');
+  const { set: setSessionId } = useLocalStorage("sessionId", "");
 
   const [sessions, setSessions] = useState<Session[]>([]);
 
@@ -88,7 +89,8 @@ export default function Dashboard() {
   };
 
   const handleRejoin = async (session: Session) => {
-    localStorage.setItem('sessionId', session.id);
+    setSessionId(session.id);
+    // localStorage.setItem('sessionId', session.id);
     try {
       const joined = await apiService.post<Session>(
         `/sessions/${session.id}/participants`,
