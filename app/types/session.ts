@@ -1,5 +1,10 @@
 export type SessionStatus = "CREATED" | "ACTIVE" | "PAUSED" | "ENDED";
 
+export interface Participant {
+  id: number;
+  username: string;
+}
+
 export interface Session {
     id: string;
     gamePin: string;
@@ -7,7 +12,7 @@ export interface Session {
     description?: string;
     status?: SessionStatus;
     createdAt?: string;
-    admin?: { id: number; username: string };
-    participants?: { id: number; username: string }[];
+    admin?: Participant;
+    participants?: Participant[];
     requiresSongSelection?: boolean;
 }
