@@ -31,7 +31,7 @@ function JoinSessionContent() {
       setSessionId(sessionId);
       setStep("song-selection");
     }
-  }, [searchParams]);
+  }, [searchParams, setSessionId]);
 
   const handleJoinWithPin = async () => {
     setError("");

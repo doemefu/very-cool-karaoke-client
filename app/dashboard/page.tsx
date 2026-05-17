@@ -101,8 +101,13 @@ export default function Dashboard() {
       } else {
         router.push(`/sessions/${session.id}`);
       }
-    } catch {
-      router.push(`/sessions/${session.id}`);
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status;
+      if (status === 404) {
+        router.push(`/sessions/${session.id}/review`);
+      } else {
+        router.push(`/sessions/${session.id}`);
+      }
     }
   };
 
