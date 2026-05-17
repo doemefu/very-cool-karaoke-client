@@ -93,6 +93,7 @@ export default function CreateSession() {
               <Alert
                 type="error"
                 description={error}
+                closable
                 style={{ marginBottom: 24 }}
               />
             )}

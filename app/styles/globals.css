@@ -69,3 +69,36 @@ a {
 .reaction-btn:active {
   transform: scale(0.9);
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #FF2D7E transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #FF2D7E;
+  border-radius: 4px;
+}
+
+.session-control-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #FF2D7E !important;
+}
+
+.ant-alert-close-icon,
+.ant-alert-close-icon svg {
+  color: #FF2D7E !important;
+}
+
+.ant-alert-close-icon:hover,
+.ant-alert-close-icon:hover svg {
+  color: #6b0030 !important;
+}

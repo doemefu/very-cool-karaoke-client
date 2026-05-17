@@ -13,17 +13,21 @@ interface Props {
   currentSong: Song | null;
   isAdmin: boolean;
   isActive: boolean;
+  isPaused: boolean;
   onTrackEnd: () => void;
 }
 
 const PLAYER_ID = "yt-player-hidden";
 
-export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackEnd }: Props) {
+export default function YouTubePlayer({ currentSong, isAdmin, isActive, isPaused, onTrackEnd }: Props) {
   const playerRef = useRef<YT.Player | null>(null);
   const playerReadyRef = useRef(false);
   const pendingVideoIdRef = useRef<string | null>(null);
+  const currentSongIdRef = useRef<number | null>(null);
   const onTrackEndRef = useRef(onTrackEnd);
   onTrackEndRef.current = onTrackEnd;
+  const isPausedRef = useRef(isPaused);
+  isPausedRef.current = isPaused;
 
   const [ytReady, setYtReady] = useState(false);
 
@@ -58,7 +62,11 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
         onReady: () => {
           playerReadyRef.current = true;
           if (pendingVideoIdRef.current) {
-            playerRef.current?.loadVideoById(pendingVideoIdRef.current);
+            if (isPausedRef.current) {
+              playerRef.current?.cueVideoById(pendingVideoIdRef.current);
+            } else {
+              playerRef.current?.loadVideoById(pendingVideoIdRef.current);
+            }
             pendingVideoIdRef.current = null;
           }
         },
@@ -73,7 +81,18 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
 
   // Search YouTube and play when song changes
   useEffect(() => {
-    if (!isAdmin || !isActive || !ytReady || !currentSong) return;
+    if (!isAdmin || !isActive || !ytReady) return;
+
+    if (!currentSong) {
+      if (playerReadyRef.current && playerRef.current) {
+        playerRef.current.stopVideo();
+        currentSongIdRef.current = null;
+      }
+      return;
+    }
+
+    if (currentSong.id === currentSongIdRef.current) return;
+    currentSongIdRef.current = currentSong.id;
 
     const searchAndPlay = async () => {
       const query = encodeURIComponent(`${currentSong.artist} ${currentSong.title}`);
@@ -88,7 +107,11 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
         if (!videoId) return;
 
         if (playerReadyRef.current && playerRef.current) {
-          playerRef.current.loadVideoById(videoId);
+          if (isPausedRef.current) {
+            playerRef.current.cueVideoById(videoId);
+          } else {
+            playerRef.current.loadVideoById(videoId);
+          }
         } else {
           pendingVideoIdRef.current = videoId;
         }
@@ -99,6 +122,16 @@ export default function YouTubePlayer({ currentSong, isAdmin, isActive, onTrackE
 
     searchAndPlay();
   }, [currentSong, isAdmin, isActive, ytReady]);
+
+  // Pause / resume based on session status
+  useEffect(() => {
+    if (!playerReadyRef.current || !playerRef.current) return;
+    if (isPaused) {
+      playerRef.current.pauseVideo();
+    } else if (isActive && currentSong) {
+      playerRef.current.playVideo();
+    }
+  }, [isPaused, isActive, currentSong]);
 
   // Destroy player on unmount
   useEffect(() => {

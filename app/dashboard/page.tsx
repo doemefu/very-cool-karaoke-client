@@ -13,8 +13,9 @@ const { Title, Text } = Typography;
 
 const ACTIVE_STATUSES: SessionStatus[] = ["CREATED", "ACTIVE", "PAUSED"];
 
-function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (id: string) => void }) {
+function SessionCard({ session, onRejoin, onViewReview }: { session: Session;  onRejoin: (session: Session) => void; onViewReview: (id: string) => void }) {
   const isActive = session.status && ACTIVE_STATUSES.includes(session.status);
+  const isEnded = session.status === "ENDED";
   const createdAt = session.createdAt ? new Date(session.createdAt).toLocaleDateString() : "—";
 
   return (
@@ -45,8 +46,13 @@ function SessionCard({ session, onRejoin }: { session: Session; onRejoin: (id: s
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>{createdAt}</Text>
           {isActive && (
-            <Button type="link" onClick={() => onRejoin(session.id)} style={{ padding: 0 }}>
+            <Button type="link" onClick={() => onRejoin(session)} style={{ padding: 0 }}>
               Rejoin
+            </Button>
+          )}
+          {isEnded && (
+            <Button type="link" onClick={() => onViewReview(session.id)} style={{ padding: 0, color: "#FF2D7E" }}>
+              View Results
             </Button>
           )}
         </div>
@@ -64,6 +70,7 @@ export default function Dashboard() {
   const { clear: clearToken } = useLocalStorage<string>('token', '');
   const { clear: clearUserId } = useLocalStorage<string>('id', '');
   const { clear: clearUsername } = useLocalStorage<string>('username', '');
+  const { set: setSessionId } = useLocalStorage("sessionId", "");
 
   const [sessions, setSessions] = useState<Session[]>([]);
 
@@ -78,16 +85,34 @@ export default function Dashboard() {
     clearToken();
     clearUserId();
     clearUsername();
-    localStorage.removeItem("spotify_access_token");
-    localStorage.removeItem("spotify_refresh_token");
-    localStorage.removeItem("spotify_token_expiry");
-    localStorage.removeItem("spotify_device_id");
     router.push("/");
   };
 
-  const handleRejoin = (sessionId: string) => {
-    localStorage.setItem('sessionId', sessionId);
-    router.push(`/sessions/${sessionId}`);
+  const handleRejoin = async (session: Session) => {
+    setSessionId(session.id);
+    // localStorage.setItem('sessionId', session.id);
+    try {
+      const joined = await apiService.post<Session>(
+        `/sessions/${session.id}/participants`,
+        { gamePin: session.gamePin }
+      );
+      if (joined.requiresSongSelection) {
+        router.push(`/join-session?sessionId=${session.id}&songSelection=true`);
+      } else {
+        router.push(`/sessions/${session.id}`);
+      }
+    } catch (err: unknown) {
+      const status = (err as { status?: number })?.status;
+      if (status === 404) {
+        router.push(`/sessions/${session.id}/review`);
+      } else {
+        router.push(`/sessions/${session.id}`);
+      }
+    }
+  };
+
+  const handleViewReview = (sessionId: string) => {
+    router.push(`/sessions/${sessionId}/review`);
   };
 
   const createdSessions = sessions.filter((s) => s.admin && String(s.admin.id) === String(userId));
@@ -117,7 +142,7 @@ export default function Dashboard() {
         <div style={{ marginTop: 16 }}>
           {createdSessions.length === 0
             ? <Text style={{ color: "rgba(255,255,255,0.3)" }}>No created sessions yet</Text>
-            : createdSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} />)
+            : createdSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} onViewReview={handleViewReview} />)
           }
         </div>
       ),
@@ -129,7 +154,7 @@ export default function Dashboard() {
         <div style={{ marginTop: 16 }}>
           {joinedSessions.length === 0
             ? <Text style={{ color: "rgba(255,255,255,0.3)" }}>No joined sessions yet</Text>
-            : joinedSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} />)
+            : joinedSessions.map((s) => <SessionCard key={s.id} session={s} onRejoin={handleRejoin} onViewReview={handleViewReview} />)
           }
         </div>
       ),

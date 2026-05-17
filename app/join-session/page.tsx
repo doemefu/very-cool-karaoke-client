@@ -1,28 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Session } from "@/types/session";
-import { Card, Typography, Layout, Button, Input, Alert } from "antd";
+import { Card, Typography, Layout, Button, Input, Alert, Steps } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import SongSearchContent from "@/components/SongSearchContent";
 
 const { Header, Content } = Layout;
 const { Title, Text } = Typography;
 
-export default function JoinSession() {
+function JoinSessionContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const apiService = useApi();
 
-  const { set: setSessionId } = useLocalStorage<string>("sessionId", "");
+  const { set: setSessionId, value: currentSessionId } = useLocalStorage<string>("sessionId", "");
 
   const [pin, setPin] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState<"pin" | "song-selection">("pin");
-  const [currentSessionId, setCurrentSessionId] = useState("");
+
+  useEffect(() => {
+    const sessionId = searchParams.get("sessionId");
+    const songSelection = searchParams.get("songSelection");
+    if (sessionId && songSelection === "true") {
+      setSessionId(sessionId);
+      setStep("song-selection");
+    }
+  }, [searchParams, setSessionId]);
 
   const handleJoinWithPin = async () => {
     setError("");
@@ -39,7 +48,6 @@ export default function JoinSession() {
         { gamePin: pin }
       );
       setSessionId(session.id);
-      setCurrentSessionId(session.id);
 
       if (joined.requiresSongSelection) {
         setStep("song-selection");
@@ -83,6 +91,16 @@ export default function JoinSession() {
 
       <Content style={{ padding: "48px 24px" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <Card style={{ marginBottom: 32 }}>
+            <Steps
+              current={step === "pin" ? 0 : 1}
+              items={[
+                { title: "Enter PIN" },
+                { title: "Add a Song" },
+              ]}
+            />
+          </Card>
+
           {step === "pin" && (
             <Card>
               <div style={{ textAlign: "center", padding: "48px 24px" }}>
@@ -133,6 +151,7 @@ export default function JoinSession() {
                     type="error"
                     description={error}
                     showIcon
+                    closable
                     style={{ marginTop: 16, textAlign: "left" }}
                   />
                 )}
@@ -165,5 +184,13 @@ export default function JoinSession() {
         </div>
       </Content>
     </Layout>
+  );
+}
+
+export default function JoinSession() {
+  return (
+    <Suspense>
+      <JoinSessionContent />
+    </Suspense>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
 import { useVotingRound } from "@/hooks/useVotingRound";
+import { useSessionStatus } from "@/hooks/useSessionStatus";
 import { useApi } from "@/hooks/useApi";
 import LyricsDisplay from "../../components/LyricsDisplay";
 import VotingPhase from "../../components/VotingPhase";
@@ -12,12 +13,12 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import SongSearchDrawer from "../../components/SongSearchDrawer";
 import ReactionBar from "../../components/ReactionBar";
 import { Song } from "@/types/song";
-import { Session } from "@/types/session";
 import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
-import Image from "next/image";
-import { Layout, Button, Typography, Tooltip, Badge, Alert } from "antd";
-import { ArrowLeftOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import WaitingLobby from "../../components/WaitingLobby";
+import SessionSidebar from "../../components/SessionSidebar";
+import { Layout, Button, Typography, Tooltip, Badge, Alert, Spin, Space, Popconfirm } from "antd";
+import { ArrowLeftOutlined, PauseCircleOutlined, PlayCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -30,68 +31,107 @@ export default function SessionPage() {
   const { clear: clearSessionId } = useLocalStorage<string>("sessionId", "");
 
   const [searchDrawerOpen, setSearchDrawerOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [gamePin, setGamePin] = useState<string>("");
-  const [playerActivated, setPlayerActivated] = useState(false);
   const [error, setError] = useState("");
+  const [startingSession, setStartingSession] = useState(false);
+
+  const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
+    useSessionStatus(sessionId, userId);
 
   useEffect(() => {
-    if (!sessionId || !userId) return;
-    apiService.get<Session>(`/sessions/${sessionId}`).then((session) => {
-      setIsAdmin(String(session.admin?.id) === String(userId));
-      setGamePin(session.gamePin ?? "");
-    }).catch(() => {/* silently ignore */});
-  }, [apiService, sessionId, userId]);
-
-  const {
-    currentSong,
-    isLoading,
-    fetchError,
-    refresh
-  } = useLyrics(sessionId);
-
-  const { queue } = useSongQueue(sessionId);
-  const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
-
-  const { openRound, clearRound } = useVotingRound(sessionId);
-  // test data for winner screen development
-  // const openRound = {
-  //   id: 1,
-  //   roundNumber: 1,
-  //   status: "CLOSED" as const,
-  //   startedAt: new Date().toISOString(),
-  //   endsAt: new Date(Date.now() - 1000).toISOString(),
-  //   candidates: [
-  //     { id: 1, title: "Bohemian Rhapsody", artist: "Queen", currentVoteCount: 3, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 1, username: "alice", status: "ONLINE" } },
-  //     { id: 2, title: "Mr. Brightside", artist: "The Killers", currentVoteCount: 1, lyrics: null, spotifyId: null, geniusId: null, albumArt: null, durationMs: 0, performed: false, addedBy: { id: 2, username: "bob", status: "ONLINE" } },
-  //   ],
-  // };
-
-  const handleLeaveSession = async () => {
-    setError("");
-    try {
-      await apiService.delete(`/sessions/${sessionId}/participants/${userId}`);
+    if (!sessionLoading && status === "ENDED") {
       clearSessionId();
-      router.push("/dashboard");
-    } catch (err) {
-      const status = (err as ApplicationError).status;
-      if (status === 404) {
-        clearSessionId();
-        router.push("/dashboard");
-      } else {
-        setError("Could not leave the session. Please try again.");
-      }
+      router.replace(`/sessions/${sessionId}/review`);
+    }
+  }, [status, sessionLoading, sessionId, router, clearSessionId]);
+
+  const handlePauseResume = async () => {
+    const newStatus = status === "PAUSED" ? "ACTIVE" : "PAUSED";
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: newStatus });
+    } catch {
+      setError("Could not update session status. Please try again.");
     }
   };
 
+  const handleEndSession = async () => {
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: "ENDED" });
+      clearSessionId();
+      router.push(`/sessions/${sessionId}/review`);
+    } catch {
+      setError("Could not end the session. Please try again.");
+    }
+  };
+
+  const { currentSong, isLoading, fetchError, refresh } = useLyrics(sessionId);
+  const { queue } = useSongQueue(sessionId);
+  const displayQueue = queue.filter((s: Song) => s.id !== currentSong?.id);
+  const { openRound, clearRound } = useVotingRound(sessionId);
+
+const handleBackToDashboard = async () => {
+    if (isAdmin && status === "ACTIVE") {
+      try {
+        await apiService.put(`/sessions/${sessionId}`, { status: "PAUSED" });
+      } catch {
+        // navigate anyway even if pause fails
+      }
+    }
+    clearSessionId();
+    router.push("/dashboard");
+  };
+
+const handleStartSession = async () => {
+    setError("");
+    setStartingSession(true);
+    try {
+      await apiService.put(`/sessions/${sessionId}`, { status: "ACTIVE" });
+    } catch {
+      setError("Could not start the session. Please try again.");
+    } finally {
+      setStartingSession(false);
+    }
+  };
+
+  const handleRoundClosed = () => {
+    clearRound();
+    refresh();
+  };
+
   if (openRound) {
-    return <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={clearRound} />;
+    return (
+      <VotingPhase sessionId={sessionId} round={openRound} onRoundClosed={handleRoundClosed} currentSong={currentSong} />
+    );
   }
 
+  // ── Loading state ────────────────────────────────────────────────────────────
+  if (sessionLoading) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#0D0D1A", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  // ── Waiting Lobby (status === "CREATED") ─────────────────────────────────────
+  if (status === "CREATED") {
+    return (
+      <WaitingLobby
+        sessionName={sessionName}
+        gamePin={gamePin}
+        participants={participants}
+        isAdmin={isAdmin}
+        error={error}
+        startingSession={startingSession}
+        onStart={handleStartSession}
+        onBack={handleBackToDashboard}
+      />
+    );
+  }
+
+  // ── Main Session View (ACTIVE / PAUSED) ──────────────────────────────────────
   return (
     <Layout style={{ minHeight: "100vh", background: "#0D0D1A" }}>
 
-      {/* Header bar */}
       <Header
         style={{
           background: "rgba(13, 13, 26, 0.97)",
@@ -106,211 +146,100 @@ export default function SessionPage() {
           height: 56,
         }}
       >
-        {/* Left: Back to Dashboard + Leave Session */}
+        {/* Left: Back + Leave */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Button
             type="text"
             icon={<ArrowLeftOutlined />}
-            onClick={() => { clearSessionId(); router.push("/dashboard"); }}
+            onClick={handleBackToDashboard}
             style={{ color: "#FFFFFF" }}
           >
             Back to Dashboard
           </Button>
-          {!isAdmin && (
-            <Tooltip title="Leave Session">
-              <Button
-                onClick={handleLeaveSession}
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(255,80,80,0.4)",
-                  borderRadius: 8,
-                  color: "rgba(255,100,100,0.9)",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  padding: "0 12px",
-                }}
-              >
-                <span style={{ fontSize: 13 }}>Leave</span>
-              </Button>
-            </Tooltip>
+        </div>
+
+        {/* Center: PIN + Status */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          {gamePin && (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
+              <Text style={{ color: "#FF2D7E", fontWeight: 700, fontSize: 20, letterSpacing: "0.18em" }}>
+                {gamePin}
+              </Text>
+            </div>
+          )}
+          {(status === "ACTIVE" || status === "PAUSED") && (
+            <Badge
+              status={status === "ACTIVE" ? "processing" : "warning"}
+              text={
+                <Text style={{ color: status === "ACTIVE" ? "#1DB954" : "#faad14", fontSize: 12 }}>
+                  {status === "ACTIVE" ? "Active" : "Paused"}
+                </Text>
+              }
+            />
           )}
         </div>
 
-        {/* Center: Game PIN */}
-        {gamePin && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
-            <Text style={{ color: "#FF2D7E", fontWeight: 700, fontSize: 20, letterSpacing: "0.18em" }}>
-              {gamePin}
-            </Text>
-          </div>
-        )}
-
-        {/* Right: playback controls + add song */}
-        <div style={{ display: "flex", gap: 8 }}>
-          {isAdmin && !playerActivated && (
-            <Tooltip title={queue.length === 0 ? "No songs in queue" : ""}>
-              <Button
-                type="primary"
-                disabled={queue.length === 0}
-                style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                onClick={() => {
-                  setPlayerActivated(true);
-                  refresh();
-                }}
+        {/* Right: controls */}
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {isAdmin && (
+            <Space size={8}>
+              <Tooltip title={status === "PAUSED" ? "Resume" : "Pause"}>
+                <Button
+                  type="text"
+                  icon={status === "PAUSED" ? <PlayCircleOutlined /> : <PauseCircleOutlined />}
+                  onClick={handlePauseResume}
+                  className="session-control-btn"
+                  style={{ color: "#FFFFFF", fontSize: 20 }}
+                />
+              </Tooltip>
+              <Popconfirm
+                title="End Session"
+                description="Are you sure you want to end this session?"
+                onConfirm={handleEndSession}
+                okText="Yes"
+                cancelText="No"
+                styles={{ root: { backgroundColor: "#1A1A2E", border: "1px solid rgba(255,45,126,0.3)", borderRadius: 8 }, container: { backgroundColor: "#1A1A2E", borderRadius: 8 } }}
               >
-                Play Now
-              </Button>
-            </Tooltip>
+                <Tooltip title="End Session">
+                  <Button type="text" danger icon={<PoweroffOutlined />} style={{ fontSize: 20 }} />
+                </Tooltip>
+              </Popconfirm>
+            </Space>
           )}
-          {isAdmin && playerActivated && (
-            <Tooltip title={displayQueue.length === 0 ? "No songs in queue" : ""}>
-              <Button
-                type="primary"
-                style={{ background: "#1DB954", borderColor: "#1DB954" }}
-                disabled={displayQueue.length === 0}
-                onClick={() => {
-                  apiService
-                    .post(`/sessions/${sessionId}/songs/next`, {})
-                    .catch(console.error);
-                }}
-              >
-                Skip
-              </Button>
-            </Tooltip>
-          )}
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => setSearchDrawerOpen(true)}
-          >
-            Add Song
-          </Button>
         </div>
       </Header>
 
-      {/* Main content */}
-      <Layout style={{ background: "transparent" }}>
-
-        {/* Lyrics */}
-        <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px", flex: 1 }}>
+      <Layout style={{ background: "transparent", height: "calc(100vh - 56px)", overflow: "hidden" }}>
+        <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px", flex: 1, overflowY: "auto" }}>
           <div style={{ width: "100%", maxWidth: 860 }}>
             {error && (
-              <Alert
-                type="error"
-                description={error}
-                closable
-                style={{ marginBottom: 16, position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400 }}
-              />
+              <Alert type="error" description={error} closable style={{ position: "absolute", top: 64, left: "50%", transform: "translateX(-50%)", zIndex: 99, minWidth: 400, background: "#391b2c" }} />
             )}
-            <div
-              style={{
-                background: "rgba(255, 255, 255, 0.04)",
-                border: "1px solid rgba(255, 45, 126, 0.15)",
-                borderRadius: 16,
-                overflow: "hidden",
-                height: "100%",
-              }}
-            >
-              <LyricsDisplay
-                currentSong={currentSong}
-                isLoading={isLoading}
-                fetchError={fetchError}
-              />
+            <div style={{ background: "rgba(255, 255, 255, 0.04)", border: "1px solid rgba(255, 45, 126, 0.15)", borderRadius: 16, overflow: "hidden", height: "100%" }}>
+              <LyricsDisplay currentSong={currentSong} isLoading={isLoading} fetchError={fetchError} />
             </div>
           </div>
         </Content>
 
-        {/* Queue Sidebar */}
-        <Layout.Sider
-          width={320}
-          style={{
-            background: "#1A1A2E",
-            borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
-            padding: 24,
-            overflowY: "auto",
+        <SessionSidebar
+          queue={displayQueue}
+          currentSong={currentSong}
+          participants={participants}
+          isAdmin={isAdmin}
+          userId={userId}
+          onAddSong={() => setSearchDrawerOpen(true)}
+          onDeleteSong={(songId) => {
+            setError("");
+            apiService.delete(`/sessions/${sessionId}/songs/${songId}`)
+              .catch((err: ApplicationError) => {
+                setError(err.message ?? "Could not remove song. Please try again.");
+              });
           }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <Text style={{ color: "#FFFFFF", fontWeight: 600, fontSize: 15 }}>
-              Party Playlist <Badge count={displayQueue.length} style={{ backgroundColor: "#FF2D7E" }} />
-            </Text>
-          </div>
-
-          {currentSong && (
-            <div
-              style={{
-                background: "#0D0D1A",
-                borderRadius: 8,
-                border: "1px solid rgba(255, 45, 126, 0.4)",
-                marginBottom: 8,
-                padding: "10px 12px",
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              {currentSong.albumArt && (
-                <Image src={currentSong.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
-              )}
-              <div>
-                <div style={{ color: "#FF2D7E", fontSize: 13, fontWeight: 600 }}>{currentSong.title}</div>
-                <div style={{ color: "rgba(255, 45, 126, 0.6)", fontSize: 12 }}>{currentSong.artist}</div>
-              </div>
-            </div>
-          )}
-
-          {displayQueue.length === 0 ? (
-            <Text style={{ color: "rgba(255,255,255,0.3)" }}>No songs yet</Text>
-          ) : (
-            displayQueue.map((song: Song) => (
-              <div
-                key={song.id}
-                style={{
-                  background: "#0D0D1A",
-                  borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  marginBottom: 8,
-                  padding: "10px 12px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                }}
-              >
-                {song.albumArt && (
-                  <Image src={song.albumArt} alt="album art" width={40} height={40} style={{ borderRadius: 4, flexShrink: 0 }} />
-                )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: "#FFFFFF", fontSize: 13 }}>{song.title}</div>
-                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{song.artist}</div>
-                </div>
-                {isAdmin && (
-                  <Tooltip title="Remove song">
-                    <Button
-                      type="text"
-                      size="small"
-                      icon={<DeleteOutlined />}
-                      onClick={() => {
-                        setError("");
-                        apiService
-                          .delete(`/sessions/${sessionId}/songs/${song.id}`)
-                          .catch((err: ApplicationError) => {
-                            setError(err.message ?? "Could not remove song. Please try again.");
-                          });
-                      }}
-                      style={{ color: "rgba(255,80,80,0.7)", flexShrink: 0 }}
-                    />
-                  </Tooltip>
-                )}
-              </div>
-            ))
-          )}
-        </Layout.Sider>
-
+          onSkipSong={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
+        />
       </Layout>
 
-      {/* Song Search Drawer */}
       <SongSearchDrawer
         open={searchDrawerOpen}
         onClose={() => setSearchDrawerOpen(false)}
@@ -321,7 +250,8 @@ export default function SessionPage() {
       <YouTubePlayer
         currentSong={currentSong}
         isAdmin={isAdmin}
-        isActive={playerActivated}
+        isActive={status === "ACTIVE" || status === "PAUSED"}
+        isPaused={status === "PAUSED"}
         onTrackEnd={() => apiService.post(`/sessions/${sessionId}/songs/next`, {}).catch(console.error)}
       />
 

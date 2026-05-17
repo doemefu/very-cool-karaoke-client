@@ -105,7 +105,7 @@ reason).
 | **[@Unick1](https://github.com/Unick1)**    | 22.04.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/89/commits  | Rest implementation to send messages instantly upon joining #89 | Major  |
 ---
 
-## Contributions Week 5 - 27.04.2026 to 04.05.2026
+## Contributions Week 5 - 27.04.2026 to 03.05.2026
 
 | **Student**                                       | **Date**   | **Link to Commit**                                                  | **Description**                                               | **Relevance** |
 |---------------------------------------------------|------------|---------------------------------------------------------------------|---------------------------------------------------------------|---------------|
@@ -119,12 +119,33 @@ reason).
 | **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/111  | [BE] Implement GET /songs/{id}/recommendations endpoint #69 | minor                            |
 | **[@lurisz33](https://github.com/lurisz33)**      | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/112/commits | #99 Implement Automated Trigger for Voting Rounds   | major    |
 | **[@lurisz33](https://github.com/lurisz33)**      | 03.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/112/commits | #38 Implement voting resolution: winner selection, tie-breaking, and auto-close   | major    |
-
 ---
 
+## Contributions Week 6 - 04.05.2026 to 11.05.2026
 
+| **Student**                                       | **Date**   | **Link to Commit**                                          | **Description**                                                       | **Relevance** |
+|---------------------------------------------------|------------|-------------------------------------------------------------|-----------------------------------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/75 | #71 check if session is in voting round or not if somebody joins      | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/76 | #73 Create Sesssion Lobby, when Admin has not yet started the session | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/116 | #115 Implement Broadcast Real-Time Vote Counts to Frontend on Vote Cast   | major    |
+| **[@lurisz33](https://github.com/lurisz33)**      | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/120 | #119 Implement GET /sessions/{sessionId}/votingRounds   | major    |
+| **[@Spring987](https://github.com/Spring987)**    | 07.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/72/changes | #68-fe-display-singer-username-in-song-queue   | Beta Testing /Tutor Feedback     |
+| **[@Spring987](https://github.com/Spring987)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/77/changes| #15-fe-add-start-pause-and-end-session-controls-for-admin | major         |
+| **[@Unick1](https://github.com/Unick1)**   | 09.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/117/commits | #42 functionality to track the played songs | optional         |
+| **[@Unick1](https://github.com/Unick1)**   | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/commits | Implement SessionWebSocketPublisherImpl and update session service | major  |
+| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | refer to week 3 plus work  |- | -                            |
 ---
 
-## Contributions Week 6 - [Begin Date] to [End Date]
+## Contributions Week 7 - 11.05.2026 to 18.05.2026
 
-_Continue with the same table format as above._
+| **Student**                                       | **Date**   | **Link to Commit**                                                   | **Description**                                                | **Relevance** |
+|---------------------------------------------------|------------|----------------------------------------------------------------------|----------------------------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 12.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/81          | #81 Bugfixes                                                   | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/87          | #85 Bugfixes and refactor                                      | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/134         | #134 Modified voting                                           | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/126/changes | #125 Extract promotion logic of next song from nextSong        | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/129         | #127 Implememnt auto-start first song on session activation    | major         |
+| **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/131         | #130 Fix NPE when broadcasting null currentSong over WebSocket | major         |
+| **[@Spring987](https://github.com/Spring987)**    | 14.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/83          | #78-fe-display-review-screen-after-ending-session              | major         |
+| **[@Spring987](https://github.com/Spring987)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/86          | #79-fe-implement-song-selection-when-rejoining                 | major         |
+---

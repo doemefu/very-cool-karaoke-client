@@ -56,7 +56,7 @@ const NoSongState: FC = () => (
       No song currently playing
     </Text>
     <Text style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>
-      The host will start the session shortly…
+      The queue is empty — add songs to keep the party going!
     </Text>
   </div>
 );
@@ -138,8 +138,6 @@ const LyricsBlock: FC<{ lyrics: string }> = ({ lyrics }) => (
       height: "65vh",
       overflowY: "auto",
       padding: "24px 40px 40px",
-      scrollbarWidth: "thin",
-      scrollbarColor: "#FF2D7E transparent",
     }}
   >
     <Paragraph
