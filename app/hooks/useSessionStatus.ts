@@ -67,7 +67,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
           data = frame.body;
         }
         // Server may send full session DTO or just a raw status string
-        const newStatus: SessionStatus =
+        const newStatus: SessionStatus | null =
           typeof data === "string" ? data as SessionStatus : (data as { status?: SessionStatus })?.status ?? null;
         if (newStatus) {
           setStatus(newStatus);
