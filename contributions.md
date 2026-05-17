@@ -148,4 +148,7 @@ reason).
 | **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/131         | #130 Fix NPE when broadcasting null currentSong over WebSocket | major         |
 | **[@Spring987](https://github.com/Spring987)**    | 14.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/83          | #78-fe-display-review-screen-after-ending-session              | major         |
 | **[@Spring987](https://github.com/Spring987)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/86          | #79-fe-implement-song-selection-when-rejoining                 | major         |
+| **[@Unick1](https://github.com/Unick1)**    | 13.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/changes/722bd6a6b041f0dca4784e87b0732450f4673f4a      | #121 Implement SessionWebSocketPublisherImpl and update session service | minor         |
+| **[@Unick1](https://github.com/Unick1)**    | 15.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/84  | #133 Introduce users list and scrollable session sections  | major         |
+
 ---
