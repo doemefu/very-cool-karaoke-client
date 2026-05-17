@@ -150,7 +150,7 @@ reason).
 | **[@Spring987](https://github.com/Spring987)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/86          | #79-fe-implement-song-selection-when-rejoining                 | major         |
 | **[@Unick1](https://github.com/Unick1)**    | 13.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/changes/722bd6a6b041f0dca4784e87b0732450f4673f4a      | #121 Implement SessionWebSocketPublisherImpl and update session service | minor         |
 | **[@Unick1](https://github.com/Unick1)**    | 15.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/84  | #133 Introduce users list and scrollable session sections  | major         |
-| **[@doemefu](https://github.com/doemefu)**        | 17.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/135/commits/82f97fc227d3e2122740b6bab22cc8585d711cf2  | Bugfixing | major                            |
-| **[@doemefu](https://github.com/doemefu)**        | 17.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/135  | Deployment cleanup and checks | major                            |
+| **[@doemefu](https://github.com/doemefu)**        | 17.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/138  | #138 Bugfixing | major                            |
+| **[@doemefu](https://github.com/doemefu)**        | 17.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/139  | #139 Deployment cleanup and checks | major                            |
 
 ---
