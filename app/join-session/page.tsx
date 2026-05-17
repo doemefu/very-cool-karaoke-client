@@ -28,7 +28,7 @@ function JoinSessionContent() {
     const sessionId = searchParams.get("sessionId");
     const songSelection = searchParams.get("songSelection");
     if (sessionId && songSelection === "true") {
-      setCurrentSessionId(sessionId);
+      setSessionId(sessionId);
       setStep("song-selection");
     }
   }, [searchParams]);
