@@ -17,6 +17,7 @@ import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import WaitingLobby from "../../components/WaitingLobby";
 import SessionSidebar from "../../components/SessionSidebar";
+import { HEADER_HEIGHT } from "@/constants/dimensions";
 import { Layout, Button, Typography, Tooltip, Badge, Alert, Spin, Space, Popconfirm } from "antd";
 import { ArrowLeftOutlined, PauseCircleOutlined, PlayCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 
@@ -143,7 +144,7 @@ const handleStartSession = async () => {
           position: "sticky",
           top: 0,
           zIndex: 100,
-          height: 56,
+          height: HEADER_HEIGHT,
         }}
       >
         {/* Left: Back + Leave */}
@@ -210,7 +211,7 @@ const handleStartSession = async () => {
         </div>
       </Header>
 
-      <Layout style={{ background: "transparent", height: "calc(100vh - 56px)", overflow: "hidden" }}>
+      <Layout style={{ background: "transparent", height: `calc(100vh - ${HEADER_HEIGHT}px)`, overflow: "hidden" }}>
         <Content style={{ display: "flex", justifyContent: "center", padding: "32px 16px", flex: 1, overflowY: "auto" }}>
           <div style={{ width: "100%", maxWidth: 860 }}>
             {error && (

@@ -6,6 +6,7 @@ import { useSessionStatus } from "@/hooks/useSessionStatus";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Layout, Button, Typography, Spin, Avatar, Badge } from "antd";
 import { ArrowLeftOutlined, TrophyOutlined, UserOutlined } from "@ant-design/icons";
+import { HEADER_HEIGHT } from "@/constants/dimensions";
 
 const { Header, Content } = Layout;
 const { Text, Title } = Typography;
@@ -33,7 +34,7 @@ export default function SessionReviewPage() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 24px",
-          height: 56,
+          height: HEADER_HEIGHT,
         }}
       >
         <Button
@@ -51,7 +52,7 @@ export default function SessionReviewPage() {
         <div style={{ width: 160 }} />
       </Header>
 
-      <Layout style={{ background: "transparent", height: "calc(100vh - 56px)", overflow: "hidden" }}>
+      <Layout style={{ background: "transparent", height: `calc(100vh - ${HEADER_HEIGHT}px)`, overflow: "hidden" }}>
         <Content style={{ padding: "40px 24px", overflowY: "auto" }}>
           <div style={{ maxWidth: 720, margin: "0 auto" }}>
 

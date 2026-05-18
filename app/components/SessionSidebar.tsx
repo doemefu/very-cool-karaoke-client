@@ -4,6 +4,7 @@ import { Layout, Button, Typography, Tooltip, Badge, Avatar, Space } from "antd"
 import { DeleteOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { Song } from "@/types/song";
 import { Participant } from "@/types/session";
+import { SIDEBAR_WIDTH } from "@/constants/dimensions";
 
 const { Text } = Typography;
 
@@ -21,7 +22,7 @@ interface SessionSidebarProps {
 export default function SessionSidebar({ queue, currentSong, participants, isAdmin, userId, onAddSong, onDeleteSong, onSkipSong }: SessionSidebarProps) {
   return (
     <Layout.Sider
-      width={320}
+      width={SIDEBAR_WIDTH}
       style={{
         background: "#1A1A2E",
         borderLeft: "1px solid rgba(255, 255, 255, 0.1)",
