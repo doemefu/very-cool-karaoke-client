@@ -6,6 +6,7 @@ import { Session, SessionStatus, Participant } from "@/types/session";
 export interface UseSessionStatusResult {
   status: SessionStatus | null;
   isAdmin: boolean;
+  adminId: string;
   gamePin: string;
   sessionName: string;
   participants: Participant[];
@@ -18,6 +19,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
 
   const [status, setStatus] = useState<SessionStatus | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminId, setAdminId] = useState("");
   const [gamePin, setGamePin] = useState("");
   const [sessionName, setSessionName] = useState("");
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -27,6 +29,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
     const newStatus = session.status ?? null;
     setStatus(newStatus);
     setIsAdmin(String(session.admin?.id) === String(currentUserId));
+    setAdminId(String(session.admin?.id ?? ""));
     setGamePin(session.gamePin ?? "");
     setSessionName(session.name ?? "");
     setParticipants(session.participants ?? []);
@@ -72,8 +75,16 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
         if (newStatus) {
           setStatus(newStatus);
         }
-        if (data && typeof data === "object" && (data as { participants?: unknown }).participants) {
-          setParticipants((data as { participants: typeof participants }).participants);
+        if (data && typeof data === "object") {
+          const obj = data as { participants?: Participant[]; admin?: { id: number } };
+          if (obj.participants) {
+            setParticipants(obj.participants);
+          }
+          if (obj.admin?.id !== undefined) {
+            const newAdminId = String(obj.admin.id);
+            setAdminId(newAdminId);
+            setIsAdmin(newAdminId === String(userId));
+          }
         }
       }
     );
@@ -94,7 +105,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
       sub.unsubscribe();
       participantsSub.unsubscribe();
     };
-  }, [sessionId, client, connected]);
+  }, [sessionId, client, connected, userId]);
 
-  return { status, isAdmin, gamePin, sessionName, participants, isLoading };
+  return { status, isAdmin, adminId, gamePin, sessionName, participants, isLoading };
 };

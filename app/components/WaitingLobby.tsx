@@ -3,6 +3,7 @@
 import { Button, Typography, Badge, Alert, Avatar } from "antd";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
 import { Participant } from "@/types/session";
+import ParticipantLabel from "@/components/ParticipantLabel";
 
 const { Text, Title } = Typography;
 
@@ -11,13 +12,15 @@ interface WaitingLobbyProps {
   gamePin: string;
   participants: Participant[];
   isAdmin: boolean;
+  userId: string;
+  adminId: string;
   error: string;
   startingSession: boolean;
   onStart: () => void;
   onBack: () => void;
 }
 
-export default function WaitingLobby({ sessionName, gamePin, participants, isAdmin, error, startingSession, onStart, onBack }: WaitingLobbyProps) {
+export default function WaitingLobby({ sessionName, gamePin, participants, isAdmin, userId, adminId, error, startingSession, onStart, onBack }: WaitingLobbyProps) {
   return (
     <div style={{ minHeight: "100vh", background: "#0D0D1A", display: "flex", flexDirection: "column" }}>
       <div
@@ -83,12 +86,28 @@ export default function WaitingLobby({ sessionName, gamePin, participants, isAdm
             <Text style={{ color: "rgba(255,255,255,0.25)", fontSize: 13 }}>No participants yet...</Text>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {participants.map((p) => (
-                <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <Avatar size={30} icon={<UserOutlined />} style={{ background: "rgba(255, 45, 126, 0.3)", flexShrink: 0 }} />
-                  <Text style={{ color: "#FFFFFF", fontSize: 14 }}>{p.username}</Text>
-                </div>
-              ))}
+              {participants.map((p) => {
+                const isMe = String(p.id) === String(userId);
+                return (
+                  <div
+                    key={p.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      padding: "4px 6px",
+                      borderRadius: 6,
+                      background: isMe ? "rgba(0, 194, 255, 0.08)" : "transparent",
+                    }}
+                  >
+                    <Avatar size={30} icon={<UserOutlined />} style={{ background: "rgba(255, 45, 126, 0.3)", flexShrink: 0 }} />
+                    <Text style={{ color: "#FFFFFF", fontSize: 14 }}>
+                      {p.username}
+                      <ParticipantLabel participantId={p.id} userId={userId} adminId={adminId} />
+                    </Text>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
