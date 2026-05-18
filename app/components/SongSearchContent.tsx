@@ -1,7 +1,7 @@
 "use client";
 
 import { Input, Avatar, Empty } from "antd";
-import { SearchOutlined, PlusOutlined, WarningOutlined } from "@ant-design/icons";
+import { SearchOutlined, PlusOutlined, WarningOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useSongSearch } from "@/hooks/useSongSearch";
 
 const { Search } = Input;
@@ -27,7 +27,7 @@ export default function SongSearchContent({ sessionId, onSongAdded }: SongSearch
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           loading={isLoading}
-          allowClear
+          allowClear={{ clearIcon: <CloseCircleOutlined style={{ color: "rgba(255,255,255,0.55)" }} /> }}
         />
       </div>
 
