@@ -75,8 +75,16 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
         if (newStatus) {
           setStatus(newStatus);
         }
-        if (data && typeof data === "object" && (data as { participants?: unknown }).participants) {
-          setParticipants((data as { participants: typeof participants }).participants);
+        if (data && typeof data === "object") {
+          const obj = data as { participants?: Participant[]; admin?: { id: number } };
+          if (obj.participants) {
+            setParticipants(obj.participants);
+          }
+          if (obj.admin?.id !== undefined) {
+            const newAdminId = String(obj.admin.id);
+            setAdminId(newAdminId);
+            setIsAdmin(newAdminId === String(userId));
+          }
         }
       }
     );
@@ -97,7 +105,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
       sub.unsubscribe();
       participantsSub.unsubscribe();
     };
-  }, [sessionId, client, connected]);
+  }, [sessionId, client, connected, userId]);
 
   return { status, isAdmin, adminId, gamePin, sessionName, participants, isLoading };
 };

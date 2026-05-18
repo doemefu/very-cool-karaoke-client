@@ -4,6 +4,7 @@ import { Layout, Button, Typography, Tooltip, Badge, Avatar, Space } from "antd"
 import { DeleteOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { Song } from "@/types/song";
 import { Participant } from "@/types/session";
+import ParticipantLabel from "@/components/ParticipantLabel";
 
 const { Text } = Typography;
 
@@ -122,34 +123,29 @@ export default function SessionSidebar({ queue, currentSong, participants, isAdm
             {participants.length === 0 ? (
               <Text style={{ color: "rgba(255,255,255,0.3)" }}>No one here yet</Text>
             ) : (
-              participants.map((p) => (
-                <div
-                  key={p.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 10,
-                    marginBottom: 8,
-                    padding: "6px 8px",
-                    borderRadius: 8,
-                    background: String(p.id) === String(userId) ? "rgba(0, 194, 255, 0.08)" : "transparent",
-                  }}
-                >
-                  <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
-                  <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
-                    {p.username}
-                    {String(p.id) === String(adminId) && String(p.id) === String(userId) && (
-                      <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(me &amp; host)</span>
-                    )}
-                    {String(p.id) === String(adminId) && String(p.id) !== String(userId) && (
-                      <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(host)</span>
-                    )}
-                    {String(p.id) !== String(adminId) && String(p.id) === String(userId) && (
-                      <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>(me)</span>
-                    )}
-                  </Text>
-                </div>
-              ))
+              participants.map((p) => {
+                const isMe = String(p.id) === String(userId);
+                return (
+                  <div
+                    key={p.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 8,
+                      padding: "6px 8px",
+                      borderRadius: 8,
+                      background: isMe ? "rgba(0, 194, 255, 0.08)" : "transparent",
+                    }}
+                  >
+                    <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
+                    <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
+                      {p.username}
+                      <ParticipantLabel participantId={p.id} userId={userId} adminId={adminId} />
+                    </Text>
+                  </div>
+                );
+              })
             )}
           </div>
         </div>

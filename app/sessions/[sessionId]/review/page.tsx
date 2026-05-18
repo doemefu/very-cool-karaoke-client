@@ -6,6 +6,7 @@ import { useSessionStatus } from "@/hooks/useSessionStatus";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Layout, Button, Typography, Spin, Avatar, Badge } from "antd";
 import { ArrowLeftOutlined, TrophyOutlined, UserOutlined } from "@ant-design/icons";
+import ParticipantLabel from "@/components/ParticipantLabel";
 
 const { Header, Content } = Layout;
 const { Text, Title } = Typography;
@@ -134,34 +135,29 @@ export default function SessionReviewPage() {
           {participants.length === 0 ? (
             <Text style={{ color: "rgba(255,255,255,0.3)" }}>No participants</Text>
           ) : (
-            participants.map((p) => (
-              <div
-                key={p.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  marginBottom: 8,
-                  padding: "6px 8px",
-                  borderRadius: 8,
-                  background: String(p.id) === String(userId) ? "rgba(0, 194, 255, 0.08)" : "transparent",
-                }}
-              >
-                <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
-                <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
-                  {p.username}
-                  {String(p.id) === String(adminId) && String(p.id) === String(userId) && (
-                    <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(me &amp; host)</span>
-                  )}
-                  {String(p.id) === String(adminId) && String(p.id) !== String(userId) && (
-                    <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(host)</span>
-                  )}
-                  {String(p.id) !== String(adminId) && String(p.id) === String(userId) && (
-                    <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>(me)</span>
-                  )}
-                </Text>
-              </div>
-            ))
+            participants.map((p) => {
+              const isMe = String(p.id) === String(userId);
+              return (
+                <div
+                  key={p.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    marginBottom: 8,
+                    padding: "6px 8px",
+                    borderRadius: 8,
+                    background: isMe ? "rgba(0, 194, 255, 0.08)" : "transparent",
+                  }}
+                >
+                  <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
+                  <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
+                    {p.username}
+                    <ParticipantLabel participantId={p.id} userId={userId ?? ""} adminId={adminId} />
+                  </Text>
+                </div>
+              );
+            })
           )}
         </Layout.Sider>
       </Layout>

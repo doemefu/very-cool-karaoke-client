@@ -120,6 +120,8 @@ const handleStartSession = async () => {
         gamePin={gamePin}
         participants={participants}
         isAdmin={isAdmin}
+        userId={userId ?? ""}
+        adminId={adminId}
         error={error}
         startingSession={startingSession}
         onStart={handleStartSession}
