@@ -112,9 +112,16 @@ export default function LandingPage() {
     <Form form={loginForm} onFinish={handleLogin} layout="vertical" size="large" onChange={() => setError("")}>
       <Form.Item
         name="username"
-        rules={[{ required: true, message: "Please enter your username" }]}
+        rules={[
+          { required: true, message: "Please enter a username" },
+          { max: 30, message: "Username cannot exceed 30 characters" },
+        ]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Username" />
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Username"
+          maxLength={30}
+        />
       </Form.Item>
 
       <Form.Item
@@ -136,9 +143,16 @@ export default function LandingPage() {
     <Form form={registerForm} onFinish={handleRegister} layout="vertical" size="large" onChange={() => setError("")}>
       <Form.Item
         name="username"
-        rules={[{ required: true, message: "Please enter a username" }]}
+        rules={[
+          { required: true, message: "Please enter a username" },
+          { max: 30, message: "Username cannot exceed 30 characters" },
+        ]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Username" />
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Username"
+          maxLength={30}
+        />
       </Form.Item>
 
       <Form.Item
