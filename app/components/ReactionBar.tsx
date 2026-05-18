@@ -4,7 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useReactions } from "@/hooks/useReactions";
 import { Button } from "antd";
 import { Reaction, ReactionType } from "@/types/reaction";
-import { HEADER_HEIGHT, SIDEBAR_WIDTH } from "@/constants/layout";
+import { HEADER_HEIGHT, SIDEBAR_WIDTH } from "@/constants/dimensions";
 
 const EMOJIS: { emoji: string; type: ReactionType }[] = [
   { emoji: "👏", type: "CLAP" },

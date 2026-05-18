@@ -17,7 +17,7 @@ import { ApplicationError } from "@/types/error";
 import YouTubePlayer from "../../components/YouTubePlayer";
 import WaitingLobby from "../../components/WaitingLobby";
 import SessionSidebar from "../../components/SessionSidebar";
-import { HEADER_HEIGHT } from "@/constants/layout";
+import { HEADER_HEIGHT } from "@/constants/dimensions";
 import { Layout, Button, Typography, Tooltip, Badge, Alert, Spin, Space, Popconfirm } from "antd";
 import { ArrowLeftOutlined, PauseCircleOutlined, PlayCircleOutlined, PoweroffOutlined } from "@ant-design/icons";
 

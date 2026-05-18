@@ -6,7 +6,7 @@ import { useSessionStatus } from "@/hooks/useSessionStatus";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Layout, Button, Typography, Spin, Avatar, Badge } from "antd";
 import { ArrowLeftOutlined, TrophyOutlined, UserOutlined } from "@ant-design/icons";
-import { HEADER_HEIGHT } from "@/constants/layout";
+import { HEADER_HEIGHT } from "@/constants/dimensions";
 
 const { Header, Content } = Layout;
 const { Text, Title } = Typography;

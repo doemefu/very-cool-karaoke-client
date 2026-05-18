@@ -4,7 +4,7 @@ import { Layout, Button, Typography, Tooltip, Badge, Avatar, Space } from "antd"
 import { DeleteOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { Song } from "@/types/song";
 import { Participant } from "@/types/session";
-import { SIDEBAR_WIDTH } from "@/constants/layout";
+import { SIDEBAR_WIDTH } from "@/constants/dimensions";
 
 const { Text } = Typography;
 
