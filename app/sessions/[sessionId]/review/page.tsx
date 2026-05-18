@@ -16,7 +16,7 @@ export default function SessionReviewPage() {
   const { clear: clearSessionId } = useLocalStorage<string>("sessionId", "");
   const { value: userId } = useLocalStorage<string>("id", "");
   const { reviewSongs, isLoading } = useSessionReview(sessionId, true);
-  const { participants, isAdmin } = useSessionStatus(sessionId, userId ?? "");
+  const { participants, adminId } = useSessionStatus(sessionId, userId ?? "");
 
   const handleBackToDashboard = () => {
     clearSessionId();
@@ -150,10 +150,14 @@ export default function SessionReviewPage() {
                 <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
                 <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
                   {p.username}
-                  {String(p.id) === String(userId) && (
-                    <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>
-                      {isAdmin ? "(host)" : "(you)"}
-                    </span>
+                  {String(p.id) === String(adminId) && String(p.id) === String(userId) && (
+                    <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(me &amp; host)</span>
+                  )}
+                  {String(p.id) === String(adminId) && String(p.id) !== String(userId) && (
+                    <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(host)</span>
+                  )}
+                  {String(p.id) !== String(adminId) && String(p.id) === String(userId) && (
+                    <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>(me)</span>
                   )}
                 </Text>
               </div>

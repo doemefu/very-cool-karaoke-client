@@ -34,7 +34,7 @@ export default function SessionPage() {
   const [error, setError] = useState("");
   const [startingSession, setStartingSession] = useState(false);
 
-  const { status, isAdmin, gamePin, sessionName, participants, isLoading: sessionLoading } =
+  const { status, isAdmin, adminId, gamePin, sessionName, participants, isLoading: sessionLoading } =
     useSessionStatus(sessionId, userId);
 
   useEffect(() => {
@@ -228,6 +228,7 @@ const handleStartSession = async () => {
           participants={participants}
           isAdmin={isAdmin}
           userId={userId}
+          adminId={adminId}
           onAddSong={() => setSearchDrawerOpen(true)}
           onDeleteSong={(songId) => {
             setError("");

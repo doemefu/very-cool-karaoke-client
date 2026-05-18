@@ -6,6 +6,7 @@ import { Session, SessionStatus, Participant } from "@/types/session";
 export interface UseSessionStatusResult {
   status: SessionStatus | null;
   isAdmin: boolean;
+  adminId: string;
   gamePin: string;
   sessionName: string;
   participants: Participant[];
@@ -18,6 +19,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
 
   const [status, setStatus] = useState<SessionStatus | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminId, setAdminId] = useState("");
   const [gamePin, setGamePin] = useState("");
   const [sessionName, setSessionName] = useState("");
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -27,6 +29,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
     const newStatus = session.status ?? null;
     setStatus(newStatus);
     setIsAdmin(String(session.admin?.id) === String(currentUserId));
+    setAdminId(String(session.admin?.id ?? ""));
     setGamePin(session.gamePin ?? "");
     setSessionName(session.name ?? "");
     setParticipants(session.participants ?? []);
@@ -96,5 +99,5 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
     };
   }, [sessionId, client, connected]);
 
-  return { status, isAdmin, gamePin, sessionName, participants, isLoading };
+  return { status, isAdmin, adminId, gamePin, sessionName, participants, isLoading };
 };

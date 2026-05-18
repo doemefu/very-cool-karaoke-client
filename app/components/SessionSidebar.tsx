@@ -13,12 +13,13 @@ interface SessionSidebarProps {
   participants: Participant[];
   isAdmin: boolean;
   userId: string;
+  adminId: string;
   onAddSong: () => void;
   onDeleteSong: (songId: number) => void;
   onSkipSong: () => void;
 }
 
-export default function SessionSidebar({ queue, currentSong, participants, isAdmin, userId, onAddSong, onDeleteSong, onSkipSong }: SessionSidebarProps) {
+export default function SessionSidebar({ queue, currentSong, participants, isAdmin, userId, adminId, onAddSong, onDeleteSong, onSkipSong }: SessionSidebarProps) {
   return (
     <Layout.Sider
       width={320}
@@ -137,10 +138,14 @@ export default function SessionSidebar({ queue, currentSong, participants, isAdm
                   <Avatar size={28} icon={<UserOutlined />} style={{ background: "rgba(0, 194, 255, 0.3)", flexShrink: 0 }} />
                   <Text style={{ color: "#FFFFFF", fontSize: 13 }}>
                     {p.username}
-                    {String(p.id) === String(userId) && (
-                      <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>
-                        {isAdmin ? "(host)" : "(you)"}
-                      </span>
+                    {String(p.id) === String(adminId) && String(p.id) === String(userId) && (
+                      <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(me &amp; host)</span>
+                    )}
+                    {String(p.id) === String(adminId) && String(p.id) !== String(userId) && (
+                      <span style={{ color: "#FF2D7E", marginLeft: 6, fontSize: 11 }}>(host)</span>
+                    )}
+                    {String(p.id) !== String(adminId) && String(p.id) === String(userId) && (
+                      <span style={{ color: "#00C2FF", marginLeft: 6, fontSize: 11 }}>(me)</span>
                     )}
                   </Text>
                 </div>
