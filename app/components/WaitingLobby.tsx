@@ -3,6 +3,7 @@
 import { Button, Typography, Badge, Alert, Avatar } from "antd";
 import { ArrowLeftOutlined, UserOutlined } from "@ant-design/icons";
 import { Participant } from "@/types/session";
+import { HEADER_HEIGHT } from "@/constants/layout";
 
 const { Text, Title } = Typography;
 
@@ -28,7 +29,7 @@ export default function WaitingLobby({ sessionName, gamePin, participants, isAdm
           alignItems: "center",
           justifyContent: "space-between",
           padding: "0 24px",
-          height: 56,
+          height: HEADER_HEIGHT,
         }}
       >
         <Button

@@ -4,6 +4,7 @@ import { useState, useCallback, useRef } from "react";
 import { useReactions } from "@/hooks/useReactions";
 import { Button } from "antd";
 import { Reaction, ReactionType } from "@/types/reaction";
+import { HEADER_HEIGHT, SIDEBAR_WIDTH } from "@/constants/layout";
 
 const EMOJIS: { emoji: string; type: ReactionType }[] = [
   { emoji: "👏", type: "CLAP" },
@@ -12,9 +13,6 @@ const EMOJIS: { emoji: string; type: ReactionType }[] = [
   { emoji: "😂", type: "LAUGH" },
   { emoji: "🎉", type: "PARTY_POPPER" },
 ];
-
-const HEADER_HEIGHT = 56;
-const SIDEBAR_WIDTH = 320;
 
 interface FloatingReaction {
   id: number;
