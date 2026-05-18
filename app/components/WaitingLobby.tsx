@@ -8,6 +8,7 @@ const { Text, Title } = Typography;
 
 interface WaitingLobbyProps {
   sessionName: string;
+  sessionDescription: string;
   gamePin: string;
   participants: Participant[];
   isAdmin: boolean;
@@ -17,7 +18,7 @@ interface WaitingLobbyProps {
   onBack: () => void;
 }
 
-export default function WaitingLobby({ sessionName, gamePin, participants, isAdmin, error, startingSession, onStart, onBack }: WaitingLobbyProps) {
+export default function WaitingLobby({ sessionName, sessionDescription, gamePin, participants, isAdmin, error, startingSession, onStart, onBack }: WaitingLobbyProps) {
   return (
     <div style={{ minHeight: "100vh", background: "#0D0D1A", display: "flex", flexDirection: "column" }}>
       <div
@@ -39,14 +40,6 @@ export default function WaitingLobby({ sessionName, gamePin, participants, isAdm
         >
           Back to Dashboard
         </Button>
-        {gamePin && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>PIN</Text>
-            <Text style={{ color: "#FF2D7E", fontWeight: 700, fontSize: 20, letterSpacing: "0.18em" }}>
-              {gamePin}
-            </Text>
-          </div>
-        )}
         <div style={{ width: 160 }} />
       </div>
 
@@ -58,6 +51,11 @@ export default function WaitingLobby({ sessionName, gamePin, participants, isAdm
           <Title level={2} style={{ color: "#FFFFFF", margin: 0, fontSize: 28, fontWeight: 700 }}>
             {sessionName || "Karaoke Session"}
           </Title>
+          {sessionDescription && (
+            <Text style={{ color: "rgba(255,255,255,0.65)", fontSize: 15, display: "block", marginTop: 6 }}>
+              {sessionDescription}
+            </Text>
+          )}
           <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 15, display: "block", marginTop: 8 }}>
             {isAdmin ? "Everyone ready? Let's get this party started!" : "Waiting for the party to begin..."}
           </Text>
@@ -68,7 +66,7 @@ export default function WaitingLobby({ sessionName, gamePin, participants, isAdm
             <Text style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", display: "block", marginBottom: 4 }}>
               Join with PIN
             </Text>
-            <Text style={{ color: "#FF2D7E", fontSize: 34, fontWeight: 800, letterSpacing: "0.22em" }}>
+            <Text copyable style={{ color: "#FF2D7E", fontSize: 34, fontWeight: 800, letterSpacing: "0.22em" }}>
               {gamePin}
             </Text>
           </div>

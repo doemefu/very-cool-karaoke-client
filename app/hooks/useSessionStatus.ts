@@ -8,6 +8,7 @@ export interface UseSessionStatusResult {
   isAdmin: boolean;
   gamePin: string;
   sessionName: string;
+  sessionDescription: string;
   participants: Participant[];
   isLoading: boolean;
 }
@@ -20,6 +21,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
   const [isAdmin, setIsAdmin] = useState(false);
   const [gamePin, setGamePin] = useState("");
   const [sessionName, setSessionName] = useState("");
+  const [sessionDescription, setSessionDescription] = useState("");
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -29,6 +31,7 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
     setIsAdmin(String(session.admin?.id) === String(currentUserId));
     setGamePin(session.gamePin ?? "");
     setSessionName(session.name ?? "");
+    setSessionDescription(session.description ?? "");
     setParticipants(session.participants ?? []);
   }, []);
 
@@ -96,5 +99,5 @@ export const useSessionStatus = (sessionId: string, userId: string): UseSessionS
     };
   }, [sessionId, client, connected]);
 
-  return { status, isAdmin, gamePin, sessionName, participants, isLoading };
+  return { status, isAdmin, gamePin, sessionName, sessionDescription, participants, isLoading };
 };

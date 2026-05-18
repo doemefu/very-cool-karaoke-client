@@ -79,7 +79,7 @@ export default function SongSearchContent({ sessionId, onSongAdded }: SongSearch
 
       {!searchQuery && (
         <Empty
-          description="Search for songs to add to your queue"
+          description={<span style={{ color: "rgba(255,255,255,0.55)" }}>Search for songs to add to your queue</span>}
           style={{ marginTop: 48 }}
         />
       )}
