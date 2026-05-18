@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useLyrics } from "@/hooks/useLyrics";
 import { useSongQueue } from "@/hooks/useSongQueue";
@@ -92,10 +92,10 @@ const handleStartSession = async () => {
     }
   };
 
-  const handleRoundClosed = () => {
+  const handleRoundClosed = useCallback(() => {
     clearRound();
     refresh();
-  };
+  }, [clearRound, refresh]);
 
   if (openRound) {
     return (

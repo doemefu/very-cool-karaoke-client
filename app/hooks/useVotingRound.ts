@@ -10,22 +10,21 @@ export const useVotingRound = (sessionId: string): { openRound: VotingRound | nu
 
   const clearRound = useCallback(() => setOpenRound(null), []);
 
-  // Initial REST fetch: check if there is already an active voting round
-  // (handles the case where the user joins mid-session and missed the broadcast)
-  // An empty list means the session hasn't started a voting round yet — that's fine.
+  // REST fetch on mount and on reconnect: check if there is already an active voting round
+  // (handles joining mid-session or WebSocket reconnections where the broadcast was missed)
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId || !connected) return;
     apiService
       .get<VotingRound[]>(`/sessions/${sessionId}/votingRounds`)
       .then((rounds) => {
         if (!Array.isArray(rounds) || rounds.length === 0) return;
         const active = rounds.find((r) => r.status === "OPEN") ?? null;
-        setOpenRound(active);
+        setOpenRound((prev) => active ?? prev);
       })
       .catch((err) => {
         console.error("Failed to fetch voting rounds:", err);
       });
-  }, [sessionId, apiService]);
+  }, [sessionId, connected, apiService]);
 
   // WebSocket subscription for live voting round updates
   useEffect(() => {
