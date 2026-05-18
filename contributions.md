@@ -157,9 +157,9 @@ reason).
 
 ## Contributions Week 7 - 18.05.2026 to 22.05.2026
 
-| **Student**                                       | **Date**   | **Link to Commit**                                         | **Description**                         | **Relevance** |
-|---------------------------------------------------|------------|------------------------------------------------------------|-----------------------------------------|---------------|
-| **[@Oskar-567](https://github.com/Oskar-567)**    | 18.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/91 | #91 Highlight Host in Participant List | major         |
-| **[@Oskar-567](https://github.com/Oskar-567)**    | 18.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/91 | #91 Highlight Host in Participant List | major         |
+| **Student**                                       | **Date**   | **Link to Commit**                                         | **Description**                            | **Relevance** |
+|---------------------------------------------------|------------|------------------------------------------------------------|--------------------------------------------|---------------|
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 18.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/91 | #91 Highlight Host in Participant List    | major         |
+| **[@Oskar-567](https://github.com/Oskar-567)**    | 18.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/93 | #93 Spawn emojis at random place on screen| major         |
 
 ---
