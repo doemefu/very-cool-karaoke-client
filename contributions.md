@@ -133,7 +133,7 @@ reason).
 | **[@Spring987](https://github.com/Spring987)**    | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/77/changes| #15-fe-add-start-pause-and-end-session-controls-for-admin | major         |
 | **[@Unick1](https://github.com/Unick1)**   | 09.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/117/commits | #42 functionality to track the played songs | optional         |
 | **[@Unick1](https://github.com/Unick1)**   | 10.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/commits | Implement SessionWebSocketPublisherImpl and update session service | major  |
-| **[@doemefu](https://github.com/doemefu)**        | 03.05.2026 | refer to week 3 plus work  |- | -                            |
+| **[@doemefu](https://github.com/doemefu)**        | 10.05.2026 | refer to week 3 plus work  |- | -                            |
 ---
 
 ## Contributions Week 7 - 11.05.2026 to 18.05.2026
@@ -148,4 +148,9 @@ reason).
 | **[@lurisz33](https://github.com/lurisz33)**      | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/131         | #130 Fix NPE when broadcasting null currentSong over WebSocket | major         |
 | **[@Spring987](https://github.com/Spring987)**    | 14.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/83          | #78-fe-display-review-screen-after-ending-session              | major         |
 | **[@Spring987](https://github.com/Spring987)**    | 16.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/86          | #79-fe-implement-song-selection-when-rejoining                 | major         |
+| **[@Unick1](https://github.com/Unick1)**    | 13.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/pull/122/changes/722bd6a6b041f0dca4784e87b0732450f4673f4a      | #121 Implement SessionWebSocketPublisherImpl and update session service | minor         |
+| **[@Unick1](https://github.com/Unick1)**    | 15.05.2026 | https://github.com/doemefu/very-cool-karaoke-client/pull/84  | #133 Introduce users list and scrollable session sections  | major         |
+| **[@doemefu](https://github.com/doemefu)**        | 17.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/138  | #138 Bugfixing | major                            |
+| **[@doemefu](https://github.com/doemefu)**        | 17.05.2026 | https://github.com/doemefu/very-cool-karaoke-server/issues/139  | #139 Deployment cleanup and checks | major                            |
+
 ---
